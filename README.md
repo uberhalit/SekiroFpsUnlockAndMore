@@ -3,12 +3,12 @@
 A small utility to remove frame rate limit, add custom resolutions with 21/9 widescreen support, increase field of view (FOV) (credits to jackfuste) and borderless window mode for [Sekiro: Shadows Die Twice](https://www.sekirothegame.com/) written in C#.
 Patches games memory while running, does not modify any game files. works with every game version (legit steam & oh-not-so-legit), should work with all future updates.
 
-### See it in action:
-[![Video preview](https://camo.githubusercontent.com/cd23c8ff94e7cd777476d01d1be608df26fab26a/68747470733a2f2f692e696d6775722e636f6d2f766632393152532e706e67)](https://giant.gfycat.com/DevotedArtisticKingsnake.webm)
-
 ## Download
 
 [Get the latest release here](https://github.com/uberhalit/SekiroFpsUnlockAndMore/releases)
+
+### See it in action:
+[![Video preview](https://camo.githubusercontent.com/cd23c8ff94e7cd777476d01d1be608df26fab26a/68747470733a2f2f692e696d6775722e636f6d2f766632393152532e706e67)](https://giant.gfycat.com/DevotedArtisticKingsnake.webm)
 
 ## Features
 
