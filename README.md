@@ -3,7 +3,8 @@
 A small utility to remove frame rate limit, add custom resolutions with 21/9 widescreen support, increase field of view (FOV) (credits to jackfuste) and borderless window mode for [Sekiro: Shadows Die Twice](https://www.sekirothegame.com/) written in C#.
 Patches games memory while running, does not modify any game files. works with every game version (legit steam & oh-not-so-legit), should work with all future updates.
 
-![Sekiro FPS Unlocker and more]()
+### See it in action:
+[![Video preview](https://camo.githubusercontent.com/cd23c8ff94e7cd777476d01d1be608df26fab26a/68747470733a2f2f692e696d6775722e636f6d2f766632393152532e706e67)](https://giant.gfycat.com/DevotedArtisticKingsnake.webm)
 
 ## Download
 
@@ -75,14 +76,10 @@ The graphic setup has to be done only once but as the patcher hot-patches the me
 
 ## Preview
 
-### Unlocking frame rate:
-![unlocked frame rate]()
+![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/3e7ebacca20a13e6325695fb870e7c2c97e7c2d4/68747470733a2f2f692e696d6775722e636f6d2f667445436150332e706e67)
 
-### Increasing FOV:
-![FOV increase on the fly and borderless window]()
-
-### See it in action:
-![preview]()
+### Increasing FOV and borderless window:
+![FOV increase on the fly and borderless window](https://camo.githubusercontent.com/3e446f64e61406027fbd73cf248336cafd7c6ff1/68747470733a2f2f692e696d6775722e636f6d2f5248544b4e6a522e706e67)
 
 ## Prerequisites
 
