@@ -1,0 +1,49 @@
+﻿<Window x:Class="SekiroFpsUnlockAndMore.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SekiroFpsUnlockAndMore"
+        mc:Ignorable="d"
+        Title="Sekiro FPS Unlocker and more v1.0.0" Height="530" Width="306" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
+
+    <Grid>
+        <CheckBox x:Name="cbUnlockFps" Content="FPS lock (0= unlimited):" IsChecked="True" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
+        <TextBox x:Name="tbFps" Text="144" MaxLength="3" HorizontalAlignment="Left" Height="25" Margin="181,10,0,0" VerticalAlignment="Top" Width="106" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler"/>
+        <CheckBox x:Name="cbAddWidescreen" Content="Add custom resolution:" HorizontalAlignment="Left" Margin="10,42,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
+        <TextBox x:Name="tbWidth" Text="2560" MaxLength="4" HorizontalAlignment="Left" Height="25" Margin="181,40,0,0" VerticalAlignment="Top" Width="45" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
+        <Label Content="x" HorizontalAlignment="Left" Margin="226,36,0,0" VerticalAlignment="Top" FontSize="14 px"/>
+        <TextBox x:Name="tbHeight" Text="1080" MaxLength="4" HorizontalAlignment="Left" Height="25" Margin="242,40,0,0" VerticalAlignment="Top" Width="45" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
+        <CheckBox x:Name="cbFov" Content="Increase FOV by:" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
+        <ComboBox x:Name="cbSelectFov" HorizontalAlignment="Left" VerticalAlignment="Top" Width="106" Height="25" Margin="181,70,0,0" FontSize="14 px" SelectedValuePath="Key" DisplayMemberPath="Value"/>
+        <CheckBox x:Name="cbBorderless" Content="Borderless window mode" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
+        <Button x:Name="bPatch" Content="Patch game (CTRL + P)" FontSize="14 px" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top" Width="277" Height="30"
+                BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPatch_Click" />
+        <TextBox x:Name="tbStatus" Text="waiting for game..." TextAlignment="Center" HorizontalAlignment="Left" TextWrapping="NoWrap" Height="25" Margin="10,165,0,0" VerticalAlignment="Top" Width="277" FontSize="14 px" IsEnabled="False" FontWeight="Bold" />
+        <StackPanel HorizontalAlignment="Left" Height="305" Margin="13,195,0,0" VerticalAlignment="Top" Width="275">
+            <TextBlock HorizontalAlignment="Left" TextWrapping="WrapWithOverflow" VerticalAlignment="Top" FontSize="11 px" IsEnabled="False">
+                <TextBlock.Inlines>
+                    <Run FontWeight="Bold">If your monitor is 60 Hz you will have to use</Run>
+                    <Run FontWeight="Bold" Foreground="#FFF00000">fullscreen mode and force disable VSYNC</Run>
+                    <Run FontWeight="Bold">with Nvidia Control panel or AMD Radeon Settings to get frame rate unlock working.</Run>
+                    <Run>To avoid stuttering it's recommended to disable VSYNC even with a 144 Hz monitor.</Run>
+                    <Run FontWeight="Bold">If your monitor is >60 Hz you will have to use</Run>
+                    <Run FontWeight="Bold" Foreground="#FFF00000">borderless window mode or force the game to run on highest available refresh rate</Run>
+                    <Run FontWeight="Bold">using Nvidia Control panel or AMD Radeon Settings.</Run>
+                    <Run>Borderless window mode requires "Window mode" in game settings first.</Run>
+                    <Run FontWeight="Bold">Custom resolution adds 21/9 support and overwrites default 1920x1080 resolution, hud will be limited to 16/9 though.</Run>
+                    <Run>Borderless window mode with custom resolution requires you to patch and set resolution first, then add borderless patch afterwards.</Run>
+                    <Run FontWeight="Bold">For FOV patch to work you need to be ingame.</Run>
+                    <Run>FOV patch resets after save game reload.</Run>
+                    <Run FontWeight="Bold" Foreground="#FFF00000">See the link below for detailed information, GSYNC support and an AMD fix.</Run>
+                </TextBlock.Inlines>
+            </TextBlock>
+
+            <Label HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="12 px">
+                <Hyperlink NavigateUri="https://github.com/uberhalit/SekiroFpsUnlockAndMore" RequestNavigate="Hyperlink_RequestNavigate">
+                    v1.0.0 - by uberhalit
+                </Hyperlink>
+            </Label>
+        </StackPanel>
+    </Grid>
+</Window>
