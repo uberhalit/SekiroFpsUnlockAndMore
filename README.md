@@ -8,7 +8,7 @@ Patches games memory while running, does not modify any game files. works with e
 [Get the latest release here](https://github.com/uberhalit/SekiroFpsUnlockAndMore/releases)
 
 ### See it in action:
-[![Video preview](https://camo.githubusercontent.com/cd23c8ff94e7cd777476d01d1be608df26fab26a/68747470733a2f2f692e696d6775722e636f6d2f766632393152532e706e67)](https://giant.gfycat.com/DevotedArtisticKingsnake.webm)
+[![Video preview](https://camo.githubusercontent.com/99b882828d8bb814a126282d67f0394460259df0/68747470733a2f2f692e696d6775722e636f6d2f4b4e4674454d772e706e67)](https://giant.gfycat.com/DevotedArtisticKingsnake.webm)
 
 ## Features
 
@@ -76,10 +76,13 @@ The graphic setup has to be done only once but as the patcher hot-patches the me
 
 ## Preview
 
-![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/3e7ebacca20a13e6325695fb870e7c2c97e7c2d4/68747470733a2f2f692e696d6775722e636f6d2f667445436150332e706e67)
+[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/3e7ebacca20a13e6325695fb870e7c2c97e7c2d4/68747470733a2f2f692e696d6775722e636f6d2f667445436150332e706e67)](#)
 
-### Increasing FOV and borderless window:
-![FOV increase on the fly and borderless window](https://camo.githubusercontent.com/3e446f64e61406027fbd73cf248336cafd7c6ff1/68747470733a2f2f692e696d6775722e636f6d2f5248544b4e6a522e706e67)
+### Unlocked framerate
+[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/cd23c8ff94e7cd777476d01d1be608df26fab26a/68747470733a2f2f692e696d6775722e636f6d2f766632393152532e706e67)](#)
+
+### Increased FOV and borderless window:
+[![FOV increase on the fly and borderless window](https://camo.githubusercontent.com/3e446f64e61406027fbd73cf248336cafd7c6ff1/68747470733a2f2f692e696d6775722e636f6d2f5248544b4e6a522e706e67)](#)
 
 ## Prerequisites
 
@@ -107,10 +110,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Limitations
 
-* the game has forced VSYNC so unlocking the frame rate when your monitor has 60Hz will do nothing. You'll have to disable VSYNC in Nvidia Control Panel or AMD Driver first
-* your monitor has to support your custom resolution otherwise it show up correctly
+* the game has forced VSYNC so unlocking the frame rate when your monitor has 60Hz will do nothing. You'll have to disable VSYNC in Nvidia Control Panel or AMD Radeon Settings first
+* in fullscreen the game forces the monitor to 60 Hz so you'll have to handle this with driver override too, see Usage
+* your monitor has to support your custom resolution otherwise it won't show up correctly
 * due to how the game renders altering FOV will not move the HUD
-* unlocking framerate and custom resolutions only work in borderless window mode or with VSYNC force disabled
+* the HUD is limited to 16/9 even in 21/9 resolutions
 
 ## Version History
 
