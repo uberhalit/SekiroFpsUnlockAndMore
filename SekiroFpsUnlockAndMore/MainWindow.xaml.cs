@@ -62,8 +62,10 @@ namespace SekiroFpsUnlockAndMore
         internal IntPtr _gameProc = IntPtr.Zero;
         internal static IntPtr _gameProcStatic;
         internal readonly DispatcherTimer _dispatcherTimerCheck = new DispatcherTimer();
-        internal string logPath;
-        internal bool retryAccess = true;
+        internal string _logPath;
+        internal bool _retryAccess = true;
+        internal RECT _windowRect;
+        internal RECT _clientRect;
 
         public MainWindow()
         {
@@ -75,7 +77,7 @@ namespace SekiroFpsUnlockAndMore
         /// </summary>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            logPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\SekiroFpsUnlockAndMore.log";
+            _logPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\SekiroFpsUnlockAndMore.log";
 
             this.cbSelectFov.ItemsSource = _fovMatrix;
             this.cbSelectFov.SelectedIndex = 0;
@@ -166,7 +168,7 @@ namespace SekiroFpsUnlockAndMore
                 LogToFile("Hwnd: " + _gameHwnd.ToString("X"));
                 LogToFile("Proc: " + _gameProc.ToString("X"));
                 LogToFile("Base: " + procList[gameIndex].MainModule.BaseAddress.ToString("X"));
-                if (!retryAccess)
+                if (!_retryAccess)
                 {
                     UpdateStatus("no access to game...", Brushes.Red);
                     _dispatcherTimerCheck.Stop();
@@ -180,7 +182,7 @@ namespace SekiroFpsUnlockAndMore
                     _gameProcStatic = IntPtr.Zero;
                 }
                 LogToFile("retrying...");
-                retryAccess = false;
+                _retryAccess = false;
                 return;
             }
 
@@ -239,6 +241,8 @@ namespace SekiroFpsUnlockAndMore
                 this.cbFov.IsChecked = false;
             }
 
+            GetWindowRect(_gameHwnd, out _windowRect);
+            GetClientRect(_gameHwnd, out _clientRect);
             _running = true;
             _dispatcherTimerCheck.Stop();
             PatchGame();
@@ -426,7 +430,11 @@ namespace SekiroFpsUnlockAndMore
         /// <param name="hwnd">The handle to the window.</param>
         private void SetWindowWindowed(IntPtr hwnd)
         {
+            var width = _windowRect.Right - _windowRect.Left;
+            var height = _windowRect.Bottom - _windowRect.Top;
+            Debug.WriteLine(string.Format("Window Resolution: {0}x{1}", width, height));
             SetWindowLongPtr(hwnd, GWL_STYLE, WS_VISIBLE | WS_CAPTION | WS_BORDER | WS_CLIPSIBLINGS | WS_DLGFRAME | WS_SYSMENU | WS_GROUP | WS_MINIMIZEBOX);
+            SetWindowPos(hwnd, HWND_NOTOPMOST, 40, 40, width, height, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
         }
 
         /// <summary>
@@ -435,10 +443,11 @@ namespace SekiroFpsUnlockAndMore
         /// <param name="hwnd">The handle to the window.</param>
         private void SetWindowBorderless(IntPtr hwnd)
         {
+            var width = _clientRect.Right - _clientRect.Left;
+            var height = _clientRect.Bottom - _clientRect.Top;
+            Debug.WriteLine(string.Format("Client Resolution: {0}x{1}", width, height));
             SetWindowLongPtr(hwnd, GWL_STYLE, WS_VISIBLE | WS_POPUP);
-            RECT rect;
-            GetWindowRect(hwnd, out rect);
-            SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, rect.Right - rect.Left, rect.Bottom - rect.Top, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+            SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, width, height, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
         }
 
         /// <summary>
@@ -518,7 +527,7 @@ namespace SekiroFpsUnlockAndMore
             Debug.WriteLine(timedMsg);
             try
             {
-                using (StreamWriter writer = new StreamWriter(logPath, true))
+                using (StreamWriter writer = new StreamWriter(_logPath, true))
                 {
                     writer.WriteLine(timedMsg);
                 }
@@ -577,6 +586,9 @@ namespace SekiroFpsUnlockAndMore
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
+
+        [DllImport("user32.dll")]
+        public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT

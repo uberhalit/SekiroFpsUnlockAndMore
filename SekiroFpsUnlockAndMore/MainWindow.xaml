@@ -41,7 +41,7 @@
 
             <Label HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="12 px">
                 <Hyperlink NavigateUri="https://github.com/uberhalit/SekiroFpsUnlockAndMore" RequestNavigate="Hyperlink_RequestNavigate">
-                    v1.0.0 - by uberhalit
+                    v1.0.1 - by uberhalit
                 </Hyperlink>
             </Label>
         </StackPanel>

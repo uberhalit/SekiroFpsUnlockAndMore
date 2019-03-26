@@ -16,7 +16,7 @@ Patches games memory while running, does not modify any game files. works with e
 * works with legit, unmodified steam version as well as with unpacked, not-so-legit versions
 * GSYNC and FreeSync support even in borderless window mode
 * unlock frame rate (remove FPS limit) by setting a new custom limit or setting lock to unlimited
-	* 60 Hz monitors: disable VSYNC via driver (use 'Enhanced Sync' on AMD) and use fullscreen 
+	* 60 Hz monitors: disable VSYNC via driver (use 'Enhanced Sync' on AMD) and use fullscreen
 	* high refresh rate monitors: use borderless or force monitor to always use highest available refresh rate and then use fullscreen
 * add a custom resolution, 21/9 widescreen supported (will overwrite the default 1920x1080 resolution, HUD limited to 16/9)
 * increase field of view (FOV) (credits to jackfuste)
@@ -105,8 +105,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Credits
 
 * jackfuste for FOV findings and running speed fix
-* TyChii93 for AMD and widescreen testing
-* [Darius Dan](www.dariusdan.com) for the icon
+* TyChii93#2376 for AMD and widescreen testing
+* [Darius Dan](https://www.dariusdan.com) for the icon
 
 ## Limitations
 
@@ -114,9 +114,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 * in fullscreen the game forces the monitor to 60 Hz so you'll have to handle this with driver override too, see Usage
 * your monitor has to support your custom resolution otherwise it won't show up correctly
 * due to how the game renders altering FOV will not move the HUD
-* the HUD is limited to 16/9 even in 21/9 resolutions
+* the HUD is limited to 16/9 even on 21/9 resolutions
 
 ## Version History
 
+* v1.0.1 (2019-03-26)
+  * Fixed scaling issue in borderless window mode (thanks to Spacecop42#0947 for reporting)
 * v1.0.0 (2019-03-25)
   * Initial release
