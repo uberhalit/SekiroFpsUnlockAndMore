@@ -16,7 +16,8 @@
         <TextBox x:Name="tbHeight" Text="1080" MaxLength="4" HorizontalAlignment="Left" Height="25" Margin="242,40,0,0" VerticalAlignment="Top" Width="45" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
         <CheckBox x:Name="cbFov" Content="Increase FOV by:" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
         <ComboBox x:Name="cbSelectFov" HorizontalAlignment="Left" VerticalAlignment="Top" Width="106" Height="25" Margin="181,70,0,0" FontSize="14 px" SelectedValuePath="Key" DisplayMemberPath="Value"/>
-        <CheckBox x:Name="cbBorderless" Content="Borderless window mode" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
+        <CheckBox x:Name="cbBorderless" Content="Borderless window" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CbBorderless_Checked" Unchecked="CbBorderless_Unchecked"/>
+        <CheckBox x:Name="cbBorderlessStretch" Content="Fullscreen stretch" IsEnabled="False" HorizontalAlignment="Left" Margin="152,100,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
         <Button x:Name="bPatch" Content="Patch game (CTRL + P)" FontSize="14 px" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top" Width="277" Height="30"
                 BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPatch_Click" />
         <TextBox x:Name="tbStatus" Text="waiting for game..." TextAlignment="Center" HorizontalAlignment="Left" TextWrapping="NoWrap" Height="25" Margin="10,165,0,0" VerticalAlignment="Top" Width="277" FontSize="14 px" IsEnabled="False" FontWeight="Bold" />
@@ -41,7 +42,7 @@
 
             <Label HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="12 px">
                 <Hyperlink NavigateUri="https://github.com/uberhalit/SekiroFpsUnlockAndMore" RequestNavigate="Hyperlink_RequestNavigate">
-                    v1.0.1 - by uberhalit
+                    v1.0.2 - by uberhalit
                 </Hyperlink>
             </Label>
         </StackPanel>

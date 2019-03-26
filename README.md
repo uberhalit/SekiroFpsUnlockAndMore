@@ -24,6 +24,8 @@ Patches games memory while running, does not modify any game files. works with e
 * set the game to borderless window mode
 	* requires "Windowed" in ingame settings first
 * automatically patch game on startup
+* seamlessly switch between windowed, borderless and borderless fullscreen
+* hotkey for patching while in (borderless) window mode
 
 ## Usage
 
@@ -73,6 +75,7 @@ The graphic setup has to be done only once but as the patcher hot-patches the me
 2. Go to `Settings -> Graphical settings -> Monitor Mode` and set it to `Windowed`
 3. Set your resolution
 4. Start `Sekiro FPS Unlocker and more` and enable borderless window mode
+5. If you want fullscreen borderless enable `Fullscreen stretch`
 
 ## Preview
 
@@ -106,7 +109,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 * jackfuste for FOV findings and running speed fix
 * TyChii93#2376 for AMD and widescreen testing
-* [Darius Dan](https://www.dariusdan.com) for the icon
+* [Darius Dan](http://www.dariusdan.com) for the icon
 
 ## Limitations
 
@@ -115,9 +118,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 * your monitor has to support your custom resolution otherwise it won't show up correctly
 * due to how the game renders altering FOV will not move the HUD
 * the HUD is limited to 16/9 even on 21/9 resolutions
+* the hotkey won't work if the game runs in exclusive, true fullscreen mode
 
 ## Version History
 
+* v1.0.2 (2019-03-26)
+  * Added option to reduce FOV (request)
+  * Added option to stretch borderless window to fullscreen regardless of window resolution
+  * Fixed borderless Z-order issue where task bar could be infront of window (thanks to [Forkinator](https://github.com/Forkinator) for reporting)
+  * Fixed resolution issues in borderless (thanks to King Henry V#6946 for reporting)
 * v1.0.1 (2019-03-26)
   * Fixed scaling issue in borderless window mode (thanks to Spacecop42#0947 for reporting)
 * v1.0.0 (2019-03-25)
