@@ -5,23 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SekiroFpsUnlockAndMore"
         mc:Ignorable="d"
-        Title="Sekiro FPS Unlocker and more v1.0.0" Height="530" Width="306" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="Sekiro FPS Unlocker and more v1.0.2" Height="Auto" SizeToContent="WidthAndHeight" Width="Auto" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
 
-    <Grid>
+    <Grid Background="#FFF9F9F9">
         <CheckBox x:Name="cbUnlockFps" Content="FPS lock (0= unlimited):" IsChecked="True" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
-        <TextBox x:Name="tbFps" Text="144" MaxLength="3" HorizontalAlignment="Left" Height="25" Margin="181,10,0,0" VerticalAlignment="Top" Width="106" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler"/>
+        <TextBox x:Name="tbFps" Text="144" MaxLength="3" HorizontalAlignment="Left" Height="25" Margin="181,10,10,10" VerticalAlignment="Top" Width="106" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler"/>
         <CheckBox x:Name="cbAddWidescreen" Content="Add custom resolution:" HorizontalAlignment="Left" Margin="10,42,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
         <TextBox x:Name="tbWidth" Text="2560" MaxLength="4" HorizontalAlignment="Left" Height="25" Margin="181,40,0,0" VerticalAlignment="Top" Width="45" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
         <Label Content="x" HorizontalAlignment="Left" Margin="226,36,0,0" VerticalAlignment="Top" FontSize="14 px"/>
         <TextBox x:Name="tbHeight" Text="1080" MaxLength="4" HorizontalAlignment="Left" Height="25" Margin="242,40,0,0" VerticalAlignment="Top" Width="45" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
         <CheckBox x:Name="cbFov" Content="Increase FOV by:" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
-        <ComboBox x:Name="cbSelectFov" HorizontalAlignment="Left" VerticalAlignment="Top" Width="106" Height="25" Margin="181,70,0,0" FontSize="14 px" SelectedValuePath="Key" DisplayMemberPath="Value"/>
+        <ComboBox x:Name="cbSelectFov" HorizontalAlignment="Left" VerticalAlignment="Top" Width="106" Height="25" Margin="181,70,10,10" FontSize="14 px" SelectedValuePath="Key" DisplayMemberPath="Value"/>
         <CheckBox x:Name="cbBorderless" Content="Borderless window" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CbBorderless_Checked" Unchecked="CbBorderless_Unchecked"/>
         <CheckBox x:Name="cbBorderlessStretch" Content="Fullscreen stretch" IsEnabled="False" HorizontalAlignment="Left" Margin="152,100,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
-        <Button x:Name="bPatch" Content="Patch game (CTRL + P)" FontSize="14 px" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top" Width="277" Height="30"
+        <Button x:Name="bPatch" Content="Patch game (CTRL + P)" FontSize="14 px" HorizontalAlignment="Left" Margin="10,125,10,10" VerticalAlignment="Top" Width="277" Height="30"
                 BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPatch_Click" />
-        <TextBox x:Name="tbStatus" Text="waiting for game..." TextAlignment="Center" HorizontalAlignment="Left" TextWrapping="NoWrap" Height="25" Margin="10,165,0,0" VerticalAlignment="Top" Width="277" FontSize="14 px" IsEnabled="False" FontWeight="Bold" />
-        <StackPanel HorizontalAlignment="Left" Height="305" Margin="13,195,0,0" VerticalAlignment="Top" Width="275">
+        <TextBox x:Name="tbStatus" Text="waiting for game..." TextAlignment="Center" HorizontalAlignment="Left" TextWrapping="NoWrap" Height="25" Margin="10,165,10,10" VerticalAlignment="Top" Width="277" FontSize="14 px" IsEnabled="False" FontWeight="Bold" />
+        <StackPanel HorizontalAlignment="Left" Height="Auto" Margin="12,195,12,5" VerticalAlignment="Top" Width="275">
             <TextBlock HorizontalAlignment="Left" TextWrapping="WrapWithOverflow" VerticalAlignment="Top" FontSize="11 px" IsEnabled="False">
                 <TextBlock.Inlines>
                     <Run FontWeight="Bold">If your monitor is 60 Hz you will have to use</Run>

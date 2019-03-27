@@ -24,8 +24,8 @@ namespace SekiroFpsUnlockAndMore
         internal const string PATTERN_WIDESCREEN_219_MASK = "?xxxxxxxxx";
 
         // credits to jackfuste for FOV findings
-        internal const string PATTERN_FOVSETTING = "F3 0F 10 08 F3 0F 59 0D 00 E7 9B 02"; // F3 0F 10 08 F3 0F 59 0D ?? E7 9B 02
-        internal const string PATTERN_FOVSETTING_MASK = "xxxxxxxx?xxx";
+        internal const string PATTERN_FOVSETTING = "F3 0F 10 08 F3 0F 59 0D 00 00 9B 02"; // F3 0F 10 08 F3 0F 59 0D ?? ?? 9B 02
+        internal const string PATTERN_FOVSETTING_MASK = "xxxxxxxx??xx";
         internal const int PATTERN_FOVSETTING_OFFSET = 8;
     }
 }

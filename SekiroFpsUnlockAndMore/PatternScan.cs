@@ -33,11 +33,9 @@ namespace SekiroFpsUnlockAndMore
             else if (IntPtr.Size == 8)
                 dwStart = (long)pModule.BaseAddress;
             int nSize = pModule.ModuleMemorySize;
-
-            IntPtr lpNumberOfBytesRead;
             byte[] bData = new byte[nSize];
 
-            if (!ReadProcessMemory(hProcess, dwStart, bData, nSize, out lpNumberOfBytesRead))
+            if (!ReadProcessMemory(hProcess, dwStart, bData, nSize, out IntPtr lpNumberOfBytesRead))
                 throw new Exception("ReadProcessMemory error!");
             if (lpNumberOfBytesRead.ToInt64() != nSize)
                 throw new Exception("ReadProcessMemory error!");

@@ -1,6 +1,6 @@
-﻿using System.Reflection;
+﻿using System.Windows;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Windows;
 
 [assembly: AssemblyTitle("SekiroFpsUnlockAndMore")]
 [assembly: AssemblyDescription("")]

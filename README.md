@@ -5,7 +5,7 @@ Patches games memory while running, does not modify any game files. works with e
 
 ## Download
 
-[Get the latest release here](https://github.com/uberhalit/SekiroFpsUnlockAndMore/releases)
+**[Get the latest release here](https://github.com/uberhalit/SekiroFpsUnlockAndMore/releases)**
 
 ### See it in action:
 [![Video preview](https://camo.githubusercontent.com/99b882828d8bb814a126282d67f0394460259df0/68747470733a2f2f692e696d6775722e636f6d2f4b4e4674454d772e706e67)](https://giant.gfycat.com/DevotedArtisticKingsnake.webm)
@@ -16,48 +16,71 @@ Patches games memory while running, does not modify any game files. works with e
 * works with legit, unmodified steam version as well as with unpacked, not-so-legit versions
 * GSYNC and FreeSync support even in borderless window mode
 * unlock frame rate (remove FPS limit) by setting a new custom limit or setting lock to unlimited
-	* 60 Hz monitors: disable VSYNC via driver (use 'Enhanced Sync' on AMD) and use fullscreen
-	* high refresh rate monitors: use borderless or force monitor to always use highest available refresh rate and then use fullscreen
 * add a custom resolution, 21/9 widescreen supported (will overwrite the default 1920x1080 resolution, HUD limited to 16/9)
 * increase field of view (FOV) (credits to jackfuste)
-	* you have to be ingame with a loaded save game, FOV will reset after every time a save game loads
 * set the game to borderless window mode
-	* requires "Windowed" in ingame settings first
 * automatically patch game on startup
 * seamlessly switch between windowed, borderless and borderless fullscreen
 * hotkey for patching while in (borderless) window mode
 
 ## Usage
 
-The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors so we have to override these. 
+The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors so we have to override these.
+#### 60 Hz monitors: disable VSYNC via driver (use 'Enhanced Sync' on AMD) and use fullscreen, see guide below
+#### high refresh rate monitors: use borderless or force monitor to always use highest available refresh rate and then use fullscreen, see guide below
 
-### Follow these steps (Nvidia):
+### Follow these steps on Nvidia:
 1. Open Nvidia Control Panel
-2. Navigate to `Configurate 3D Settings -> Program settings`
-3. Select Sekiro from the dropdown or add it manually if it's missing: `Add -> Select Sekiro`
-4. **Set `Vertical sync` to `Off`**
-5. **Set `Preferred refresh rate` to `Highest available`**
-6. Start `Sekiro FPS Unlocker and more` and set FPS lock to your desired framerate
-7. Start the game and use fullscreen or borderless window mode
-8. These steps will force disable vsync so it won't limit your fps to monitor refresh rate and also force the monitor to ignore the games request to run at 60 Hz if in fullscreen
+2. Navigate to `Display -> Change resolution`
+3. **Make sure your monitor is set to the highest Refresh rate possible:**
+4.  [![Make sure your monitor is set to the highest Refresh rate possible](https://camo.githubusercontent.com/331eb420bee67f4e57d7e46601bfd51f462de68f/68747470733a2f2f692e696d6775722e636f6d2f625667767155372e706e67)](#)
+5. Navigate to `3D Settings -> Manage 3D settings -> Program Settings`
+6. Select Sekiro from the dropdown or add it manually if it's missing: `Add -> Select Sekiro -> Add Selected Program`
+7. **Set `Vertical sync` to `Off`**
+8. **Set `Preferred refresh rate` to `Highest available`**
+9. [![Vertical sync Off and Preferred refresh rate Highest available](https://camo.githubusercontent.com/bae53a6199d5a6fc2b8e0c4f0bfab322ebecd648/68747470733a2f2f692e696d6775722e636f6d2f35446f526d55452e706e67)](#)
+10. Hit apply and close Nvidia Control Panel
+11. Start `Sekiro FPS Unlocker and more` and set FPS lock to your desired framerate
+12. Start the game and use fullscreen or borderless window mode
+13. These steps will force disable vsync so it won't limit your fps to monitor refresh rate and also force the monitor to ignore the games request to run at 60 Hz if in fullscreen
+#### If you do not have 'Preferred refresh rate' or 'Vertical sync' follow these steps (Nvidia):
+1. Download and extract the [Nvidia Inspector](https://www.techpowerup.com/download/nvidia-inspector/)
+2. Start the Nvidia Profile Inspector
+3. Under `2 - Sync and Refresh` set `Prefered Refreshrate` to `Highest available` and `Vertical Sync` to `Force off`
+4. [![Vertical sync Off and Preferred refresh rate Highest available](https://camo.githubusercontent.com/560355d19113ad3e6782c75cae992e7c91a4e0fd/68747470733a2f2f692e696d6775722e636f6d2f4657424b57536e2e706e67)](#)
+5. Hit `Apply changes` and you are good to go
 
-### Or these (AMD):
-1. Open Radeon Settings
-2. Navigate to `Gaming -> Sekiro` or add it manually if it's missing: `Add -> Browse -> Sekiro`
-3. **Set `Wait for Vertical Refresh` to `Enhanced Sync`**
-4. Start `Sekiro FPS Unlocker and more` and set FPS lock to your desired frame rate
-5. **Launch the game in windowed mode, then switch to fullscreen once in game**
-6. The last step is important as AMD somehow does not correctly disable VSYNC otherwise
+### Follow these steps on AMD:
+1. Right click on Desktop -> `Display settings`
+2. Scroll down an click `Advanced Display Settings -> Display Adapter Properties`
+3. **Switch to `Monitor` tab and make sure your monitor is set to the highest Refresh rate possible:**
+4.  [![Make sure your monitor is set to the highest Refresh rate possible](https://camo.githubusercontent.com/8ba71a0b512eb68509f7e7506a92a78f3cd47537/68747470733a2f2f692e696d6775722e636f6d2f61774b4862774d2e706e67)](#)
+5. Open Radeon Settings
+6. Navigate to `Gaming -> Sekiro` or add it manually if it's missing: `Add -> Browse -> Sekiro`
+7. **Set `Wait for Vertical Refresh` to `Enhanced Sync`**:
+8. [![Wait for Vertical Refresh Enhanced Sync](https://camo.githubusercontent.com/7c00daebb59c7e46c455e30b6caa055c63185dcb/68747470733a2f2f692e696d6775722e636f6d2f456e77595146322e706e67)](#)
+9.  Apply and close Radeon Settings
+10. Start `Sekiro FPS Unlocker and more` and set FPS lock to your desired frame rate
+11. **Launch the game in windowed mode, then switch to fullscreen once in game**
+12. The last step is important as AMD somehow does not correctly disable VSYNC otherwise
+#### If you do not have 'Enhanced Sync' follow these steps (AMD):
+1. Try setting `Wait for Vertical Refresh` to `Off` instead:
+2.  [![Wait for Vertical Refresh Off](https://camo.githubusercontent.com/c06be2d7a7be65e379996eee66685209b276dcea/68747470733a2f2f692e696d6775722e636f6d2f417a7a716545332e706e67)](#)
+3.  Be aware however that it seems like AMDs latest drivers are buggy in that regard
 
 ### To play the game with GSYNC do these additional steps (Nvidia):
-1. Set `Monitor Technology` to `G-SYNC`
-2. Make sure that `Preferred refresh rate` is still set to `Highest available`
-3. Use a 3rd party frame rate limiter like [RTSS](https://www.guru3d.com/files-details/rtss-rivatuner-statistics-server-download.html) and set a frame rate limit just a few fps below your monitor refresh rate, on a 144Hz Monitor use 138
-4. Start `Sekiro FPS Unlocker and more` and set FPS lock to your monitors refresh rate
-5. Start the game and set it to Fullscreen
-6. Enjoy perfectly tearing free variable high refresh rates without VSYNC
+1. Under Nvidia Control Panel navigate to `3D Settings -> Manage 3D settings -> Program Settings -> Sekiro`
+2. Set `Monitor Technology` to `G-SYNC`
+3. Make sure that `Preferred refresh rate` is still set to `Highest available`
+4. Make sure that `Vertical sync` is still set to `Off`
+5. [![Control Panel](https://camo.githubusercontent.com/b7b491c24020fd3eca41d857bd58b1c0c2ee037f/68747470733a2f2f692e696d6775722e636f6d2f614a41744444632e706e67)](#)
+6. Don't forget to Apply and close Nvidia Control Panel
+7. Use a 3rd party frame rate limiter like [RTSS](https://www.guru3d.com/files-details/rtss-rivatuner-statistics-server-download.html) and set a frame rate limit just a few fps below your monitor refresh rate, on a 144Hz Monitor use 138
+8. Start `Sekiro FPS Unlocker and more` and set FPS lock to your monitors refresh rate
+9. Start the game and set it to Fullscreen
+10. Enjoy perfectly tearing free variable high refresh rates without VSYNC
 
-The graphic setup has to be done only once but as the patcher hot-patches the memory you have to start the patcher every time you want to unlock frame rate etc.
+The graphic setup has to be done only once but as the patcher hot-patches the memory **you have to start the patcher every time you want to unlock frame rate etc**.
 
 ### To add a custom resolution
 1. Start the game
