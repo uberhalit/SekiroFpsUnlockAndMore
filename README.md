@@ -22,6 +22,7 @@ Patches games memory while running, does not modify any game files. works with e
 * automatically patch game on startup
 * seamlessly switch between windowed, borderless and borderless fullscreen
 * hotkey for patching while in (borderless) window mode
+* log hidden counters such as deaths/kill count
 
 ## Usage
 
@@ -144,7 +145,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 * the hotkey won't work if the game runs in exclusive, true fullscreen mode
 
 ## Version History
-
+* v1.0.3 (2019-??-??)
+  * Added option to log death/kill counters to use with OBS
 * v1.0.2 (2019-03-26)
   * Added option to reduce FOV (request)
   * Added option to stretch borderless window to fullscreen regardless of window resolution
