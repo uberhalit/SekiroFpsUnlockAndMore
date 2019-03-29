@@ -27,5 +27,13 @@ namespace SekiroFpsUnlockAndMore
         internal const string PATTERN_FOVSETTING = "F3 0F 10 08 F3 0F 59 0D 00 00 9B 02"; // F3 0F 10 08 F3 0F 59 0D ?? ?? 9B 02
         internal const string PATTERN_FOVSETTING_MASK = "xxxxxxxx??xx";
         internal const int PATTERN_FOVSETTING_OFFSET = 8;
-    }
+
+		// game stat values by Me_TheCat
+		internal const string PATTERN_PLAYER_DEATHS = "8B 88 90 00 00 00 89 8B FC 00 00 00 48 8B";
+		internal const string PATTERN_PLAYER_DEATHS_MASK = "xxxxxxxxx???xx";
+
+		internal const string PATTERN_TOTAL_KILLS = "48 8D 0D 00 00 00 00 89 14 81 C3";
+		internal const string PATTERN_TOTAL_KILLS_MASK = "xxx????xxxx";
+		internal const int PATTERN_TOTAL_KILLS_OFFSET = 7;
+	}
 }

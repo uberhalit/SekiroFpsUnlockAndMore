@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Timers;
 
 namespace SekiroFpsUnlockAndMore
 {
@@ -42,14 +43,23 @@ namespace SekiroFpsUnlockAndMore
         internal long _offset_resolution_default = 0x0;
         internal long _offset_widescreen_219 = 0x0;
         internal long _offset_fovsetting = 0x0;
+		//game stat offsets
+		internal long _offset_player_deaths = 0x0;
+		internal long _pointer_player_deaths = 0x0;
+		internal long _offset_total_kills = 0x0;
+		internal long _pointer_total_kills = 0x0;
 
-        internal readonly DispatcherTimer _dispatcherTimerCheck = new DispatcherTimer();
+		internal const string deathCounterFilename = "DeathCouner.txt";
+		internal const string totalKillsFilename = "TotalKillsCounter.txt";
+
+		internal readonly Timer _statRecordTimer = new Timer();
+		internal readonly DispatcherTimer _dispatcherTimerCheck = new DispatcherTimer();
         internal bool _running = false;
         internal string _logPath;
         internal bool _retryAccess = true;
         internal RECT _windowRect;
 
-        public MainWindow()
+		public MainWindow()
         {
             InitializeComponent();
         }
@@ -74,7 +84,10 @@ namespace SekiroFpsUnlockAndMore
             _dispatcherTimerCheck.Tick += new EventHandler(CheckGame);
             _dispatcherTimerCheck.Interval = new TimeSpan(0, 0, 0, 2);
             _dispatcherTimerCheck.Start();
-        }
+
+			_statRecordTimer.Elapsed += new ElapsedEventHandler(StatReadTimer);
+			_statRecordTimer.Interval = 1500;
+		}
 
         /// <summary>
         /// On window closing.
@@ -86,7 +99,9 @@ namespace SekiroFpsUnlockAndMore
             UnregisterHotKey(hwnd, 9009);
             if (_gameProc != IntPtr.Zero)
                 CloseHandle(_gameProc);
-        }
+
+			_statRecordTimer.Stop();
+		}
 
         /// <summary>
         /// Windows Message queue (Wndproc) to catch HotKeyPressed
@@ -245,7 +260,30 @@ namespace SekiroFpsUnlockAndMore
                 this.cbFov.IsChecked = false;
             }
 
-            _running = true;
+			//Game stats
+			_offset_player_deaths = PatternScan.FindPattern(_gameProc, procList[gameIndex].MainModule, Offsets.PATTERN_PLAYER_DEATHS, Offsets.PATTERN_PLAYER_DEATHS_MASK, ' ');
+			Debug.WriteLine("Player Deaths found at: 0x" + _offset_player_deaths.ToString("X"));
+			if (!IsValid(_offset_player_deaths))
+			{
+				LogToFile("Player death counter not found...");
+			}
+			else
+			{
+				_pointer_player_deaths = Read<Int64>(_gameProc, FindOffsetToStaticPointer(_gameProc, _offset_player_deaths, 0)) + 0x90;
+			}
+
+			_offset_total_kills = PatternScan.FindPattern(_gameProc, procList[gameIndex].MainModule, Offsets.PATTERN_TOTAL_KILLS, Offsets.PATTERN_TOTAL_KILLS_MASK, ' ') + Offsets.PATTERN_TOTAL_KILLS_OFFSET;
+			Debug.WriteLine("Total kills found at: 0x" + _offset_total_kills.ToString("X"));
+			if (!IsValid(_offset_total_kills))
+			{
+				LogToFile("Total kills counter not found...");
+			}
+			else
+			{
+				_pointer_total_kills = FindOffsetToStaticPointer(_gameProc, _offset_total_kills, 0);
+			}
+
+			_running = true;
             _dispatcherTimerCheck.Stop();
             PatchGame();
         }
@@ -404,12 +442,33 @@ namespace SekiroFpsUnlockAndMore
                 UpdateStatus(DateTime.Now.ToString("HH:mm:ss") + " Game unpatched!", Brushes.White);
         }
 
-        /// <summary>
-        /// Returns the hexadecimal representation of an IEEE-754 floating point number
-        /// </summary>
-        /// <param name="input">The floating point number.</param>
-        /// <returns>The hexadecimal representation of the input.</returns>
-        private string getHexRepresentationFromFloat(float input)
+		/// <summary>
+		/// Reads some hidden stats and outputs them to text files. Use to display counters on Twitch stream or just look at them and get disspointed
+		/// </summary
+		private void StatReadTimer(object sender, EventArgs e)
+		{
+			if (IsValid(_pointer_player_deaths))
+			{
+				int playerDeaths = Read<Int32>(_gameProc, _pointer_player_deaths);
+				//Debug.WriteLine("[STAT]Player deaths: " + playerDeaths);
+				LogStatFile(deathCounterFilename, playerDeaths.ToString());
+
+				if (IsValid(_pointer_total_kills))
+				{
+					int totalKills = Read<Int32>(_gameProc, _pointer_total_kills);
+					totalKills -= playerDeaths; //Since this value seems to track every death, including the player
+					//Debug.WriteLine("[STAT]Enemies killed: " + totalKills);
+					LogStatFile(totalKillsFilename, totalKills.ToString());
+				}
+			}
+		}
+
+		/// <summary>
+		/// Returns the hexadecimal representation of an IEEE-754 floating point number
+		/// </summary>
+		/// <param name="input">The floating point number.</param>
+		/// <returns>The hexadecimal representation of the input.</returns>
+		private string getHexRepresentationFromFloat(float input)
         {
             uint f = BitConverter.ToUInt32(BitConverter.GetBytes(input), 0);
             return "0x" + f.ToString("X8");
@@ -578,7 +637,27 @@ namespace SekiroFpsUnlockAndMore
             }
         }
 
-        private void UpdateStatus(string text, Brush color)
+		/// <summary>
+		/// Logs stat values to separate files for the use in OBS
+		/// </summary>
+		/// <param name="filename">File name</param>
+		/// <param name="msg">Just a single stat value</param>
+		private void LogStatFile(string filename, string value)
+		{
+			try
+			{
+				using (StreamWriter writer = new StreamWriter(filename, false))
+				{
+					writer.Write(value);
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Failed writing stat file: " + ex.Message, "Sekiro Fps Unlock And More");
+			}
+		}
+
+		private void UpdateStatus(string text, Brush color)
         {
             this.tbStatus.Background = color;
             this.tbStatus.Text = text;
@@ -617,7 +696,12 @@ namespace SekiroFpsUnlockAndMore
             PatchGame();
         }
 
-        private void BPatch_Click(object sender, RoutedEventArgs e)
+		private void CbStatChanged(object sender, RoutedEventArgs e)
+		{
+			_statRecordTimer.Enabled = (bool)cbLogStats.IsChecked;
+		}
+
+		private void BPatch_Click(object sender, RoutedEventArgs e)
         {
             PatchGame();
         }
