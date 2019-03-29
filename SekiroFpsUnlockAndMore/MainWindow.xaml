@@ -27,7 +27,10 @@
                 <CheckBox x:Name="cbBorderless" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Borderless window" IsEnabled="False" Checked="CbBorderless_Checked" Unchecked="CbBorderless_Unchecked"/>
                 <CheckBox x:Name="cbBorderlessStretch" DockPanel.Dock="Right" Margin="10,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Fullscreen stretch" IsEnabled="False" Checked="CbBorderlessStretch_Check_Handler" Unchecked="CbBorderlessStretch_Check_Handler"  />
             </StackPanel>
-            <Expander x:Name="exGameMods" Margin="-3,4,0,0" Height="Auto" FontSize="14 px" Header="Game modifications" IsExpanded="False">
+			<DockPanel Margin="0,5,0,0" LastChildFill="False">
+				<CheckBox x:Name="cbLogStats" Content="Log stats (Deaths, Enemies killed)" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CbStatChanged" Unchecked="CbStatChanged" />
+			</DockPanel>
+			<Expander x:Name="exGameMods" Margin="-3,4,0,0" Height="Auto" FontSize="14 px" Header="Game modifications" IsExpanded="False">
                 <Grid Margin="3,0,0,0" Background="#FFF9F9F9">
                     <StackPanel Width="Auto" Height="Auto">
                         <DockPanel Margin="0,3,0,0" LastChildFill="False">
