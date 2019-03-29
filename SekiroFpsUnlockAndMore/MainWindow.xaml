@@ -7,44 +7,45 @@
         mc:Ignorable="d"
         Title="Sekiro FPS Unlocker and more v1.0.2" Height="Auto" SizeToContent="WidthAndHeight" Width="Auto" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
 
-    <Grid Background="#FFF9F9F9">
-        <CheckBox x:Name="cbUnlockFps" Content="FPS lock (0= unlimited):" IsChecked="True" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
-        <TextBox x:Name="tbFps" Text="144" MaxLength="3" HorizontalAlignment="Left" Height="25" Margin="181,10,10,10" VerticalAlignment="Top" Width="106" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler"/>
-        <CheckBox x:Name="cbAddWidescreen" Content="Add custom resolution:" HorizontalAlignment="Left" Margin="10,42,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
-        <TextBox x:Name="tbWidth" Text="2560" MaxLength="4" HorizontalAlignment="Left" Height="25" Margin="181,40,0,0" VerticalAlignment="Top" Width="45" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
-        <Label Content="x" HorizontalAlignment="Left" Margin="226,36,0,0" VerticalAlignment="Top" FontSize="14 px"/>
-        <TextBox x:Name="tbHeight" Text="1080" MaxLength="4" HorizontalAlignment="Left" Height="25" Margin="242,40,0,0" VerticalAlignment="Top" Width="45" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
-        <CheckBox x:Name="cbFov" Content="Increase FOV by:" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
-        <ComboBox x:Name="cbSelectFov" HorizontalAlignment="Left" VerticalAlignment="Top" Width="106" Height="25" Margin="181,70,10,10" FontSize="14 px" SelectedValuePath="Key" DisplayMemberPath="Value"/>
-        <CheckBox x:Name="cbBorderless" Content="Borderless window" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CbBorderless_Checked" Unchecked="CbBorderless_Unchecked"/>
-        <CheckBox x:Name="cbBorderlessStretch" Content="Fullscreen stretch" IsEnabled="False" HorizontalAlignment="Left" Margin="152,100,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
-        <Button x:Name="bPatch" Content="Patch game (CTRL + P)" FontSize="14 px" HorizontalAlignment="Left" Margin="10,125,10,10" VerticalAlignment="Top" Width="277" Height="30"
+	<Grid Background="#FFF9F9F9" Margin="0,0,0,-1">
+		<CheckBox x:Name="cbUnlockFps" Content="FPS lock (0= unlimited):" IsChecked="True" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
+		<TextBox x:Name="tbFps" Text="144" MaxLength="3" HorizontalAlignment="Left" Height="25" Margin="181,10,10,10" VerticalAlignment="Top" Width="106" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler"/>
+		<CheckBox x:Name="cbAddWidescreen" Content="Add custom resolution:" HorizontalAlignment="Left" Margin="10,42,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
+		<TextBox x:Name="tbWidth" Text="2560" MaxLength="4" HorizontalAlignment="Left" Height="25" Margin="181,40,0,0" VerticalAlignment="Top" Width="45" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
+		<Label Content="x" HorizontalAlignment="Left" Margin="226,36,0,0" VerticalAlignment="Top" FontSize="14 px"/>
+		<TextBox x:Name="tbHeight" Text="1080" MaxLength="4" HorizontalAlignment="Left" Height="25" Margin="242,40,0,0" VerticalAlignment="Top" Width="45" FontSize="14 px" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
+		<CheckBox x:Name="cbFov" Content="Increase FOV by:" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
+		<ComboBox x:Name="cbSelectFov" HorizontalAlignment="Left" VerticalAlignment="Top" Width="106" Height="25" Margin="181,70,10,10" FontSize="14 px" SelectedValuePath="Key" DisplayMemberPath="Value"/>
+		<CheckBox x:Name="cbBorderless" Content="Borderless window" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CbBorderless_Checked" Unchecked="CbBorderless_Unchecked"/>
+		<CheckBox x:Name="cbBorderlessStretch" Content="Fullscreen stretch" IsEnabled="False" HorizontalAlignment="Left" Margin="152,100,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CheckBoxChanged_Handler" Unchecked="CheckBoxChanged_Handler"/>
+		<CheckBox x:Name="cbLogStats" Content="Log stats (Deaths, Enemies killed)" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top" FontSize="14 px" Checked="CbStatChanged" Unchecked="CbStatChanged" />
+		<Button x:Name="bPatch" Content="Patch game (CTRL + P)" FontSize="14 px" HorizontalAlignment="Left" Margin="10,153,0,0" VerticalAlignment="Top" Width="277" Height="30"
                 BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPatch_Click" />
-        <TextBox x:Name="tbStatus" Text="waiting for game..." TextAlignment="Center" HorizontalAlignment="Left" TextWrapping="NoWrap" Height="25" Margin="10,165,10,10" VerticalAlignment="Top" Width="277" FontSize="14 px" IsEnabled="False" FontWeight="Bold" />
-        <StackPanel HorizontalAlignment="Left" Height="Auto" Margin="12,195,12,5" VerticalAlignment="Top" Width="275">
-            <TextBlock HorizontalAlignment="Left" TextWrapping="WrapWithOverflow" VerticalAlignment="Top" FontSize="11 px" IsEnabled="False">
-                <TextBlock.Inlines>
-                    <Run FontWeight="Bold">If your monitor is 60 Hz you will have to use</Run>
-                    <Run FontWeight="Bold" Foreground="#FFF00000">fullscreen mode and force disable VSYNC</Run>
-                    <Run FontWeight="Bold">with Nvidia Control panel or AMD Radeon Settings to get frame rate unlock working.</Run>
-                    <Run>To avoid stuttering it's recommended to disable VSYNC even with a 144 Hz monitor.</Run>
-                    <Run FontWeight="Bold">If your monitor is >60 Hz you will have to use</Run>
-                    <Run FontWeight="Bold" Foreground="#FFF00000">borderless window mode or force the game to run on highest available refresh rate</Run>
-                    <Run FontWeight="Bold">using Nvidia Control panel or AMD Radeon Settings.</Run>
-                    <Run>Borderless window mode requires "Window mode" in game settings first.</Run>
-                    <Run FontWeight="Bold">Custom resolution adds 21/9 support and overwrites default 1920x1080 resolution, hud will be limited to 16/9 though.</Run>
-                    <Run>Borderless window mode with custom resolution requires you to patch and set resolution first, then add borderless patch afterwards.</Run>
-                    <Run FontWeight="Bold">For FOV patch to work you need to be ingame.</Run>
-                    <Run>FOV patch resets after save game reload.</Run>
-                    <Run FontWeight="Bold" Foreground="#FFF00000">See the link below for detailed information, GSYNC support and an AMD fix.</Run>
-                </TextBlock.Inlines>
-            </TextBlock>
+		<TextBox x:Name="tbStatus" Text="waiting for game..." TextAlignment="Center" HorizontalAlignment="Left" TextWrapping="NoWrap" Height="25" Margin="10,189,0,0" VerticalAlignment="Top" Width="277" FontSize="14 px" IsEnabled="False" FontWeight="Bold" />
+		<StackPanel HorizontalAlignment="Left" Height="304" Margin="12,219,0,0" VerticalAlignment="Top" Width="275">
+			<TextBlock HorizontalAlignment="Left" TextWrapping="WrapWithOverflow" VerticalAlignment="Top" FontSize="11 px" IsEnabled="False" Height="280">
+				<TextBlock.Inlines>
+					<Run FontWeight="Bold">If your monitor is 60 Hz you will have to use</Run>
+					<Run FontWeight="Bold" Foreground="#FFF00000">fullscreen mode and force disable VSYNC</Run>
+					<Run FontWeight="Bold">with Nvidia Control panel or AMD Radeon Settings to get frame rate unlock working.</Run>
+					<Run>To avoid stuttering it's recommended to disable VSYNC even with a 144 Hz monitor.</Run>
+					<Run FontWeight="Bold">If your monitor is >60 Hz you will have to use</Run>
+					<Run FontWeight="Bold" Foreground="#FFF00000">borderless window mode or force the game to run on highest available refresh rate</Run>
+					<Run FontWeight="Bold">using Nvidia Control panel or AMD Radeon Settings.</Run>
+					<Run>Borderless window mode requires "Window mode" in game settings first.</Run>
+					<Run FontWeight="Bold">Custom resolution adds 21/9 support and overwrites default 1920x1080 resolution, hud will be limited to 16/9 though.</Run>
+					<Run>Borderless window mode with custom resolution requires you to patch and set resolution first, then add borderless patch afterwards.</Run>
+					<Run FontWeight="Bold">For FOV patch to work you need to be ingame.</Run>
+					<Run>FOV patch resets after save game reload.</Run>
+					<Run FontWeight="Bold" Foreground="#FFF00000">See the link below for detailed information, GSYNC support and an AMD fix.</Run>
+				</TextBlock.Inlines>
+			</TextBlock>
 
-            <Label HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="12 px">
-                <Hyperlink NavigateUri="https://github.com/uberhalit/SekiroFpsUnlockAndMore" RequestNavigate="Hyperlink_RequestNavigate">
-                    v1.0.2 - by uberhalit
-                </Hyperlink>
-            </Label>
-        </StackPanel>
-    </Grid>
+			<Label HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="12 px">
+				<Hyperlink NavigateUri="https://github.com/uberhalit/SekiroFpsUnlockAndMore" RequestNavigate="Hyperlink_RequestNavigate">
+					v1.0.2 - by uberhalit
+				</Hyperlink>
+			</Label>
+		</StackPanel>
+	</Grid>
 </Window>
