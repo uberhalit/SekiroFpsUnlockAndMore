@@ -147,7 +147,8 @@ namespace SekiroFpsUnlockAndMore
             this.tbGameSpeed.Text = _settingsService.settings.tbGameSpeed.ToString();
             this.cbPlayerSpeed.IsChecked = _settingsService.settings.cbPlayerSpeed;
             this.tbPlayerSpeed.Text = _settingsService.settings.tbPlayerSpeed.ToString();
-        }
+			this.cbLogStats.IsChecked = _settingsService.settings.cbLogStats;
+		}
 
         /// <summary>
         /// Save all settings to configuration file.
@@ -168,7 +169,8 @@ namespace SekiroFpsUnlockAndMore
             _settingsService.settings.tbGameSpeed = Convert.ToInt32(this.tbGameSpeed.Text);
             _settingsService.settings.cbPlayerSpeed = this.cbPlayerSpeed.IsChecked == true;
             _settingsService.settings.tbPlayerSpeed = Convert.ToInt32(this.tbPlayerSpeed.Text);
-            _settingsService.Save();
+			_settingsService.settings.cbLogStats = this.cbLogStats.IsChecked == true;
+			_settingsService.Save();
         }
 
         /// <summary>
