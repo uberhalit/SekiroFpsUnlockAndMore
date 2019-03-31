@@ -52,17 +52,21 @@ namespace SekiroFpsUnlockAndMore
 		internal const string deathCounterFilename = "DeathCouner.txt";
 		internal const string totalKillsFilename = "TotalKillsCounter.txt";
 
+		internal StatViewModel _statViewModel = new StatViewModel();
+		private bool _statLoggingEnabled = false;
 		internal readonly Timer _statRecordTimer = new Timer();
 		internal readonly DispatcherTimer _dispatcherTimerCheck = new DispatcherTimer();
         internal bool _running = false;
         internal string _logPath;
         internal bool _retryAccess = true;
         internal RECT _windowRect;
+		
 
 		public MainWindow()
         {
-            InitializeComponent();
-        }
+			InitializeComponent();
+			DataContext = _statViewModel;
+		}
 
         /// <summary>
         /// On window loaded.
@@ -87,6 +91,7 @@ namespace SekiroFpsUnlockAndMore
 
 			_statRecordTimer.Elapsed += new ElapsedEventHandler(StatReadTimer);
 			_statRecordTimer.Interval = 1500;
+			_statRecordTimer.Start();
 		}
 
         /// <summary>
@@ -447,18 +452,19 @@ namespace SekiroFpsUnlockAndMore
 		/// </summary
 		private void StatReadTimer(object sender, EventArgs e)
 		{
+			if (_gameProc==IntPtr.Zero) return;
 			if (IsValid(_pointer_player_deaths))
 			{
 				int playerDeaths = Read<Int32>(_gameProc, _pointer_player_deaths);
-				//Debug.WriteLine("[STAT]Player deaths: " + playerDeaths);
-				LogStatFile(deathCounterFilename, playerDeaths.ToString());
+				_statViewModel.Deaths = playerDeaths;
+				if (_statLoggingEnabled) LogStatFile(deathCounterFilename, playerDeaths.ToString());
 
 				if (IsValid(_pointer_total_kills))
 				{
 					int totalKills = Read<Int32>(_gameProc, _pointer_total_kills);
 					totalKills -= playerDeaths; //Since this value seems to track every death, including the player
-					//Debug.WriteLine("[STAT]Enemies killed: " + totalKills);
-					LogStatFile(totalKillsFilename, totalKills.ToString());
+					_statViewModel.Kills = totalKills;
+					if (_statLoggingEnabled)  LogStatFile(totalKillsFilename, totalKills.ToString());
 				}
 			}
 		}
@@ -698,7 +704,7 @@ namespace SekiroFpsUnlockAndMore
 
 		private void CbStatChanged(object sender, RoutedEventArgs e)
 		{
-			_statRecordTimer.Enabled = (bool)cbLogStats.IsChecked;
+			_statLoggingEnabled = (bool)cbLogStats.IsChecked;
 		}
 
 		private void BPatch_Click(object sender, RoutedEventArgs e)

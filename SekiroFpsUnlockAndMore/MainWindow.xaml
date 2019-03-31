@@ -22,7 +22,7 @@
 		<Button x:Name="bPatch" Content="Patch game (CTRL + P)" FontSize="14 px" HorizontalAlignment="Left" Margin="10,153,0,0" VerticalAlignment="Top" Width="277" Height="30"
                 BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPatch_Click" />
 		<TextBox x:Name="tbStatus" Text="waiting for game..." TextAlignment="Center" HorizontalAlignment="Left" TextWrapping="NoWrap" Height="25" Margin="10,189,0,0" VerticalAlignment="Top" Width="277" FontSize="14 px" IsEnabled="False" FontWeight="Bold" />
-		<StackPanel HorizontalAlignment="Left" Height="304" Margin="12,219,0,0" VerticalAlignment="Top" Width="275">
+		<StackPanel HorizontalAlignment="Left" Height="329" Margin="12,219,0,0" VerticalAlignment="Top" Width="275">
 			<TextBlock HorizontalAlignment="Left" TextWrapping="WrapWithOverflow" VerticalAlignment="Top" FontSize="11 px" IsEnabled="False" Height="280">
 				<TextBlock.Inlines>
 					<Run FontWeight="Bold">If your monitor is 60 Hz you will have to use</Run>
@@ -47,5 +47,32 @@
 				</Hyperlink>
 			</Label>
 		</StackPanel>
+		<StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
+			<StatusBar.ItemsPanel>
+				<ItemsPanelTemplate>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+					</Grid>
+				</ItemsPanelTemplate>
+			</StatusBar.ItemsPanel>
+
+			<StatusBarItem Grid.Column="0">
+				<TextBlock Name="sbDeathCount">
+					<Run Text="Deaths:"/>
+					<Run Text="{Binding Deaths}"/>
+				</TextBlock>
+			</StatusBarItem>
+			<Separator Grid.Column="1" />
+			<StatusBarItem Grid.Column="2">
+				<TextBlock Name="sbKillCount">
+					<Run Text="Kills:"/>
+					<Run Text="{Binding Kills}"/>
+				</TextBlock>
+			</StatusBarItem>
+		</StatusBar>
 	</Grid>
 </Window>
