@@ -11,6 +11,8 @@ using System.Windows.Threading;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Timers;
+using Timer = System.Timers.Timer;
 
 namespace SekiroFpsUnlockAndMore
 {
@@ -26,21 +28,34 @@ namespace SekiroFpsUnlockAndMore
         internal long _offset_resolution_default = 0x0;
         internal long _offset_resolution_scaling_fix = 0x0;
         internal long _offset_fovsetting = 0x0;
+		//game stat offsets
+		internal long _offset_player_deaths = 0x0;
+		internal long _pointer_player_deaths = 0x0;
         internal long _offset_timescale = 0x0;
         internal long _offset_timescale_player = 0x0;
         internal bool _use_resolution_720 = false;
+		internal long _offset_total_kills = 0x0;
+		internal long _pointer_total_kills = 0x0;
 
+		internal const string deathCounterFilename = "DeathCouner.txt";
         internal SettingsService _settingsService;
-        internal readonly DispatcherTimer _dispatcherTimerCheck = new DispatcherTimer();
+		internal const string totalKillsFilename = "TotalKillsCounter.txt";
+
+		internal StatViewModel _statViewModel = new StatViewModel();
+		private bool _statLoggingEnabled = false;
+		internal readonly Timer _statRecordTimer = new Timer();
+		internal readonly DispatcherTimer _dispatcherTimerCheck = new DispatcherTimer();
         internal bool _running = false;
         internal string _logPath;
         internal bool _retryAccess = true;
         internal RECT _windowRect;
+		
 
-        public MainWindow()
+		public MainWindow()
         {
-            InitializeComponent();
-        }
+			InitializeComponent();
+			DataContext = _statViewModel;
+		}
 
         /// <summary>
         /// On window loaded.
@@ -75,7 +90,11 @@ namespace SekiroFpsUnlockAndMore
             });
             _dispatcherTimerCheck.Interval = new TimeSpan(0, 0, 0, 2);
             _dispatcherTimerCheck.Start();
-        }
+
+			_statRecordTimer.Elapsed += new ElapsedEventHandler(StatReadTimer);
+			_statRecordTimer.Interval = 1500;
+			_statRecordTimer.Start();
+		}
 
         /// <summary>
         /// On window closing.
@@ -88,7 +107,9 @@ namespace SekiroFpsUnlockAndMore
             UnregisterHotKey(hWnd, 9009);
             if (_gameAccessHwnd != IntPtr.Zero)
                 CloseHandle(_gameAccessHwnd);
-        }
+
+			_statRecordTimer.Stop();
+		}
 
         /// <summary>
         /// Windows Message queue (Wndproc) to catch HotKeyPressed
@@ -126,7 +147,8 @@ namespace SekiroFpsUnlockAndMore
             this.tbGameSpeed.Text = _settingsService.settings.tbGameSpeed.ToString();
             this.cbPlayerSpeed.IsChecked = _settingsService.settings.cbPlayerSpeed;
             this.tbPlayerSpeed.Text = _settingsService.settings.tbPlayerSpeed.ToString();
-        }
+			this.cbLogStats.IsChecked = _settingsService.settings.cbLogStats;
+		}
 
         /// <summary>
         /// Save all settings to configuration file.
@@ -147,7 +169,8 @@ namespace SekiroFpsUnlockAndMore
             _settingsService.settings.tbGameSpeed = Convert.ToInt32(this.tbGameSpeed.Text);
             _settingsService.settings.cbPlayerSpeed = this.cbPlayerSpeed.IsChecked == true;
             _settingsService.settings.tbPlayerSpeed = Convert.ToInt32(this.tbPlayerSpeed.Text);
-            _settingsService.Save();
+			_settingsService.settings.cbLogStats = this.cbLogStats.IsChecked == true;
+			_settingsService.Save();
         }
 
         /// <summary>
@@ -288,6 +311,29 @@ namespace SekiroFpsUnlockAndMore
                 this.cbFov.IsEnabled = false;
             }
 
+			//Game stats
+			_offset_player_deaths = patternScan.FindPatternInternal(GameData.PATTERN_PLAYER_DEATHS, GameData.PATTERN_PLAYER_DEATHS_MASK, ' ');
+			Debug.WriteLine("Player Deaths found at: 0x" + _offset_player_deaths.ToString("X"));
+			if (!IsValidAddress(_offset_player_deaths))
+			{
+				LogToFile("Player death counter not found...");
+			}
+			else
+			{
+				_pointer_player_deaths = Read<Int64>(_gameAccessHwndStatic, DereferenceStaticX64Pointer(_gameAccessHwndStatic, _offset_player_deaths, 0)) + 0x90;
+			}
+
+			_offset_total_kills = patternScan.FindPatternInternal(GameData.PATTERN_TOTAL_KILLS, GameData.PATTERN_TOTAL_KILLS_MASK, ' ') + GameData.PATTERN_TOTAL_KILLS_OFFSET;
+			Debug.WriteLine("Total kills found at: 0x" + _offset_total_kills.ToString("X"));
+			if (!IsValidAddress(_offset_total_kills))
+			{
+				LogToFile("Total kills counter not found...");
+			}
+			else
+			{
+				_pointer_total_kills = DereferenceStaticX64Pointer(_gameAccessHwndStatic, _offset_total_kills, 0);
+			}
+
             this.cbBorderless.IsEnabled = true;
 
             long offset_pTimeRelated = patternScan.FindPatternInternal(GameData.PATTERN_TIMESCALE, GameData.PATTERN_TIMESCALE_MASK, ' ');
@@ -353,7 +399,7 @@ namespace SekiroFpsUnlockAndMore
 
             this.bPatch.IsEnabled = true;
 
-            _running = true;
+			_running = true;
             _dispatcherTimerCheck.Stop();
             return Task.FromResult(true);
         }
@@ -655,11 +701,33 @@ namespace SekiroFpsUnlockAndMore
                 UpdateStatus(DateTime.Now.ToString("HH:mm:ss") + " Game unpatched!", Brushes.White);
         }
 
-        /// <summary>
-        /// Returns the hexadecimal representation of an IEEE-754 floating point number
-        /// </summary>
-        /// <param name="input">The floating point number.</param>
-        /// <returns>The hexadecimal representation of the input.</returns>
+		/// <summary>
+		/// Reads some hidden stats and outputs them to text files. Use to display counters on Twitch stream or just look at them and get disspointed
+		/// </summary
+		private void StatReadTimer(object sender, EventArgs e)
+		{
+			if (_gameAccessHwndStatic == IntPtr.Zero) return;
+			if (IsValidAddress(_pointer_player_deaths))
+			{
+				int playerDeaths = Read<Int32>(_gameAccessHwndStatic, _pointer_player_deaths);
+				_statViewModel.Deaths = playerDeaths;
+				if (_statLoggingEnabled) LogStatFile(deathCounterFilename, playerDeaths.ToString());
+
+				if (IsValidAddress(_pointer_total_kills))
+				{
+					int totalKills = Read<Int32>(_gameAccessHwndStatic, _pointer_total_kills);
+					totalKills -= playerDeaths; //Since this value seems to track every death, including the player
+					_statViewModel.Kills = totalKills;
+					if (_statLoggingEnabled)  LogStatFile(totalKillsFilename, totalKills.ToString());
+				}
+			}
+		}
+
+		/// <summary>
+		/// Returns the hexadecimal representation of an IEEE-754 floating point number
+		/// </summary>
+		/// <param name="input">The floating point number.</param>
+		/// <returns>The hexadecimal representation of the input.</returns>
         private static string GetHexRepresentationFromFloat(float input)
         {
             uint f = BitConverter.ToUInt32(BitConverter.GetBytes(input), 0);
@@ -848,7 +916,27 @@ namespace SekiroFpsUnlockAndMore
             }
         }
 
-        private void UpdateStatus(string text, Brush color)
+		/// <summary>
+		/// Logs stat values to separate files for the use in OBS
+		/// </summary>
+		/// <param name="filename">File name</param>
+		/// <param name="msg">Just a single stat value</param>
+		private void LogStatFile(string filename, string value)
+		{
+			try
+			{
+				using (StreamWriter writer = new StreamWriter(filename, false))
+				{
+					writer.Write(value);
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Failed writing stat file: " + ex.Message, "Sekiro Fps Unlock And More");
+			}
+		}
+
+		private void UpdateStatus(string text, Brush color)
         {
             this.tbStatus.Background = color;
             this.tbStatus.Text = text;
@@ -985,7 +1073,12 @@ namespace SekiroFpsUnlockAndMore
             if (this.cbPlayerSpeed.IsChecked == true) PatchPlayerSpeed();
         }
 
-        private void BPatch_Click(object sender, RoutedEventArgs e)
+		private void CbStatChanged(object sender, RoutedEventArgs e)
+		{
+			_statLoggingEnabled = (bool)cbLogStats.IsChecked;
+		}
+
+		private void BPatch_Click(object sender, RoutedEventArgs e)
         {
             PatchGame();
         }

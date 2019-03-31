@@ -25,6 +25,7 @@ Patches games memory while running, does not modify any game files. Wrks with ev
 * automatically patch game on startup
 * seamlessly switch between windowed, borderless and borderless fullscreen
 * hotkey for patching while in (borderless) window mode
+* log and display hidden counters such as deaths/kill count
 
 ## Usage
 

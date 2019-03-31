@@ -48,8 +48,10 @@ namespace SekiroFpsUnlockAndMore
         public bool cbPlayerSpeed { get; set; }
         [XmlElement]
         public int tbPlayerSpeed { get; set; }
+		[XmlElement]
+		public bool cbLogStats { get; set; }
 
-        public SettingsService() { }
+		public SettingsService() { }
 
         /// <summary>
         /// Create a settings provider to load and save settings.
