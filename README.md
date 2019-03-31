@@ -48,7 +48,7 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 11. [![Preferred refresh rate Highest available and Vertical sync Off](https://camo.githubusercontent.com/209678e46eb63c150abf394894ef24a75bb664d0/68747470733a2f2f692e696d6775722e636f6d2f56634d754f33362e706e67)](#)
 12. Hit apply and close Nvidia Control Panel
 13. Start `Sekiro FPS Unlocker and more` and set FPS lock to your desired framerate
-14. Start the game and use fullscreen or borderless window mode
+14. Start the game and use fullscreen (144 Hz or 60 Hz Monitors) or borderless window mode (144 Hz Monitors)
 15. These steps will force disable vsync so it won't limit your fps to monitor refresh rate and also force the monitor to ignore the games request to run at 60 Hz if in fullscreen
 #### If you do not have 'Preferred refresh rate' or 'Vertical sync' follow these steps (Nvidia):
 1. **Delete the Sekiro Profile in Nvidia Control panel as otherwise it will block all settings from Profile Inspector**
@@ -56,10 +56,10 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 3. Download and extract the [Nvidia Inspector](https://www.techpowerup.com/download/nvidia-inspector/)
 4. Start the Nvidia Profile Inspector
 5. **Check if there already is a profile for Sekiro and if so DELETE IT using the red 'X' button**
-6. Press the yellow start icon in the menu bar to create a new Profile (1)
+6. Press the yellow star icon in the menu bar to create a new Profile (1)
 7. [![Vertical sync Off and Preferred refresh rate Highest available](https://camo.githubusercontent.com/531be3614b0742e9065f8c2a19df7e31afcdc7ed/68747470733a2f2f692e696d6775722e636f6d2f6f75664a7239632e706e67)](#)
 8. Name it `Sekiro` and select it in dropdown
-9. Press the blue window icon with the plus symbol to add an application to this profile(2)
+9. Press the blue window icon with the plus symbol to add an application to this profile (2)
 10. Change file type to `Application Absolute Path`, navigate to your `sekiro.exe` and select it
 11. [![Application Absolute Path](https://camo.githubusercontent.com/0bb8ace024658dfcb31c5f3347df1505854819ec/68747470733a2f2f692e696d6775722e636f6d2f545669495357562e706e67)](#)
 12. Make sure that the file path to the game is correct (3)
@@ -128,7 +128,7 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 ### Unlocked framerate
 [![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/2c22eea5a618066716cdd1d45274720814592172/68747470733a2f2f692e696d6775722e636f6d2f534e636b6445732e706e67)](#)
 
-### Increased FOV borderless window and 90% game speed:
+### Increased FOV, borderless window and 90% game speed
 [![FOV increase on the fly and borderless window](https://camo.githubusercontent.com/fbca15acc147937ccc1b98a9fc0850c06cff4476/68747470733a2f2f692e696d6775722e636f6d2f536e6f394e39302e706e67)](#)
 
 ## Prerequisites
@@ -166,11 +166,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Version History
 
+* v1.1.1 (2019-03-31)
+  * Fixed topmost for borderless
 * v1.1.0 (2019-03-30)
   * Added game speed modifier (thanks to Zullie the Witch#7202 for offset)
   * Added player speed modifier (thanks to Zullie the Witch#7202 for offset)
+  * Custom resolution now support displays down to 1280x720
   * Settings are saved and loaded from config file now
-  * FOV will now stick even after save game load
+  * FOV will now stick even between loads
   * Fixed a potential issue with unlimited frame rate unlock
   * Fixed a potential issue when user tried to enable borderless while in minimized fullscreen
   * Improved initial load time til game is patchable

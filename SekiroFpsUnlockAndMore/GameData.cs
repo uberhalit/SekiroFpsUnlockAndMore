@@ -77,7 +77,6 @@ namespace SekiroFpsUnlockAndMore
             { new byte[1] {0xF0}, 150f }
         };
         internal static byte[] PATCH_FRAMELOCK_SPEED_FIX_DISABLE = new byte[1] { 0x90 }; // 30f
-
         /// <summary>
         /// Finds closest valid speed fix value for a frame rate limit.
         /// </summary>
@@ -142,7 +141,9 @@ namespace SekiroFpsUnlockAndMore
         internal const string PATTERN_FOVSETTING_MASK = "xxxxxxxx??xx";
         internal const int PATTERN_FOVSETTING_OFFSET = 8;
         /**
-            
+            00000001430F7C60
+            Key: Patch to pFovTableEntry last 2 bytes
+            Value: Value resolve in float table from pFovTableEntry->fFov
          */
         internal static Dictionary<byte[], string> PATCH_FOVSETTING_MATRIX = new Dictionary<byte[], string>
         {

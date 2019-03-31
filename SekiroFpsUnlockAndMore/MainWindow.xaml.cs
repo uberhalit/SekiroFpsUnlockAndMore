@@ -761,7 +761,7 @@ namespace SekiroFpsUnlockAndMore
         private static void SetWindowBorderless(IntPtr hWnd, int width, int height, int posX, int posY, bool demoMode = false)
         {
             SetWindowLongPtr(hWnd, GWL_STYLE, WS_VISIBLE | WS_POPUP);
-            SetWindowPos(hWnd, !demoMode ? HWND_TOPMOST : HWND_NOTOPMOST, posX, posY, width, height, !demoMode ? SWP_FRAMECHANGED | SWP_SHOWWINDOW : SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOACTIVATE);
+            SetWindowPos(hWnd, !demoMode ? HWND_TOP : HWND_NOTOPMOST, posX, posY, width, height, !demoMode ? SWP_FRAMECHANGED | SWP_SHOWWINDOW : SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOACTIVATE);
         }
 
         /// <summary>
@@ -1016,7 +1016,6 @@ namespace SekiroFpsUnlockAndMore
         private const uint WS_POPUP         = 0x80000000;
         private const uint WS_EX_TOPMOST    = 0x00000008;
         private const int HWND_TOP          = 0;
-        private const int HWND_TOPMOST      = -1;
         private const int HWND_NOTOPMOST    = -2;
         private const uint SWP_NOSIZE       = 0x0001;
         private const uint SWP_NOACTIVATE   = 0x0010;

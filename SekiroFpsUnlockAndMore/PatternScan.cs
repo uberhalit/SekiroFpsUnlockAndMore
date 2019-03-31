@@ -28,7 +28,7 @@ namespace SekiroFpsUnlockAndMore
             if (lpNumberOfBytesRead.ToInt64() != nSize)
                 throw new Exception("ReadProcessMemory error!");
             if (bData == null || bData.Length == 0)
-                throw new Exception("Could not read memory in FindPattern.");
+                throw new Exception("Could not read memory in PatternScan.");
         }
 
         ~PatternScan()
@@ -38,13 +38,12 @@ namespace SekiroFpsUnlockAndMore
         }
 
         /// <summary>
-        /// Finds a pattern or signature inside another process's memory.
+        /// Finds a pattern or signature inside initialized process.
         /// </summary>
-        
         /// <param name="szPattern">A character-delimited string representing the pattern to be found.</param>
         /// <param name="szMask">A string of 'x' (match), '!' (not-match), or '?' (wildcard).</param>
         /// <param name="cDelimiter">Determines how the string will be split. If null, defaults to ' '.</param>
-        /// <returns>The address of the beginning of the pattern if found, 0 if not found</returns>
+        /// <returns>The address of the beginning of the pattern if found, 0 if not found.</returns>
         internal Int64 FindPatternInternal(string szPattern, string szMask, char cDelimiter = ' ')
         {
             string[] saPattern = szPattern.Split(cDelimiter);
@@ -89,7 +88,7 @@ namespace SekiroFpsUnlockAndMore
         /// <param name="szPattern">A character-delimited string representing the pattern to be found.</param>
         /// <param name="szMask">A string of 'x' (match), '!' (not-match), or '?' (wildcard).</param>
         /// <param name="cDelimiter">Determines how the string will be split. If null, defaults to ' '.</param>
-        /// <returns>The address of the beginning of the pattern if found, 0 if not found</returns>
+        /// <returns>The address of the beginning of the pattern if found, 0 if not found.</returns>
         internal static Int64 FindPattern(IntPtr hProcess, ProcessModule pModule, string szPattern, string szMask, char cDelimiter = ' ')
         {
             string[] saPattern = szPattern.Split(cDelimiter);
