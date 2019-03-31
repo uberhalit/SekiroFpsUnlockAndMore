@@ -310,7 +310,7 @@ namespace SekiroFpsUnlockAndMore
             }
 
 			//Game stats
-			_offset_player_deaths = patternScan.FindPatternInternal(_gameAccessHwndStatic, procList[gameIndex].MainModule, GameData.PATTERN_PLAYER_DEATHS, GameData.PATTERN_PLAYER_DEATHS_MASK, ' ');
+			_offset_player_deaths = patternScan.FindPatternInternal(GameData.PATTERN_PLAYER_DEATHS, GameData.PATTERN_PLAYER_DEATHS_MASK, ' ');
 			Debug.WriteLine("Player Deaths found at: 0x" + _offset_player_deaths.ToString("X"));
 			if (!IsValidAddress(_offset_player_deaths))
 			{
@@ -321,7 +321,7 @@ namespace SekiroFpsUnlockAndMore
 				_pointer_player_deaths = Read<Int64>(_gameAccessHwndStatic, DereferenceStaticX64Pointer(_gameAccessHwndStatic, _offset_player_deaths, 0)) + 0x90;
 			}
 
-			_offset_total_kills = patternScan.FindPatternInternal(_gameProc, procList[gameIndex].MainModule, GameData.PATTERN_TOTAL_KILLS, GameData.PATTERN_TOTAL_KILLS_MASK, ' ') + GameData.PATTERN_TOTAL_KILLS_OFFSET;
+			_offset_total_kills = patternScan.FindPatternInternal(GameData.PATTERN_TOTAL_KILLS, GameData.PATTERN_TOTAL_KILLS_MASK, ' ') + GameData.PATTERN_TOTAL_KILLS_OFFSET;
 			Debug.WriteLine("Total kills found at: 0x" + _offset_total_kills.ToString("X"));
 			if (!IsValidAddress(_offset_total_kills))
 			{
