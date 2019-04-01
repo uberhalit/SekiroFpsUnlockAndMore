@@ -19,13 +19,13 @@ Patches games memory while running, does not modify any game files. Wrks with ev
 * add a custom resolution, 21/9 widescreen supported (will overwrite the default 1920x1080 / 1280x720 resolution, HUD limited to 16/9)
 * increase and decrease field of view (FOV)
 * set the game to borderless window mode
+* display hidden counters such as death/kill count and optionally log them to file to display in OBS
 * game modifications
   * global game speed modifier
   * player speed modifier
 * automatically patch game on startup
 * seamlessly switch between windowed, borderless and borderless fullscreen
 * hotkey for patching while in (borderless) window mode
-* log and display hidden counters such as deaths/kill count
 
 ## Usage
 
@@ -116,12 +116,6 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 4. Start `Sekiro FPS Unlocker and more` and enable borderless window mode
 5. If you want fullscreen borderless enable `Fullscreen stretch`
 
-### To use any of the game modifications
-1. Start the game
-2. Load up your save game
-3. Start `Sekiro FPS Unlocker and more` and expand `Game modifications`
-4. Set your desired values and then tick the checkbox you'd wish to enable
-
 ### To display death/kill counters in OBS
 1. Start the game
 2. Load up your save game
@@ -129,10 +123,15 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 4. In OBS Sources window click `+` and select `Text (GDI+)` from the list, text properties window will pop up
 5. In text properties window, enable `Read from file` checkbox and click `Browse`
 6. Navigate to the folder where `Sekiro FPS Unlocker and more` executable is located
-7. Select either `DeathCouner.txt`* or `TotalKillsCounter.txt`
+7. Select either `DeathCouner.txt` (only tracks true deaths, excluding revives) or `TotalKillsCounter.txt`
 9. Customize font style and color
 10. To add additional counters repeat steps 4-7
-*`DeathCouner.txt` only tracks true deaths, excluding revives
+
+### To use any of the game modifications
+1. Start the game
+2. Load up your save game
+3. Start `Sekiro FPS Unlocker and more` and expand `Game modifications`
+4. Set your desired values and then tick the checkbox you'd wish to enable
 
 ## Preview
 
@@ -179,7 +178,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Version History
 
-* v1.1.1 (2019-03-31)
+* v1.1.0.1 (2019-03-31)
   * Fixed topmost for borderless
 * v1.1.0 (2019-03-30)
   * Added game speed modifier (thanks to Zullie the Witch#7202 for offset)
