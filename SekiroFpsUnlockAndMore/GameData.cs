@@ -158,9 +158,38 @@ namespace SekiroFpsUnlockAndMore
 
 
         /**
-            Reference pointer pTimeRelated to pTimescaleManager pointer, offset in struct to <float>fTimescale which acts as a global speed scale for almost all ingame calculations
-            0000000141149E87 | 48:8B05 3A24B402          | mov rax,qword ptr ds:[143C8C2C8]                | pTimeRelated->[pTimescaleManager+0x360]->fTimescale
-            0000000141149E8E | F3:0F1088 60030000        | movss xmm1,dword ptr ds:[rax+360]               | offset from TimescaleManager->fTimescale
+            Reference pointer pPlayerStatsRelated to PlayerStats pointer, offset in struct to <int>iPlayerDeaths
+            00000001407AAC92 | 0FB648 7A                 | movzx ecx,byte ptr ds:[rax+7A]                  |
+            00000001407AAC96 | 888B F7000000             | mov byte ptr ds:[rbx+F7],cl                     |
+            00000001407AAC9C | 48:8B05 4DD03903          | mov rax,qword ptr ds:[143B47CF0]                |
+            00000001407AACA3 | 8B88 8C000000             | mov ecx,dword ptr ds:[rax+8C]                   |
+            00000001407AACA9 | 898B F8000000             | mov dword ptr ds:[rbx+F8],ecx                   |
+            00000001407AACAF | 48:8B05 3AD03903          | mov rax,qword ptr ds:[143B47CF0]                | pPlayerStatsRelated->[PlayerStats+0x90]->iPlayerDeaths
+            00000001407AACB6 | 8B88 90000000             | mov ecx,dword ptr ds:[rax+90]                   | offset pPlayerStats->iPlayerDeaths
+         */
+        // credits to 'Me_TheCat' for original offset
+        internal const string PATTERN_PLAYER_DEATHS = "0F B6 48 00 88 8B 00 00 00 00 48 8B 05 00 00 00 00 8B 88 00 00 00 00 89 8B 00 00 00 00 48 8B 05 00 00 00 00 8B 88 00 00 00 00"; // 0F B6 48 ?? 88 8B ?? ?? 00 00 48 8B 05 ?? ?? ?? ?? 8B 88 ?? ?? 00 00 89 8B ?? ?? 00 00 48 8B 05 ?? ?? ?? ?? 8B 88 ?? ?? 00 00
+        internal const string PATTERN_PLAYER_DEATHS_MASK = "xxx?xx??xxxxx????xx??xxxx??xxxxx????xx??xx";
+        internal const int PATTERN_PLAYER_DEATHS_OFFSET = 29;
+        internal const int PATTERN_PLAYER_DEATHS_INSTRUCTION_LENGTH = 7;
+        internal const int PATTERN_PLAYER_DEATHS_POINTER_OFFSET_OFFSET = 9;
+
+        /**
+            Reference pointer pTotalKills to <int>iTotalKills, does not get updated on every kill but mostly on every 2nd, includes own player deaths...
+            0000000141151838 | 48:8D0D A9A5B302          | lea rcx,qword ptr ds:[143C8BDE8]                | pTotalKills->iTotalKills
+            000000014115183F | 891481                    | mov dword ptr ds:[rcx+rax*4],edx                |
+            0000000141151842 | C3                        | ret                                             |
+         */
+        // credits to 'Me_TheCat' for original offset
+        internal const string PATTERN_TOTAL_KILLS = "48 8D 0D 00 00 00 00 89 14 81 C3"; // 48 8D 0D ?? ?? ?? ?? 89 14 81 C3
+        internal const string PATTERN_TOTAL_KILLS_MASK = "xxx????xxxx";
+        internal const int PATTERN_TOTAL_KILLS_INSTRUCTION_LENGTH = 7;
+
+
+        /**
+            Reference pointer pTimeRelated to TimescaleManager pointer, offset in struct to <float>fTimescale which acts as a global speed scale for almost all ingame calculations
+            0000000141149E87 | 48:8B05 3A24B402          | mov rax,qword ptr ds:[143C8C2C8]                | pTimeRelated->[TimescaleManager+0x360]->fTimescale
+            0000000141149E8E | F3:0F1088 60030000        | movss xmm1,dword ptr ds:[rax+360]               | offset TimescaleManager->fTimescale
             0000000141149E96 | F3:0F5988 68020000        | mulss xmm1,dword ptr ds:[rax+268]               |
          */
         // credits to 'Zullie the Witch' for original offset
@@ -168,6 +197,7 @@ namespace SekiroFpsUnlockAndMore
         internal const string PATTERN_TIMESCALE_MASK = "xxx????xxxx????xx";
         internal const int PATTERN_TIMESCALE_INSTRUCTION_LENGTH = 7;
         internal const int PATTERN_TIMESCALE_POINTER_OFFSET_OFFSET = 11;
+
 
         /**
             Reference pointer pPlayerStructRelated1 to 4 more pointers up to player data class, offset in struct to <float>fTimescalePlayer which acts as a speed scale for the player character
@@ -184,13 +214,5 @@ namespace SekiroFpsUnlockAndMore
         internal const int PATTERN_TIMESCALE_POINTER3_OFFSET = 0x1FF8;
         internal const int PATTERN_TIMESCALE_POINTER4_OFFSET = 0x28;
         internal const int PATTERN_TIMESCALE_POINTER5_OFFSET = 0xD00;
-
-		// game stat values by Me_TheCat
-		internal const string PATTERN_PLAYER_DEATHS = "8B 88 90 00 00 00 89 8B FC 00 00 00 48 8B";
-		internal const string PATTERN_PLAYER_DEATHS_MASK = "xxxxxxxxx???xx";
-
-		internal const string PATTERN_TOTAL_KILLS = "48 8D 0D 00 00 00 00 89 14 81 C3";
-		internal const string PATTERN_TOTAL_KILLS_MASK = "xxx????xxxx";
-		internal const int PATTERN_TOTAL_KILLS_OFFSET = 7;
 	}
 }

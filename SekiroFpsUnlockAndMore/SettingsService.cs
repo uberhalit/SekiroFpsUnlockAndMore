@@ -7,16 +7,8 @@ namespace SekiroFpsUnlockAndMore
 {
     [XmlRoot("SekiroFpsUnlockAndMore")]
     [Serializable]
-    public class SettingsService
+    public class ApplicationSettings
     {
-        private readonly string sConfigurationPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\config.xml";
-
-        /// <summary>
-        /// Read and store settings here.
-        /// </summary>
-        public SettingsService settings;
-
-
         /**
          * Settings definition
          */
@@ -39,6 +31,8 @@ namespace SekiroFpsUnlockAndMore
         [XmlElement]
         public bool cbBorderlessStretch { get; set; }
         [XmlElement]
+        public bool cbLogStats { get; set; }
+        [XmlElement]
         public bool exGameMods { get; set; }
         [XmlElement]
         public bool cbGameSpeed { get; set; }
@@ -48,10 +42,16 @@ namespace SekiroFpsUnlockAndMore
         public bool cbPlayerSpeed { get; set; }
         [XmlElement]
         public int tbPlayerSpeed { get; set; }
-		[XmlElement]
-		public bool cbLogStats { get; set; }
+    }
 
-		public SettingsService() { }
+    public class SettingsService
+    {
+        private readonly string _sConfigurationPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\config.xml";
+
+        /// <summary>
+        /// Read and store settings here.
+        /// </summary>
+        public ApplicationSettings ApplicationSettings;
 
         /// <summary>
         /// Create a settings provider to load and save settings.
@@ -59,11 +59,8 @@ namespace SekiroFpsUnlockAndMore
         /// <param name="settingsFilePath">The file path to the settings file.</param>
         public SettingsService(string settingsFilePath = null)
         {
-            if (settingsFilePath != null)
-            {
-                sConfigurationPath = settingsFilePath;
-                settings = new SettingsService();
-            }
+            if (settingsFilePath != null) _sConfigurationPath = settingsFilePath;
+            ApplicationSettings = new ApplicationSettings();
         }
 
         /// <summary>
@@ -72,14 +69,14 @@ namespace SekiroFpsUnlockAndMore
         /// <returns></returns>
         internal bool Load()
         {
-            if (!File.Exists(sConfigurationPath)) return false;
+            if (!File.Exists(_sConfigurationPath)) return false;
             
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(SettingsService));
-            using (StreamReader streamReader = new StreamReader(sConfigurationPath))
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(ApplicationSettings));
+            using (StreamReader streamReader = new StreamReader(_sConfigurationPath))
             {
                 try
                 {
-                    settings = (SettingsService)xmlSerializer.Deserialize(streamReader);
+                    ApplicationSettings = (ApplicationSettings)xmlSerializer.Deserialize(streamReader);
                     return true;
                 }
                 catch (Exception ex)
@@ -95,12 +92,12 @@ namespace SekiroFpsUnlockAndMore
         /// </summary>
         internal void Save()
         {
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(SettingsService));
-            using (StreamWriter streamReader = new StreamWriter(sConfigurationPath))
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(ApplicationSettings));
+            using (StreamWriter streamReader = new StreamWriter(_sConfigurationPath))
             { 
                 try
                 {
-                    xmlSerializer.Serialize(streamReader, settings);
+                    xmlSerializer.Serialize(streamReader, ApplicationSettings);
                 }
                 catch (Exception ex)
                 {
