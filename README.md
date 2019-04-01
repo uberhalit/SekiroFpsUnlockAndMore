@@ -122,6 +122,18 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 3. Start `Sekiro FPS Unlocker and more` and expand `Game modifications`
 4. Set your desired values and then tick the checkbox you'd wish to enable
 
+### To display death/kill counters in OBS
+1. Start the game
+2. Load up your save game
+3. Start `Sekiro FPS Unlocker and more` and enable `Log stats` check box
+4. In OBS Sources window click `+` and select `Text (GDI+)` from the list, text properties window will pop up
+5. In text properties window, enable `Read from file` checkbox and click `Browse`
+6. Navigate to the folder where `Sekiro FPS Unlocker and more` executable is located
+7. Select either `DeathCouner.txt`* or `TotalKillsCounter.txt`
+9. Customize font style and color
+10. To add additional counters repeat steps 4-7
+*`DeathCouner.txt` only tracks true deaths, excluding revives
+
 ## Preview
 
 [![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/275b23b532ec7dcfc18a83d0ba9e8ae1f20b9e20/68747470733a2f2f692e696d6775722e636f6d2f615179334869392e706e67)](#)
