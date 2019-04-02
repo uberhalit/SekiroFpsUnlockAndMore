@@ -32,6 +32,10 @@ Patches games memory while running, does not modify any game files. Wrks with ev
 The following graphical guide has to be done if you want to unlock the game's framerate or play on a highter refresh rate in fullscreen. If you do not wish to use that feature you can scoll down further to the guides on all other features. The graphic setup has to be done only once but as the patcher hot-patches the memory **you have to start the patcher every time you want use any of its features**.
 
 The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors so we have to override these.
+
+#### TL;DR Nvidia: Use Nvidia Control Panel to set 'Vsync' to 'Off' and 'Preferred Refreshrate' to 'Highest available' on a Sekiro Profile. Troubleshoot: delete the (premade) Sekiro profile, add a new profile by stating the full file path to sekiro.exe and try again. If Preferred Refreshrate is missing or game still locks to 60fps see the guide further down on Nvidia Profile Inspector.
+#### TL;DR AMD: Use Radeon Settings to set 'Wait for Vertical Refresh' to 'Enhanced Sync' on a Sekiro profile. Start Sekiro in windowed mode and switch to fullscreen once ingame.
+
 #### 60 Hz monitors: disable VSYNC via driver (use 'Enhanced Sync' on AMD) and use fullscreen, see guide below
 #### high refresh rate monitors: use borderless or force monitor to always use highest available refresh rate and then use fullscreen, see guide below
 
@@ -123,10 +127,10 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 4. In OBS Sources window click `+` and select `Text (GDI+)` from the list, text properties window will pop up
 5. In text properties window, enable `Read from file` checkbox and click `Browse`
 6. Navigate to the folder where `Sekiro FPS Unlocker and more` executable is located
-7. Select either `DeathCouner.txt` (only tracks true deaths, excluding revives) or `TotalKillsCounter.txt`
-9. Customize font style and color
-10. To add additional counters repeat steps 4-7
-11. [[!On Stream Display with OBS](https://camo.githubusercontent.com/007910d42ace53ee0db0ea8b61d525751b9d48a6/68747470733a2f2f692e696d6775722e636f6d2f4c39546e6f34462e706e67)](#)
+7. Select either `DeathCounter.txt` (only tracks true deaths, excluding revives) or `TotalKillsCounter.txt`
+8. Customize font style, color and position
+9.  To add additional counters repeat steps 4-7
+10. [[!On Stream Display with OBS](https://camo.githubusercontent.com/007910d42ace53ee0db0ea8b61d525751b9d48a6/68747470733a2f2f692e696d6775722e636f6d2f4c39546e6f34462e706e67)](#)
 
 ### To use any of the game modifications
 1. Start the game
