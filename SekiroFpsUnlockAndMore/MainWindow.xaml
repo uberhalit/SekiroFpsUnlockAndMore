@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Sekiro FPS Unlocker and more v1.2.0" Width="Auto" Height="Auto" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
 
-	<Grid Background="#FFF9F9F9">
+    <Grid Background="#FFF9F9F9">
         <DockPanel>
             <StackPanel DockPanel.Dock="Top" Margin="10,10,10,0" Width="290" Height="Auto">
                 <DockPanel LastChildFill="False">
@@ -87,18 +87,18 @@
             </StackPanel>
             <StatusBar DockPanel.Dock="Bottom" Height="25">
                 <StatusBarItem DockPanel.Dock="Left">
-                        <TextBlock Name="sbDeathCount">
+                    <TextBlock Name="sbDeathCount">
                             <Run Text="Deaths:" />
                             <Run Text="{Binding Deaths}" />
-                        </TextBlock>
-                    </StatusBarItem>
-                    <Separator Margin="5,4,5,4" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
-                    <StatusBarItem DockPanel.Dock="Left">
-                        <TextBlock Name="sbKillCount">
+                    </TextBlock>
+                </StatusBarItem>
+                <Separator Margin="5,4,5,4" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
+                <StatusBarItem DockPanel.Dock="Left">
+                    <TextBlock Name="sbKillCount">
                             <Run Text="Kills:" />
                             <Run Text="{Binding Kills}" />
-                        </TextBlock>
-                    </StatusBarItem>
+                    </TextBlock>
+                </StatusBarItem>
                 <Separator Margin="5,4,5,4" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
                 <StatusBarItem DockPanel.Dock="Right" HorizontalAlignment="Right">
                     <TextBlock Name="sbStatus" />

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Windows.Media;
 using System.Windows.Input;
+using System.ComponentModel;
 using System.Windows.Interop;
 using System.Threading.Tasks;
 using System.Windows.Threading;
@@ -35,25 +36,26 @@ namespace SekiroFpsUnlockAndMore
 
         internal SettingsService _settingsService;
         internal StatusViewModel _statusViewModel = new StatusViewModel();
-        
-		internal readonly System.Timers.Timer _timerStatsCheck = new System.Timers.Timer();
-		internal readonly DispatcherTimer _dispatcherTimerFreezeMem = new DispatcherTimer();
-        internal readonly DispatcherTimer _dispatcherTimerCheck = new DispatcherTimer();
+
+        internal readonly DispatcherTimer _dispatcherTimerGameCheck = new DispatcherTimer();
+        internal readonly DispatcherTimer _dispatcherTimerFreezeMem = new DispatcherTimer();
+        internal readonly BackgroundWorker _bgwScanGame = new BackgroundWorker();
+        internal readonly System.Timers.Timer _timerStatsCheck = new System.Timers.Timer();
         internal bool _running = false;
         internal bool _gameInitializing = false;
         internal string _logPath;
         internal string _deathCounterPath;
         internal string _killCounterPath;
         internal bool _retryAccess = true;
-		internal bool _use_resolution_720 = false;
+        internal bool _use_resolution_720 = false;
         internal bool _statLoggingEnabled = false;
         internal RECT _windowRect;
 
         public MainWindow()
         {
-			InitializeComponent();
-			DataContext = _statusViewModel;
-		}
+            InitializeComponent();
+            DataContext = _statusViewModel;
+        }
 
         /// <summary>
         /// On window loaded.
@@ -63,7 +65,7 @@ namespace SekiroFpsUnlockAndMore
             var mutex = new Mutex(true, "sekiroFpsUnlockAndMore", out bool isNewInstance);
             if (!isNewInstance)
             {
-                MessageBox.Show("Another instance is already running!", "Sekiro FPS Unlocker and more");
+                MessageBox.Show("Another instance is already running!", "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 Environment.Exit(0);
             }
             GC.KeepAlive(mutex);
@@ -79,24 +81,31 @@ namespace SekiroFpsUnlockAndMore
 
             IntPtr hWnd = new WindowInteropHelper(this).Handle;
             if (!RegisterHotKey(hWnd, 9009, MOD_CONTROL, VK_P))
-                MessageBox.Show("Hotkey is already in use, it may not work.", "Sekiro FPS Unlocker and more");
+                MessageBox.Show("Hotkey is already in use, it may not work.", "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Warning);
 
             ComponentDispatcher.ThreadFilterMessage += new ThreadMessageEventHandler(ComponentDispatcherThreadFilterMessage);
 
-            _dispatcherTimerCheck.Tick += new EventHandler(async (object s, EventArgs a) =>
+            _bgwScanGame.DoWork += new DoWorkEventHandler(ReadGame);
+            _bgwScanGame.RunWorkerCompleted += new RunWorkerCompletedEventHandler(OnReadGameFinish);
+
+            _dispatcherTimerGameCheck.Tick += new EventHandler(async (object s, EventArgs a) =>
             {
                 bool result = await CheckGame();
-                if (result) PatchGame();
+                if (result)
+                {
+                    _bgwScanGame.RunWorkerAsync();
+                    _dispatcherTimerGameCheck.Stop();
+                }
             });
-            _dispatcherTimerCheck.Interval = new TimeSpan(0, 0, 0, 0, 2000);
-            _dispatcherTimerCheck.Start();
+            _dispatcherTimerGameCheck.Interval = new TimeSpan(0, 0, 0, 0, 2000);
+            _dispatcherTimerGameCheck.Start();
 
             _dispatcherTimerFreezeMem.Tick += new EventHandler(FreezeMemory);
             _dispatcherTimerFreezeMem.Interval = new TimeSpan(0, 0, 0, 0, 2000);
 
             _timerStatsCheck.Elapsed += new ElapsedEventHandler(StatsReadTimer);
             _timerStatsCheck.Interval = 2000;
-		}
+        }
 
         /// <summary>
         /// On window closing.
@@ -110,7 +119,7 @@ namespace SekiroFpsUnlockAndMore
             UnregisterHotKey(hWnd, 9009);
             if (_gameAccessHwnd != IntPtr.Zero)
                 CloseHandle(_gameAccessHwnd);
-		}
+        }
 
         /// <summary>
         /// Windows Message queue (Wndproc) to catch HotKeyPressed
@@ -149,7 +158,7 @@ namespace SekiroFpsUnlockAndMore
             this.tbGameSpeed.Text = _settingsService.ApplicationSettings.tbGameSpeed.ToString();
             this.cbPlayerSpeed.IsChecked = _settingsService.ApplicationSettings.cbPlayerSpeed;
             this.tbPlayerSpeed.Text = _settingsService.ApplicationSettings.tbPlayerSpeed.ToString();
-		}
+        }
 
         /// <summary>
         /// Save all settings to configuration file.
@@ -171,7 +180,7 @@ namespace SekiroFpsUnlockAndMore
             _settingsService.ApplicationSettings.tbGameSpeed = Convert.ToInt32(this.tbGameSpeed.Text);
             _settingsService.ApplicationSettings.cbPlayerSpeed = this.cbPlayerSpeed.IsChecked == true;
             _settingsService.ApplicationSettings.tbPlayerSpeed = Convert.ToInt32(this.tbPlayerSpeed.Text);
-			_settingsService.Save();
+            _settingsService.Save();
         }
 
         /// <summary>
@@ -179,6 +188,9 @@ namespace SekiroFpsUnlockAndMore
         /// </summary>
         private Task<bool> CheckGame()
         {
+            // game process have been found last check and can be read now, aborting
+            if (_gameInitializing) return Task.FromResult(true);
+
             Process[] procList = Process.GetProcessesByName(GameData.PROCESS_NAME);
             if (procList.Length < 1)
                 return Task.FromResult(false);
@@ -220,7 +232,7 @@ namespace SekiroFpsUnlockAndMore
                 if (!_retryAccess)
                 {
                     UpdateStatus("no access to game...", Brushes.Red);
-                    _dispatcherTimerCheck.Stop();
+                    _dispatcherTimerGameCheck.Stop();
                     return Task.FromResult(false);
                 }
                 _gameHwnd = IntPtr.Zero;
@@ -235,14 +247,23 @@ namespace SekiroFpsUnlockAndMore
                 return Task.FromResult(false);
             }
 
-            // give the game some time to initialize
-            if (!_gameInitializing)
+            string gameFileVersion = FileVersionInfo.GetVersionInfo(procList[0].MainModule.FileName).FileVersion;
+            if (gameFileVersion != GameData.PROCESS_EXE_VERSION && !_settingsService.ApplicationSettings.gameVersionNotify)
             {
-                _gameInitializing = true;
-                return Task.FromResult(false);
+                MessageBox.Show("Unknown game version.\nSome functions might not work properly or even crash the game. Check for updates on this utility regularly following the link at the bottom.", "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _settingsService.ApplicationSettings.gameVersionNotify = true;
             }
 
-            //string gameFileVersion = FileVersionInfo.GetVersionInfo(procList[0].MainModule.FileName).FileVersion;
+            // give the game some time to initialize
+            _gameInitializing = true;
+            return Task.FromResult(false);
+        }
+
+        /// <summary>
+        /// Read all game offsets and pointer (external).
+        /// </summary>
+        private void ReadGame(object sender, DoWorkEventArgs doWorkEventArgs)
+        {
             PatternScan patternScan = new PatternScan(_gameAccessHwnd, _gameProc.MainModule);
 
             _offset_framelock = patternScan.FindPatternInternal(GameData.PATTERN_FRAMELOCK, GameData.PATTERN_FRAMELOCK_MASK, ' ') + GameData.PATTERN_FRAMELOCK_OFFSET;
@@ -253,125 +274,65 @@ namespace SekiroFpsUnlockAndMore
                 Debug.WriteLine("2. fFrameTick found at: 0x" + _offset_framelock.ToString("X"));
             }
             if (!IsValidAddress(_offset_framelock))
-            {
-                UpdateStatus("fFrameTick not found...", Brushes.Red);
-                LogToFile("fFrameTick not found...");
                 _offset_framelock = 0x0;
-                this.cbFramelock.IsEnabled = false;
-            }
 
             _offset_framelock_speed_fix = patternScan.FindPatternInternal(GameData.PATTERN_FRAMELOCK_SPEED_FIX, GameData.PATTERN_FRAMELOCK_SPEED_FIX_MASK, ' ') + GameData.PATTERN_FRAMELOCK_SPEED_FIX_OFFSET;
             Debug.WriteLine("pFrametimeRunningSpeed at: 0x" + _offset_framelock_speed_fix.ToString("X"));
             if (!IsValidAddress(_offset_framelock_speed_fix))
-            {
-                UpdateStatus("pFrametimeRunningSpeed no found...", Brushes.Red);
-                LogToFile("pFrametimeRunningSpeed not found...");
                 _offset_framelock_speed_fix = 0x0;
-                this.cbFramelock.IsEnabled = false;
-            }
 
-            bool enableResolutionPatch = true;
-            if ((int) SystemParameters.PrimaryScreenWidth < 1281) _use_resolution_720 = true;
-            _offset_resolution_default = patternScan.FindPatternInternal(!_use_resolution_720 ? GameData.PATTERN_RESOLUTION_DEFAULT : GameData.PATTERN_RESOLUTION_DEFAULT_720, GameData.PATTERN_RESOLUTION_DEFAULT_MASK, ' ');
+            _offset_resolution_default = patternScan.FindPatternInternal((int)SystemParameters.PrimaryScreenWidth > 1280 ? GameData.PATTERN_RESOLUTION_DEFAULT : GameData.PATTERN_RESOLUTION_DEFAULT_720, GameData.PATTERN_RESOLUTION_DEFAULT_MASK, ' ');
             Debug.WriteLine("default resolution found at: 0x" + _offset_resolution_default.ToString("X"));
             if (!IsValidAddress(_offset_resolution_default))
-            {
-                UpdateStatus("default resolution not found...", Brushes.Red);
-                LogToFile("default resolution not found...");
-                enableResolutionPatch = false;
                 _offset_resolution_default = 0x0;
-            }
+
             _offset_resolution_scaling_fix = patternScan.FindPatternInternal(GameData.PATTERN_RESOLUTION_SCALING_FIX, GameData.PATTERN_RESOLUTION_SCALING_FIX_MASK, ' ') + GameData.PATTERN_RESOLUTION_SCALING_FIX_OFFSET;
             Debug.WriteLine("scaling fix found at: 0x" + _offset_resolution_scaling_fix.ToString("X"));
             if (!IsValidAddress(_offset_resolution_scaling_fix))
-            {
-                UpdateStatus("scaling fix not found...", Brushes.Red);
-                LogToFile("scaling fix not found...");
-                enableResolutionPatch = false;
                 _offset_resolution_scaling_fix = 0x0;
-            }
+
             long ref_pCurrentResolutionWidth = patternScan.FindPatternInternal(GameData.PATTERN_RESOLUTION_POINTER, GameData.PATTERN_RESOLUTION_POINTER_MASK, ' ') + GameData.PATTERN_RESOLUTION_POINTER_OFFSET;
             Debug.WriteLine("ref_pCurrentResolutionWidth found at: 0x" + ref_pCurrentResolutionWidth.ToString("X"));
-            if (!IsValidAddress(ref_pCurrentResolutionWidth))
-            {
-                UpdateStatus("re_pCurrentResolutionWidth not found...", Brushes.Red);
-                LogToFile("ref_pCurrentResolutionWidth not found...");
-                enableResolutionPatch = false;
-            }
-            else
+            if (IsValidAddress(ref_pCurrentResolutionWidth))
             {
                 _offset_resolution = DereferenceStaticX64Pointer(_gameAccessHwnd, ref_pCurrentResolutionWidth, GameData.PATTERN_RESOLUTION_POINTER_INSTRUCTION_LENGTH);
                 Debug.WriteLine("pCurrentResolutionWidth at: 0x" + _offset_resolution.ToString("X"));
                 if (!IsValidAddress(_offset_resolution))
-                {
-                    UpdateStatus("pCurrentResolutionWidth not valid...", Brushes.Red);
-                    LogToFile("pCurrentResolutionWidth not valid...");
                     _offset_resolution = 0x0;
-                }
             }
-            this.cbAddResolution.IsEnabled = enableResolutionPatch;
 
             _offset_fovsetting = patternScan.FindPatternInternal(GameData.PATTERN_FOVSETTING, GameData.PATTERN_FOVSETTING_MASK, ' ') + GameData.PATTERN_FOVSETTING_OFFSET;
             Debug.WriteLine("pFovTableEntry found at: 0x" + _offset_fovsetting.ToString("X"));
             if (!IsValidAddress(_offset_fovsetting))
-            {
-                UpdateStatus("pFovTableEntry not found...", Brushes.Red);
-                LogToFile("pFovTableEntry not found...");
                 _offset_fovsetting = 0x0;
-                this.cbFov.IsEnabled = false;
-            }
 
             long ref_pPlayerStatsRelated = patternScan.FindPatternInternal(GameData.PATTERN_PLAYER_DEATHS, GameData.PATTERN_PLAYER_DEATHS_MASK, ' ') + GameData.PATTERN_PLAYER_DEATHS_OFFSET;
-			Debug.WriteLine("ref_pPlayerStatsRelated found at: 0x" + ref_pPlayerStatsRelated.ToString("X"));
-			if (!IsValidAddress(ref_pPlayerStatsRelated))
-			{
-			    UpdateStatus("ref_pPlayerStatsRelated not found...", Brushes.Red);
-			    LogToFile("ref_pPlayerStatsRelated not found...");
-			    this.cbLogStats.IsEnabled = false;
-            }
-			else
-			{
-			    long pPlayerStatsRelated = DereferenceStaticX64Pointer(_gameAccessHwndStatic, ref_pPlayerStatsRelated, GameData.PATTERN_PLAYER_DEATHS_INSTRUCTION_LENGTH);
-			    Debug.WriteLine("pPlayerStatsRelated found at: 0x" + pPlayerStatsRelated.ToString("X"));
-                if (IsValidAddress(pPlayerStatsRelated))
-			    {
-			        int playerStatsToDeathsOffset = Read<Int32>(_gameAccessHwndStatic, ref_pPlayerStatsRelated + GameData.PATTERN_PLAYER_DEATHS_POINTER_OFFSET_OFFSET);
-			        Debug.WriteLine("offset pPlayerStats->iPlayerDeaths found : 0x" + playerStatsToDeathsOffset.ToString("X"));
-
-                    if (playerStatsToDeathsOffset > 0) _offset_player_deaths = Read<Int64>(_gameAccessHwndStatic, pPlayerStatsRelated) + playerStatsToDeathsOffset;
-			        Debug.WriteLine("iPlayerDeaths found at: 0x" + _offset_player_deaths.ToString("X"));
-                }
-			}
-            if (!IsValidAddress(_offset_player_deaths))
+            Debug.WriteLine("ref_pPlayerStatsRelated found at: 0x" + ref_pPlayerStatsRelated.ToString("X"));
+            if (IsValidAddress(ref_pPlayerStatsRelated))
             {
-                UpdateStatus("Player Deaths not found...", Brushes.Red);
-                LogToFile("Player Deaths not found...");
-                _offset_player_deaths = 0x0;
-                this.cbLogStats.IsEnabled = false;
-            }
+                long pPlayerStatsRelated = DereferenceStaticX64Pointer(_gameAccessHwndStatic, ref_pPlayerStatsRelated, GameData.PATTERN_PLAYER_DEATHS_INSTRUCTION_LENGTH);
+                Debug.WriteLine("pPlayerStatsRelated found at: 0x" + pPlayerStatsRelated.ToString("X"));
+                if (IsValidAddress(pPlayerStatsRelated))
+                {
+                    int playerStatsToDeathsOffset = Read<Int32>(_gameAccessHwndStatic, ref_pPlayerStatsRelated + GameData.PATTERN_PLAYER_DEATHS_POINTER_OFFSET_OFFSET);
+                    Debug.WriteLine("offset pPlayerStats->iPlayerDeaths found : 0x" + playerStatsToDeathsOffset.ToString("X"));
 
-			long ref_pTotalKills = patternScan.FindPatternInternal(GameData.PATTERN_TOTAL_KILLS, GameData.PATTERN_TOTAL_KILLS_MASK, ' ');
-			Debug.WriteLine("ref_pTotalKills found at: 0x" + ref_pTotalKills.ToString("X"));
-			if (!IsValidAddress(ref_pTotalKills))
-			{
-			    UpdateStatus("ref_pTotalKills not found...", Brushes.Red);
-                LogToFile("ref_pTotalKills not found...");
-			    this.cbLogStats.IsEnabled = false;
-            }
-			else
-			{
-			    _offset_total_kills = DereferenceStaticX64Pointer(_gameAccessHwndStatic, ref_pTotalKills, GameData.PATTERN_TOTAL_KILLS_INSTRUCTION_LENGTH);
-			    if (!IsValidAddress(_offset_total_kills))
-			    {
-			        UpdateStatus("pTotalKills not valid...", Brushes.Red);
-			        LogToFile("pTotalKills not valid...");
-			        _offset_total_kills = 0x0;
-                    this.cbLogStats.IsEnabled = false;
+                    if (playerStatsToDeathsOffset > 0)
+                        _offset_player_deaths = Read<Int64>(_gameAccessHwndStatic, pPlayerStatsRelated) + playerStatsToDeathsOffset;
+                    Debug.WriteLine("iPlayerDeaths found at: 0x" + _offset_player_deaths.ToString("X"));
                 }
-			}
-            if (_offset_player_deaths > 0x0 && _offset_total_kills > 0x0) _timerStatsCheck.Start();
+            }
+            if (!IsValidAddress(_offset_player_deaths))
+                _offset_player_deaths = 0x0;
 
-            this.cbBorderless.IsEnabled = true;
+            long ref_pTotalKills = patternScan.FindPatternInternal(GameData.PATTERN_TOTAL_KILLS, GameData.PATTERN_TOTAL_KILLS_MASK, ' ');
+            Debug.WriteLine("ref_pTotalKills found at: 0x" + ref_pTotalKills.ToString("X"));
+            if (IsValidAddress(ref_pTotalKills))
+            {
+                _offset_total_kills = DereferenceStaticX64Pointer(_gameAccessHwndStatic, ref_pTotalKills, GameData.PATTERN_TOTAL_KILLS_INSTRUCTION_LENGTH);
+                if (!IsValidAddress(_offset_total_kills))
+                    _offset_total_kills = 0x0;
+            }
 
             long ref_pTimeRelated = patternScan.FindPatternInternal(GameData.PATTERN_TIMESCALE, GameData.PATTERN_TIMESCALE_MASK, ' ');
             Debug.WriteLine("ref_pTimeRelated found at: 0x" + ref_pTimeRelated.ToString("X"));
@@ -384,16 +345,8 @@ namespace SekiroFpsUnlockAndMore
                     _offset_timescale = Read<Int64>(_gameAccessHwndStatic, pTimescaleManager) + Read<Int32>(_gameAccessHwndStatic, ref_pTimeRelated + GameData.PATTERN_TIMESCALE_POINTER_OFFSET_OFFSET);
                     Debug.WriteLine("fTimescale found at: 0x" + _offset_timescale.ToString("X"));
                     if (!IsValidAddress(_offset_timescale))
-                    {
                         _offset_timescale = 0x0;
-                    }
                 }
-            }
-            if (_offset_timescale == 0x0)
-            {
-                UpdateStatus("fTimescale not found...", Brushes.Red);
-                LogToFile("fTimescale not found...");
-                this.cbGameSpeed.IsEnabled = false;
             }
 
             long pPlayerStructRelated1 = patternScan.FindPatternInternal(GameData.PATTERN_TIMESCALE_PLAYER, GameData.PATTERN_TIMESCALE_PLAYER_MASK, ' ');
@@ -420,26 +373,93 @@ namespace SekiroFpsUnlockAndMore
                                 _offset_timescale_player = Read<Int64>(_gameAccessHwndStatic, pPlayerStructRelated5) + GameData.PATTERN_TIMESCALE_POINTER5_OFFSET;
                                 Debug.WriteLine("fTimescalePlayer found at: 0x" + _offset_timescale_player.ToString("X"));
                                 if (!IsValidAddress(_offset_timescale_player))
-                                {
                                     _offset_timescale_player = 0x0;
-                                }
                             }
                         }
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// All game data has been read.
+        /// </summary>
+        private void OnReadGameFinish(object sender, RunWorkerCompletedEventArgs runWorkerCompletedEventArgs)
+        {
+            if (_offset_framelock == 0x0)
+            {
+                UpdateStatus("frame tick not found...", Brushes.Red);
+                LogToFile("frame tick not found...");
+                this.cbFramelock.IsEnabled = false;
+            }
+
+            if (_offset_framelock_speed_fix == 0x0)
+            {
+                UpdateStatus("running speed fix no found...", Brushes.Red);
+                LogToFile("running speed fix not found...");
+                this.cbFramelock.IsEnabled = false;
+            }
+
+            if ((int)SystemParameters.PrimaryScreenWidth < 1281) _use_resolution_720 = true;
+            if (_offset_resolution_default == 0x0)
+            {
+                UpdateStatus("default resolution not found...", Brushes.Red);
+                LogToFile("default resolution not found...");
+                this.cbAddResolution.IsEnabled = false;
+            }
+            if (_offset_resolution_scaling_fix == 0x0)
+            {
+                UpdateStatus("scaling fix not found...", Brushes.Red);
+                LogToFile("scaling fix not found...");
+                this.cbAddResolution.IsEnabled = false;
+            }
+            if (_offset_resolution == 0x0)
+            {
+                UpdateStatus("current resolution not found...", Brushes.Red);
+                LogToFile("current resolution not found...");
+                this.cbAddResolution.IsEnabled = false;
+            }
+
+            if (_offset_fovsetting == 0x0)
+            {
+                UpdateStatus("fov table not found...", Brushes.Red);
+                LogToFile("fov table not found...");
+                this.cbFov.IsEnabled = false;
+            }
+
+            if (_offset_player_deaths == 0x0)
+            {
+                UpdateStatus("player deaths not found...", Brushes.Red);
+                LogToFile("player deaths not found...");
+                this.cbLogStats.IsEnabled = false;
+            }
+            if (_offset_total_kills == 0x0)
+            {
+                UpdateStatus("player kills not found...", Brushes.Red);
+                LogToFile("player kills not found...");
+                this.cbLogStats.IsEnabled = false;
+            }
+            if (_offset_player_deaths > 0x0 && _offset_total_kills > 0x0)
+                _timerStatsCheck.Start();
+
+            this.cbBorderless.IsEnabled = true;
+
+            if (_offset_timescale == 0x0)
+            {
+                UpdateStatus("timescale not found...", Brushes.Red);
+                LogToFile("timescale not found...");
+                this.cbGameSpeed.IsEnabled = false;
+            }
             if (_offset_timescale_player_pointer_start == 0x0)
             {
-                UpdateStatus("Playerscale not found...", Brushes.Red);
-                LogToFile("Playerscale not found...");
+                UpdateStatus("player timescale not found...", Brushes.Red);
+                //LogToFile("player timescale not found...");
                 this.cbPlayerSpeed.IsEnabled = false;
             }
 
             this.bPatch.IsEnabled = true;
-
-			_running = true;
-            _dispatcherTimerCheck.Stop();
-            return Task.FromResult(true);
+            _running = true;
+            PatchGame();
         }
 
         /// <summary>
@@ -461,9 +481,7 @@ namespace SekiroFpsUnlockAndMore
                         {
                             _offset_timescale_player = Read<Int64>(_gameAccessHwndStatic, pPlayerStructRelated5) + GameData.PATTERN_TIMESCALE_POINTER5_OFFSET;
                             if (IsValidAddress(_offset_timescale_player))
-                            {
                                 valid = true;
-                            }
                         }
                     }
                 }
@@ -509,7 +527,7 @@ namespace SekiroFpsUnlockAndMore
             this.cbGameSpeed.IsEnabled = true;
             this.cbPlayerSpeed.IsEnabled = true;
             UpdateStatus("waiting for game...", Brushes.White);
-            _dispatcherTimerCheck.Start();
+            _dispatcherTimerGameCheck.Start();
 
             return false;
         }
@@ -820,8 +838,8 @@ namespace SekiroFpsUnlockAndMore
         /// Reads some hidden stats and outputs them to text files and status bar. Use to display counters on Twitch stream or just look at them and get disappointed.
         /// </summary>
         private void StatsReadTimer(object sender, EventArgs e)
-		{
-			if (_gameAccessHwndStatic == IntPtr.Zero || _offset_player_deaths == 0x0 || _offset_total_kills == 0x0) return;
+        {
+            if (!_running || _gameAccessHwndStatic == IntPtr.Zero || _offset_player_deaths == 0x0 || _offset_total_kills == 0x0) return;
             int playerDeaths = Read<Int32>(_gameAccessHwndStatic, _offset_player_deaths);
             _statusViewModel.Deaths = playerDeaths;
             if (_statLoggingEnabled) LogStatsFile(_deathCounterPath, playerDeaths.ToString());
@@ -831,11 +849,11 @@ namespace SekiroFpsUnlockAndMore
             if (_statLoggingEnabled) LogStatsFile(_killCounterPath, totalKills.ToString());
         }
 
-		/// <summary>
-		/// Returns the hexadecimal representation of an IEEE-754 floating point number
-		/// </summary>
-		/// <param name="input">The floating point number.</param>
-		/// <returns>The hexadecimal representation of the input.</returns>
+        /// <summary>
+        /// Returns the hexadecimal representation of an IEEE-754 floating point number
+        /// </summary>
+        /// <param name="input">The floating point number.</param>
+        /// <returns>The hexadecimal representation of the input.</returns>
         private static string GetHexRepresentationFromFloat(float input)
         {
             uint f = BitConverter.ToUInt32(BitConverter.GetBytes(input), 0);
@@ -990,7 +1008,7 @@ namespace SekiroFpsUnlockAndMore
         /// <returns>The static offset from the process to the referenced object.</returns>
         private static Int64 DereferenceStaticX64Pointer(IntPtr hProcess, Int64 lpInstructionAddress, int instructionLength)
         {
-            return lpInstructionAddress + Read<Int32>(hProcess, lpInstructionAddress + (instructionLength -0x04)) + instructionLength;
+            return lpInstructionAddress + Read<Int32>(hProcess, lpInstructionAddress + (instructionLength - 0x04)) + instructionLength;
         }
 
         /// <summary>
@@ -1024,27 +1042,27 @@ namespace SekiroFpsUnlockAndMore
             }
         }
 
-		/// <summary>
-		/// Logs stats values to separate files for use in OBS or similar.
-		/// </summary>
-		/// <param name="filename">The filepath to the status file.</param>
-		/// <param name="msg">The value to write to the text file.</param>
-		private void LogStatsFile(string filename, string msg)
-		{
-			try
-			{
-				using (StreamWriter writer = new StreamWriter(filename, false))
-				{
-					writer.Write(msg);
-				}
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show("Failed writing stats file: " + ex.Message, "Sekiro Fps Unlock And More");
-			}
-		}
+        /// <summary>
+        /// Logs stats values to separate files for use in OBS or similar.
+        /// </summary>
+        /// <param name="filename">The filepath to the status file.</param>
+        /// <param name="msg">The value to write to the text file.</param>
+        private void LogStatsFile(string filename, string msg)
+        {
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(filename, false))
+                {
+                    writer.Write(msg);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed writing stats file: " + ex.Message, "Sekiro Fps Unlock And More");
+            }
+        }
 
-		private void UpdateStatus(string text, Brush color)
+        private void UpdateStatus(string text, Brush color)
         {
             this.tbStatus.Background = color;
             this.tbStatus.Text = text;
@@ -1186,7 +1204,7 @@ namespace SekiroFpsUnlockAndMore
             if (this.cbPlayerSpeed.IsChecked == true) PatchPlayerSpeed();
         }
 
-		private void BPatch_Click(object sender, RoutedEventArgs e)
+        private void BPatch_Click(object sender, RoutedEventArgs e)
         {
             PatchGame();
         }
@@ -1203,25 +1221,25 @@ namespace SekiroFpsUnlockAndMore
         private const int MOD_CONTROL = 0x0002;
         private const uint VK_P = 0x0050;
         private const uint PROCESS_ALL_ACCESS = 0x001F0FFF;
-        private const int GWL_STYLE         = -16;
-        private const int GWL_EXSTYLE       = -20;
-        private const uint WS_GROUP         = 0x00020000;
-        private const uint WS_MINIMIZEBOX   = 0x00020000;
-        private const uint WS_SYSMENU       = 0x00080000;
-        private const uint WS_DLGFRAME      = 0x00400000;
-        private const uint WS_BORDER        = 0x00800000;
-        private const uint WS_CAPTION       = 0x00C00000;
-        private const uint WS_CLIPSIBLINGS  = 0x04000000;
-        private const uint WS_VISIBLE       = 0x10000000;
-        private const uint WS_MINIMIZE      = 0x20000000;
-        private const uint WS_POPUP         = 0x80000000;
-        private const uint WS_EX_TOPMOST    = 0x00000008;
-        private const int HWND_TOP          = 0;
-        private const int HWND_NOTOPMOST    = -2;
-        private const uint SWP_NOSIZE       = 0x0001;
-        private const uint SWP_NOACTIVATE   = 0x0010;
+        private const int GWL_STYLE = -16;
+        private const int GWL_EXSTYLE = -20;
+        private const uint WS_GROUP = 0x00020000;
+        private const uint WS_MINIMIZEBOX = 0x00020000;
+        private const uint WS_SYSMENU = 0x00080000;
+        private const uint WS_DLGFRAME = 0x00400000;
+        private const uint WS_BORDER = 0x00800000;
+        private const uint WS_CAPTION = 0x00C00000;
+        private const uint WS_CLIPSIBLINGS = 0x04000000;
+        private const uint WS_VISIBLE = 0x10000000;
+        private const uint WS_MINIMIZE = 0x20000000;
+        private const uint WS_POPUP = 0x80000000;
+        private const uint WS_EX_TOPMOST = 0x00000008;
+        private const int HWND_TOP = 0;
+        private const int HWND_NOTOPMOST = -2;
+        private const uint SWP_NOSIZE = 0x0001;
+        private const uint SWP_NOACTIVATE = 0x0010;
         private const uint SWP_FRAMECHANGED = 0x0020;
-        private const uint SWP_SHOWWINDOW   = 0x0040;
+        private const uint SWP_SHOWWINDOW = 0x0040;
 
         [DllImport("user32.dll")]
         public static extern Boolean RegisterHotKey(IntPtr hWnd, Int32 id, UInt32 fsModifiers, UInt32 vlc);

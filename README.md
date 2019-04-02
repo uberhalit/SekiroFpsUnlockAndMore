@@ -1,7 +1,7 @@
 # Sekiro FPS Unlocker and more
 
 A small utility to remove frame rate limit, add custom resolutions with 21/9 widescreen support, change field of view (FOV), borderless window mode and various game modifications for [Sekiro: Shadows Die Twice](https://www.sekirothegame.com/) written in C#.
-Patches games memory while running, does not modify any game files. Wrks with every game version (legit steam & oh-not-so-legit), should work with all future updates. Also available [Nexus Mods](https://www.nexusmods.com/sekiro/mods/13/).
+Patches games memory while running, does not modify any game files. Works with every game version (legit steam & oh-not-so-legit), should work with all future updates. Also available [Nexus Mods](https://www.nexusmods.com/sekiro/mods/13/).
 
 ## Download
 
@@ -130,7 +130,7 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 7. Select either `DeathCounter.txt` (only tracks true deaths, excluding revives) or `TotalKillsCounter.txt`
 8. Customize font style, color and position
 9.  To add additional counters repeat steps 4-7
-10. [[!On Stream Display with OBS](https://camo.githubusercontent.com/007910d42ace53ee0db0ea8b61d525751b9d48a6/68747470733a2f2f692e696d6775722e636f6d2f4c39546e6f34462e706e67)](#)
+10. [![On Stream Display with OBS](https://camo.githubusercontent.com/007910d42ace53ee0db0ea8b61d525751b9d48a6/68747470733a2f2f692e696d6775722e636f6d2f4c39546e6f34462e706e67)](#)
 
 ### To use any of the game modifications
 1. Start the game

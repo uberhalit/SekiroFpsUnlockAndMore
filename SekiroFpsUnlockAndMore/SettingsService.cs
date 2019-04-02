@@ -13,6 +13,7 @@ namespace SekiroFpsUnlockAndMore
          * Settings definition
          */
         [XmlElement]
+        public bool gameVersionNotify { get; set; }
         public bool cbFramelock { get; set; }
         [XmlElement]
         public int tbFramelock { get; set; }

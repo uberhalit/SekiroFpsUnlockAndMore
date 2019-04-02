@@ -9,6 +9,7 @@ namespace SekiroFpsUnlockAndMore
         internal const string PROCESS_NAME = "sekiro";
         internal const string PROCESS_TITLE = "Sekiro";
         internal const string PROCESS_DESCRIPTION = "Shadows Die Twice";
+        internal const string PROCESS_EXE_VERSION = "1.2.0.0";
 
 
         /**
@@ -22,7 +23,7 @@ namespace SekiroFpsUnlockAndMore
         internal const string PATTERN_FRAMELOCK_FUZZY = "C7 43 00 00 00 00 00 4C 89 AB";  // C7 43 ?? ?? ?? ?? ?? 4C 89 AB
         internal const string PATTERN_FRAMELOCK_FUZZY_MASK = "xx?????xxx";
         internal const int PATTERN_FRAMELOCK_FUZZY_OFFSET = 3;
-        
+
 
         /**
             Reference pointer pFrametimeRunningSpeed to speed table entry that gets used in calculations. Add or remove multiplications of 4bytes to pFrametimeRunningSpeed address to use a higher or lower <float>fFrametimeCriticalRunningSpeed from table
@@ -129,7 +130,7 @@ namespace SekiroFpsUnlockAndMore
         internal const int PATTERN_RESOLUTION_SCALING_FIX_OFFSET = -1;
         internal static byte[] PATCH_RESOLUTION_SCALING_FIX_ENABLE = new byte[1] { 0xEB };  // JMP
         internal static byte[] PATCH_RESOLUTION_SCALING_FIX_DISABLE = new byte[1] { 0x74 }; // JE
-        
+
 
         /**
             Reference pointer pFovTableEntry to FOV entry in game FOV table that gets used in FOV calculations. Overwrite pFovTableEntry address to use a higher or lower <float>fFOV from table
@@ -142,7 +143,7 @@ namespace SekiroFpsUnlockAndMore
         internal const int PATTERN_FOVSETTING_OFFSET = 8;
         /**
             00000001430F7C60
-            Key: Patch to pFovTableEntry last 2 bytes
+            Key: Patch to pFovTableEntry (last 2 bytes)
             Value: Value resolve in float table from pFovTableEntry->fFov
          */
         internal static Dictionary<byte[], string> PATCH_FOVSETTING_MATRIX = new Dictionary<byte[], string>
@@ -150,6 +151,7 @@ namespace SekiroFpsUnlockAndMore
             { new byte[2] {0x00, 0xE7}, "- 50%" },
             { new byte[2] {0x04, 0xE7}, "- 10%" },
             { new byte[2] {0x10, 0xE7}, "+ 15%" },
+            { new byte[2] {0x42, 0x9B}, "+ 25%" },
             { new byte[2] {0x14, 0xE7}, "+ 40%" },
             { new byte[2] {0x18, 0xE7}, "+ 75%" },
             { new byte[2] {0x1C, 0xE7}, "+ 90%" }
@@ -214,5 +216,5 @@ namespace SekiroFpsUnlockAndMore
         internal const int PATTERN_TIMESCALE_POINTER3_OFFSET = 0x1FF8;
         internal const int PATTERN_TIMESCALE_POINTER4_OFFSET = 0x28;
         internal const int PATTERN_TIMESCALE_POINTER5_OFFSET = 0xD00;
-	}
+    }
 }
