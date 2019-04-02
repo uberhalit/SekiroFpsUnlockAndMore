@@ -40,6 +40,7 @@ namespace SekiroFpsUnlockAndMore
 		internal readonly DispatcherTimer _dispatcherTimerFreezeMem = new DispatcherTimer();
         internal readonly DispatcherTimer _dispatcherTimerCheck = new DispatcherTimer();
         internal bool _running = false;
+        internal bool _gameInitializing = false;
         internal string _logPath;
         internal string _deathCounterPath;
         internal string _killCounterPath;
@@ -87,13 +88,13 @@ namespace SekiroFpsUnlockAndMore
                 bool result = await CheckGame();
                 if (result) PatchGame();
             });
-            _dispatcherTimerCheck.Interval = new TimeSpan(0, 0, 0, 2);
+            _dispatcherTimerCheck.Interval = new TimeSpan(0, 0, 0, 0, 2000);
             _dispatcherTimerCheck.Start();
 
             _dispatcherTimerFreezeMem.Tick += new EventHandler(FreezeMemory);
             _dispatcherTimerFreezeMem.Interval = new TimeSpan(0, 0, 0, 0, 2000);
 
-            _timerStatsCheck.Elapsed += new ElapsedEventHandler(StatReadTimer);
+            _timerStatsCheck.Elapsed += new ElapsedEventHandler(StatsReadTimer);
             _timerStatsCheck.Interval = 2000;
 		}
 
@@ -142,12 +143,12 @@ namespace SekiroFpsUnlockAndMore
             this.cbSelectFov.SelectedIndex = _settingsService.ApplicationSettings.cbSelectFov;
             this.cbBorderless.IsChecked = _settingsService.ApplicationSettings.cbBorderless;
             this.cbBorderlessStretch.IsChecked = _settingsService.ApplicationSettings.cbBorderlessStretch;
+            this.cbLogStats.IsChecked = _settingsService.ApplicationSettings.cbLogStats;
             this.exGameMods.IsExpanded = _settingsService.ApplicationSettings.exGameMods;
             this.cbGameSpeed.IsChecked = _settingsService.ApplicationSettings.cbGameSpeed;
             this.tbGameSpeed.Text = _settingsService.ApplicationSettings.tbGameSpeed.ToString();
             this.cbPlayerSpeed.IsChecked = _settingsService.ApplicationSettings.cbPlayerSpeed;
             this.tbPlayerSpeed.Text = _settingsService.ApplicationSettings.tbPlayerSpeed.ToString();
-			this.cbLogStats.IsChecked = _settingsService.ApplicationSettings.cbLogStats;
 		}
 
         /// <summary>
@@ -164,12 +165,12 @@ namespace SekiroFpsUnlockAndMore
             _settingsService.ApplicationSettings.cbSelectFov = this.cbSelectFov.SelectedIndex;
             _settingsService.ApplicationSettings.cbBorderless = this.cbBorderless.IsChecked == true;
             _settingsService.ApplicationSettings.cbBorderlessStretch = this.cbBorderlessStretch.IsChecked == true;
+            _settingsService.ApplicationSettings.cbLogStats = this.cbLogStats.IsChecked == true;
             _settingsService.ApplicationSettings.exGameMods = this.exGameMods.IsExpanded;
             _settingsService.ApplicationSettings.cbGameSpeed = this.cbGameSpeed.IsChecked == true;
             _settingsService.ApplicationSettings.tbGameSpeed = Convert.ToInt32(this.tbGameSpeed.Text);
             _settingsService.ApplicationSettings.cbPlayerSpeed = this.cbPlayerSpeed.IsChecked == true;
             _settingsService.ApplicationSettings.tbPlayerSpeed = Convert.ToInt32(this.tbPlayerSpeed.Text);
-			_settingsService.ApplicationSettings.cbLogStats = this.cbLogStats.IsChecked == true;
 			_settingsService.Save();
         }
 
@@ -203,7 +204,7 @@ namespace SekiroFpsUnlockAndMore
                     LogToFile(string.Format("\tDescription #{0}: {1} | {2} | {3}", j, procList[j].MainWindowTitle, procList[j].MainModule.FileVersionInfo.CompanyName, procList[j].MainModule.FileVersionInfo.FileDescription));
                     LogToFile(string.Format("\tData #{0}: {1} | {2} | {3} | {4} | {5}", j, procList[j].MainModule.FileVersionInfo.FileVersion, procList[j].MainModule.ModuleMemorySize, procList[j].StartTime, procList[j].Responding, procList[j].HasExited));
                 }
-                Task.FromResult(false);
+                return Task.FromResult(false);
             }
 
             _gameProc = procList[gameIndex];
@@ -220,7 +221,7 @@ namespace SekiroFpsUnlockAndMore
                 {
                     UpdateStatus("no access to game...", Brushes.Red);
                     _dispatcherTimerCheck.Stop();
-                    Task.FromResult(false);
+                    return Task.FromResult(false);
                 }
                 _gameHwnd = IntPtr.Zero;
                 if (_gameAccessHwnd != IntPtr.Zero)
@@ -231,7 +232,14 @@ namespace SekiroFpsUnlockAndMore
                 }
                 LogToFile("retrying...");
                 _retryAccess = false;
-                Task.FromResult(false);
+                return Task.FromResult(false);
+            }
+
+            // give the game some time to initialize
+            if (!_gameInitializing)
+            {
+                _gameInitializing = true;
+                return Task.FromResult(false);
             }
 
             //string gameFileVersion = FileVersionInfo.GetVersionInfo(procList[0].MainModule.FileName).FileVersion;
@@ -329,6 +337,7 @@ namespace SekiroFpsUnlockAndMore
 			    {
 			        int playerStatsToDeathsOffset = Read<Int32>(_gameAccessHwndStatic, ref_pPlayerStatsRelated + GameData.PATTERN_PLAYER_DEATHS_POINTER_OFFSET_OFFSET);
 			        Debug.WriteLine("offset pPlayerStats->iPlayerDeaths found : 0x" + playerStatsToDeathsOffset.ToString("X"));
+
                     if (playerStatsToDeathsOffset > 0) _offset_player_deaths = Read<Int64>(_gameAccessHwndStatic, pPlayerStatsRelated) + playerStatsToDeathsOffset;
 			        Debug.WriteLine("iPlayerDeaths found at: 0x" + _offset_player_deaths.ToString("X"));
                 }
@@ -434,9 +443,9 @@ namespace SekiroFpsUnlockAndMore
         }
 
         /// <summary>
-        /// Read and refresh all offsets that can change on quick travel or save game loading.
+        /// Read and refresh the player speed offset that can change on quick travel or save game loading.
         /// </summary>
-        private void ReadIngameOffsets()
+        private void ReadPlayerTimescaleOffsets()
         {
             bool valid = false;
             if (_offset_timescale_player_pointer_start > 0)
@@ -474,10 +483,13 @@ namespace SekiroFpsUnlockAndMore
             _running = false;
             if (_gameAccessHwnd != IntPtr.Zero)
                 CloseHandle(_gameAccessHwnd);
+            _dispatcherTimerFreezeMem.Stop();
+            _timerStatsCheck.Stop();
             _gameProc = null;
             _gameHwnd = IntPtr.Zero;
             _gameAccessHwnd = IntPtr.Zero;
             _gameAccessHwndStatic = IntPtr.Zero;
+            _gameInitializing = false;
             _offset_framelock = 0x0;
             _offset_framelock_speed_fix = 0x0;
             _offset_resolution = 0x0;
@@ -488,6 +500,7 @@ namespace SekiroFpsUnlockAndMore
             _offset_total_kills = 0x0;
             _offset_timescale = 0x0;
             _offset_timescale_player = 0x0;
+            _offset_timescale_player_pointer_start = 0x0;
             this.cbFramelock.IsEnabled = true;
             this.cbAddResolution.IsEnabled = true;
             this.cbFov.IsEnabled = true;
@@ -712,7 +725,7 @@ namespace SekiroFpsUnlockAndMore
             if (!this.cbPlayerSpeed.IsEnabled || !CanPatchGame()) return false;
             if (this.cbPlayerSpeed.IsChecked == true)
             {
-                if (_offset_timescale_player_pointer_start > 0x0) ReadIngameOffsets();
+                if (_offset_timescale_player_pointer_start > 0x0) ReadPlayerTimescaleOffsets();
                 if (_offset_timescale_player == 0x0)
                 {
                     this.cbPlayerSpeed.IsChecked = false;
@@ -784,7 +797,7 @@ namespace SekiroFpsUnlockAndMore
                 return;
             }
             if (_offset_timescale_player_pointer_start == 0x0 || !CanPatchGame()) return;
-            if (_offset_timescale_player_pointer_start > 0x0) ReadIngameOffsets();
+            if (_offset_timescale_player_pointer_start > 0x0) ReadPlayerTimescaleOffsets();
             if (_offset_timescale_player == 0x0) return;
 
             bool isNumber = Int32.TryParse(this.tbPlayerSpeed.Text, out int playerSpeed);
@@ -806,7 +819,7 @@ namespace SekiroFpsUnlockAndMore
         /// <summary>
         /// Reads some hidden stats and outputs them to text files and status bar. Use to display counters on Twitch stream or just look at them and get disappointed.
         /// </summary>
-        private void StatReadTimer(object sender, EventArgs e)
+        private void StatsReadTimer(object sender, EventArgs e)
 		{
 			if (_gameAccessHwndStatic == IntPtr.Zero || _offset_player_deaths == 0x0 || _offset_total_kills == 0x0) return;
             int playerDeaths = Read<Int32>(_gameAccessHwndStatic, _offset_player_deaths);

@@ -116,7 +116,7 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 4. Start `Sekiro FPS Unlocker and more` and enable borderless window mode
 5. If you want fullscreen borderless enable `Fullscreen stretch`
 
-### To display death/kill counters in OBS
+### To display total death/kill counters in OBS
 1. Start the game
 2. Load up your save game
 3. Start `Sekiro FPS Unlocker and more` and enable `Log stats` check box
@@ -126,6 +126,7 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 7. Select either `DeathCouner.txt` (only tracks true deaths, excluding revives) or `TotalKillsCounter.txt`
 9. Customize font style and color
 10. To add additional counters repeat steps 4-7
+11. [[!On Stream Display with OBS](https://camo.githubusercontent.com/007910d42ace53ee0db0ea8b61d525751b9d48a6/68747470733a2f2f692e696d6775722e636f6d2f4c39546e6f34462e706e67)](#)
 
 ### To use any of the game modifications
 1. Start the game
@@ -135,7 +136,7 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 
 ## Preview
 
-[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/275b23b532ec7dcfc18a83d0ba9e8ae1f20b9e20/68747470733a2f2f692e696d6775722e636f6d2f615179334869392e706e67)](#)
+[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/53468e92a923083b0fa8d19350dffdfde3b1d480/68747470733a2f2f692e696d6775722e636f6d2f435656497555312e706e67)](#)
 
 ### Unlocked framerate
 [![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/2c22eea5a618066716cdd1d45274720814592172/68747470733a2f2f692e696d6775722e636f6d2f534e636b6445732e706e67)](#)
@@ -163,6 +164,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Credits
 
+* Me_TheCat for his contribution to log stats and display them in OBS
 * Zullie the Witch#7202 for game speed and player speed modifier offsets
 * jackfuste for FOV offset and basic running speed fix
 * TyChii93#2376 for AMD and widescreen testing
@@ -174,10 +176,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 * in fullscreen the game forces the monitor to 60 Hz so you'll have to handle this with driver override too, see Usage
 * your monitor has to support your custom resolution otherwise it won't show up correctly
 * due to how the game renders altering HUD is limited to 16/9 even on 21/9 resolutions
+* Player speed modification needs a loaded save before it can be activated
 * the hotkey won't work if the game runs in exclusive, true fullscreen mode
 
 ## Version History
 
+* v1.2.0 (2019-04-02)
+  * Added stats (kills & deaths for now) with an option to log them to file for display in OBS (thanks to Me_TheCat for his contribution)
+  * Player speed modifier will stick between quicktravel now
 * v1.1.0.1 (2019-03-31)
   * Fixed topmost for borderless
 * v1.1.0 (2019-03-30)

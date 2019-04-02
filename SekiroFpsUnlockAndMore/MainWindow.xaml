@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SekiroFpsUnlockAndMore"
         mc:Ignorable="d"
-        Title="Sekiro FPS Unlocker and more v1.1.1" Width="Auto" Height="Auto" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="Sekiro FPS Unlocker and more v1.2.0" Width="Auto" Height="Auto" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
 
 	<Grid Background="#FFF9F9F9">
         <DockPanel>
@@ -28,7 +28,7 @@
                     <CheckBox x:Name="cbBorderless" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Borderless window" ToolTip="To enable this set 'Windowed' mode in game options first." IsEnabled="False" Checked="CbBorderless_Checked" Unchecked="CbBorderless_Unchecked"/>
                     <CheckBox x:Name="cbBorderlessStretch" DockPanel.Dock="Right" Margin="10,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Fullscreen stretch" IsEnabled="False" Checked="CbBorderlessStretch_Check_Handler" Unchecked="CbBorderlessStretch_Check_Handler"  />
                 </StackPanel>
-                <CheckBox x:Name="cbLogStats" Margin="0,5,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Log stats to file (Deaths, Kills)" ToolTip="Check the guide on how to display these with OBS." Checked="CbStatChanged" Unchecked="CbStatChanged" />
+                <CheckBox x:Name="cbLogStats" Margin="0,5,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Log stats (Deaths, Kills) to file for OBS" ToolTip="Check the guide on how to display these on stream with OBS." Checked="CbStatChanged" Unchecked="CbStatChanged" />
                 <Expander x:Name="exGameMods" Margin="-3,5,0,0" Height="Auto" FontSize="14 px" Header="Game modifications" IsExpanded="False">
                     <Grid Margin="3,0,0,0" Background="#FFF9F9F9">
                         <StackPanel Width="Auto" Height="Auto">
@@ -81,7 +81,7 @@
                 </TextBlock>
                 <Label HorizontalAlignment="Right" FontSize="12 px">
                     <Hyperlink NavigateUri="https://github.com/uberhalit/SekiroFpsUnlockAndMore" RequestNavigate="Hyperlink_RequestNavigate">
-                        v1.1.1 - by uberhalit
+                        v1.2.0 - by uberhalit
                     </Hyperlink>
                 </Label>
             </StackPanel>

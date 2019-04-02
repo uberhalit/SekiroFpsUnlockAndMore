@@ -29,7 +29,7 @@ namespace SekiroFpsUnlockAndMore
             fFrametimeCriticalRunningSpeed should be roughly half the frame rate: 30 @ 60FPS limit, 50 @ 100FPS limit...
             00000001407D4E08 | F3:0F5905 90309202        | mulss xmm0,dword ptr ds:[1430F7EA0]             | pFrametimeRunningSpeed->fFrametimeCriticalRunningSpeed
          */
-        internal const string PATTERN_FRAMELOCK_SPEED_FIX = "F3 0F 59 05 00 30 92 02"; // F3 0F 59 05 ?? 30 92 02 | 0F 51 C2 F3 0F 59 05 ?? ?? ?? ?? 0F 2F F8
+        internal const string PATTERN_FRAMELOCK_SPEED_FIX = "F3 0F 59 05 00 30 92 02"; // F3 0F 59 05 ?? 30 92 02
         internal const string PATTERN_FRAMELOCK_SPEED_FIX_MASK = "xxxx?xxx";
         internal const int PATTERN_FRAMELOCK_SPEED_FIX_OFFSET = 4;
         /**
