@@ -1,6 +1,6 @@
 # Sekiro FPS Unlocker and more
 
-A small utility to remove frame rate limit, add custom resolutions with 21/9 widescreen support, change field of view (FOV), borderless window mode, display and log stats (OBS), diSable camera auto adjust on movement and various game modifications for [Sekiro: Shadows Die Twice](https://www.sekirothegame.com/) written in C#.
+A small utility to remove frame rate limit, add custom resolutions with 21/9 widescreen support, change field of view (FOV), borderless window mode, display and log stats (OBS), disable camera auto adjust on movement and various game modifications for [Sekiro: Shadows Die Twice](https://www.sekirothegame.com/) written in C#.
 Patches games memory while running, does not modify any game files. Works with every game version (legit steam & oh-not-so-legit), should work with all future updates. Also available on [Nexus Mods](https://www.nexusmods.com/sekiro/mods/13/).
 
 ## Download
@@ -34,7 +34,7 @@ The following graphical guide has to be done if you want to unlock the game's fr
 
 The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors so we have to override these.
 
-#### TL;DR Nvidia: Use Nvidia Control Panel to set 'Vsync' to 'Off' and 'Preferred Refreshrate' to 'Highest available' on a Sekiro Profile. Troubleshoot: delete the (premade) Sekiro profile, add a new profile by stating the full file path to sekiro.exe and try again. If Preferred Refreshrate is missing or game still locks to 60fps see the guide further down on Nvidia Profile Inspector an general troubleshooting.
+#### TL;DR Nvidia: Use Nvidia Control Panel to set 'Vsync' to 'Off' and 'Preferred Refreshrate' to 'Highest available' on a Sekiro Profile. Troubleshoot: delete the (premade) Sekiro profile, add a new profile by stating the full file path to sekiro.exe and try again. If Preferred Refreshrate is missing or game still locks to 60fps see the guide further down on Nvidia Profile Inspector and general troubleshooting.
 #### TL;DR AMD: Use Radeon Settings to set 'Wait for Vertical Refresh' to 'Enhanced Sync' on a Sekiro profile. Start Sekiro in windowed mode and switch to fullscreen once ingame. Troubleshoot: see the guide further down below.
 
 #### 60 Hz monitors: disable VSYNC via driver (use 'Enhanced Sync' on AMD) and use fullscreen, see guide below
@@ -74,7 +74,7 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 
 ### Follow these steps on AMD:
 1. Right click on Desktop -> `Display settings`
-2. Scroll down anD click `Advanced Display Settings -> Display Adapter Properties`
+2. Scroll down and click `Advanced Display Settings -> Display Adapter Properties`
 3. **Switch to `Monitor` tab and make sure your monitor is set to the highest Refresh rate possible:**
 4.  [![Make sure your monitor is set to the highest Refresh rate possible](https://camo.githubusercontent.com/8ba71a0b512eb68509f7e7506a92a78f3cd47537/68747470733a2f2f692e696d6775722e636f6d2f61774b4862774d2e706e67)](#)
 5. Open Radeon Settings
@@ -109,13 +109,13 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 * Try adding the whole game folder and `Sekiro FPS Unlocker and more` to your antivirus's exclusion list
 * Try disabling `Steam Broadcast` (streaming via overlay)
 * Do a clean reinstall of your graphic driver:
-  1. Download latest graphic drivers for your GPU
+  1. Download latest graphics driver for your GPU
   2. Download [DDU](https://www.guru3d.com/files-get/display-driver-uninstaller-download,1.html)
   3. Disconnect internet so windows update won't auto-install minimal driver as soon as you uninstall them
   4. Boot into safe mode
-  5. Completely uninstall graphic drivers and all of their utilities using DDU
+  5. Completely uninstall graphics driver and all of their utilities using DDU
   6. Reboot
-  7. Install the latest driver
+  7. Install the latest driver you previously downloaded
   8. Reconnect internet
 * Close and disable all screen recording and streaming applications
 * Close and disable all overlays
