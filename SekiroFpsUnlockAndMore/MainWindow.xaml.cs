@@ -34,6 +34,7 @@ namespace SekiroFpsUnlockAndMore
         internal long _offset_timescale_player = 0x0;
         internal long _offset_timescale_player_pointer_start = 0x0;
 
+        internal CodeCaveGenerator _codeCaveGenerator;
         internal SettingsService _settingsService;
         internal StatusViewModel _statusViewModel = new StatusViewModel();
 
@@ -43,13 +44,19 @@ namespace SekiroFpsUnlockAndMore
         internal readonly System.Timers.Timer _timerStatsCheck = new System.Timers.Timer();
         internal bool _running = false;
         internal bool _gameInitializing = false;
-        internal string _logPath;
+        internal static string _logPath;
         internal string _deathCounterPath;
         internal string _killCounterPath;
         internal bool _retryAccess = true;
         internal bool _use_resolution_720 = false;
+        internal bool _codeCavesGenerated = false;
         internal bool _statLoggingEnabled = false;
         internal RECT _windowRect;
+
+        internal const string _CODECAVE_CAMADJUST_PITCH = "camAdjustPitch";
+        internal const string _CODECAVE_CAMADJUST_YAW_Z = "camAdjustYawZ";
+        internal const string _CODECAVE_CAMADJUST_PITCH_XY = "camAdjustPitchXY";
+        internal const string _CODECAVE_CAMADJUST_YAW_XY = "camAdjustYawXY";
 
         public MainWindow()
         {
@@ -152,6 +159,7 @@ namespace SekiroFpsUnlockAndMore
             this.cbSelectFov.SelectedIndex = _settingsService.ApplicationSettings.cbSelectFov;
             this.cbBorderless.IsChecked = _settingsService.ApplicationSettings.cbBorderless;
             this.cbBorderlessStretch.IsChecked = _settingsService.ApplicationSettings.cbBorderlessStretch;
+            this.cbCamAdjust.IsChecked = _settingsService.ApplicationSettings.cbCamAdjust;
             this.cbLogStats.IsChecked = _settingsService.ApplicationSettings.cbLogStats;
             this.exGameMods.IsExpanded = _settingsService.ApplicationSettings.exGameMods;
             this.cbGameSpeed.IsChecked = _settingsService.ApplicationSettings.cbGameSpeed;
@@ -174,6 +182,7 @@ namespace SekiroFpsUnlockAndMore
             _settingsService.ApplicationSettings.cbSelectFov = this.cbSelectFov.SelectedIndex;
             _settingsService.ApplicationSettings.cbBorderless = this.cbBorderless.IsChecked == true;
             _settingsService.ApplicationSettings.cbBorderlessStretch = this.cbBorderlessStretch.IsChecked == true;
+            _settingsService.ApplicationSettings.cbCamAdjust = this.cbCamAdjust.IsChecked == true;
             _settingsService.ApplicationSettings.cbLogStats = this.cbLogStats.IsChecked == true;
             _settingsService.ApplicationSettings.exGameMods = this.exGameMods.IsExpanded;
             _settingsService.ApplicationSettings.cbGameSpeed = this.cbGameSpeed.IsChecked == true;
@@ -253,6 +262,10 @@ namespace SekiroFpsUnlockAndMore
                 MessageBox.Show("Unknown game version.\nSome functions might not work properly or even crash the game. Check for updates on this utility regularly following the link at the bottom.", "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Warning);
                 _settingsService.ApplicationSettings.gameVersionNotify = true;
             }
+            else
+            {
+                _settingsService.ApplicationSettings.gameVersionNotify = false;
+            }
 
             // give the game some time to initialize
             _gameInitializing = true;
@@ -265,112 +278,113 @@ namespace SekiroFpsUnlockAndMore
         private void ReadGame(object sender, DoWorkEventArgs doWorkEventArgs)
         {
             PatternScan patternScan = new PatternScan(_gameAccessHwnd, _gameProc.MainModule);
+            _codeCaveGenerator = new CodeCaveGenerator(_gameAccessHwnd, _gameProc.MainModule.BaseAddress.ToInt64());
 
-            _offset_framelock = patternScan.FindPatternInternal(GameData.PATTERN_FRAMELOCK, GameData.PATTERN_FRAMELOCK_MASK, ' ') + GameData.PATTERN_FRAMELOCK_OFFSET;
+            _offset_framelock = patternScan.FindPattern(GameData.PATTERN_FRAMELOCK) + GameData.PATTERN_FRAMELOCK_OFFSET;
             Debug.WriteLine("fFrameTick found at: 0x" + _offset_framelock.ToString("X"));
             if (!IsValidAddress(_offset_framelock))
             {
-                _offset_framelock = patternScan.FindPatternInternal(GameData.PATTERN_FRAMELOCK_FUZZY, GameData.PATTERN_FRAMELOCK_FUZZY_MASK, ' ') + GameData.PATTERN_FRAMELOCK_FUZZY_OFFSET;
+                _offset_framelock = patternScan.FindPattern(GameData.PATTERN_FRAMELOCK_FUZZY) + GameData.PATTERN_FRAMELOCK_FUZZY_OFFSET;
                 Debug.WriteLine("2. fFrameTick found at: 0x" + _offset_framelock.ToString("X"));
             }
             if (!IsValidAddress(_offset_framelock))
                 _offset_framelock = 0x0;
 
-            _offset_framelock_speed_fix = patternScan.FindPatternInternal(GameData.PATTERN_FRAMELOCK_SPEED_FIX, GameData.PATTERN_FRAMELOCK_SPEED_FIX_MASK, ' ') + GameData.PATTERN_FRAMELOCK_SPEED_FIX_OFFSET;
+            _offset_framelock_speed_fix = patternScan.FindPattern(GameData.PATTERN_FRAMELOCK_SPEED_FIX) + GameData.PATTERN_FRAMELOCK_SPEED_FIX_OFFSET;
             Debug.WriteLine("pFrametimeRunningSpeed at: 0x" + _offset_framelock_speed_fix.ToString("X"));
             if (!IsValidAddress(_offset_framelock_speed_fix))
                 _offset_framelock_speed_fix = 0x0;
 
-            _offset_resolution_default = patternScan.FindPatternInternal((int)SystemParameters.PrimaryScreenWidth > 1280 ? GameData.PATTERN_RESOLUTION_DEFAULT : GameData.PATTERN_RESOLUTION_DEFAULT_720, GameData.PATTERN_RESOLUTION_DEFAULT_MASK, ' ');
+            _offset_resolution_default = patternScan.FindPattern((int)SystemParameters.PrimaryScreenWidth > 1280 ? GameData.PATTERN_RESOLUTION_DEFAULT : GameData.PATTERN_RESOLUTION_DEFAULT_720);
             Debug.WriteLine("default resolution found at: 0x" + _offset_resolution_default.ToString("X"));
             if (!IsValidAddress(_offset_resolution_default))
                 _offset_resolution_default = 0x0;
 
-            _offset_resolution_scaling_fix = patternScan.FindPatternInternal(GameData.PATTERN_RESOLUTION_SCALING_FIX, GameData.PATTERN_RESOLUTION_SCALING_FIX_MASK, ' ') + GameData.PATTERN_RESOLUTION_SCALING_FIX_OFFSET;
+            _offset_resolution_scaling_fix = patternScan.FindPattern(GameData.PATTERN_RESOLUTION_SCALING_FIX) + GameData.PATTERN_RESOLUTION_SCALING_FIX_OFFSET;
             Debug.WriteLine("scaling fix found at: 0x" + _offset_resolution_scaling_fix.ToString("X"));
             if (!IsValidAddress(_offset_resolution_scaling_fix))
                 _offset_resolution_scaling_fix = 0x0;
 
-            long ref_pCurrentResolutionWidth = patternScan.FindPatternInternal(GameData.PATTERN_RESOLUTION_POINTER, GameData.PATTERN_RESOLUTION_POINTER_MASK, ' ') + GameData.PATTERN_RESOLUTION_POINTER_OFFSET;
-            Debug.WriteLine("ref_pCurrentResolutionWidth found at: 0x" + ref_pCurrentResolutionWidth.ToString("X"));
-            if (IsValidAddress(ref_pCurrentResolutionWidth))
+            long ref_lpCurrentResolutionWidth = patternScan.FindPattern(GameData.PATTERN_RESOLUTION_POINTER) + GameData.PATTERN_RESOLUTION_POINTER_OFFSET;
+            Debug.WriteLine("ref_lpCurrentResolutionWidth found at: 0x" + ref_lpCurrentResolutionWidth.ToString("X"));
+            if (IsValidAddress(ref_lpCurrentResolutionWidth))
             {
-                _offset_resolution = DereferenceStaticX64Pointer(_gameAccessHwnd, ref_pCurrentResolutionWidth, GameData.PATTERN_RESOLUTION_POINTER_INSTRUCTION_LENGTH);
-                Debug.WriteLine("pCurrentResolutionWidth at: 0x" + _offset_resolution.ToString("X"));
+                _offset_resolution = DereferenceStaticX64Pointer(_gameAccessHwnd, ref_lpCurrentResolutionWidth, GameData.PATTERN_RESOLUTION_POINTER_INSTRUCTION_LENGTH);
+                Debug.WriteLine("lpCurrentResolutionWidth at: 0x" + _offset_resolution.ToString("X"));
                 if (!IsValidAddress(_offset_resolution))
                     _offset_resolution = 0x0;
             }
 
-            _offset_fovsetting = patternScan.FindPatternInternal(GameData.PATTERN_FOVSETTING, GameData.PATTERN_FOVSETTING_MASK, ' ') + GameData.PATTERN_FOVSETTING_OFFSET;
+            _offset_fovsetting = patternScan.FindPattern(GameData.PATTERN_FOVSETTING) + GameData.PATTERN_FOVSETTING_OFFSET;
             Debug.WriteLine("pFovTableEntry found at: 0x" + _offset_fovsetting.ToString("X"));
             if (!IsValidAddress(_offset_fovsetting))
                 _offset_fovsetting = 0x0;
 
-            long ref_pPlayerStatsRelated = patternScan.FindPatternInternal(GameData.PATTERN_PLAYER_DEATHS, GameData.PATTERN_PLAYER_DEATHS_MASK, ' ') + GameData.PATTERN_PLAYER_DEATHS_OFFSET;
-            Debug.WriteLine("ref_pPlayerStatsRelated found at: 0x" + ref_pPlayerStatsRelated.ToString("X"));
-            if (IsValidAddress(ref_pPlayerStatsRelated))
+            long ref_lpPlayerStatsRelated = patternScan.FindPattern(GameData.PATTERN_PLAYER_DEATHS) + GameData.PATTERN_PLAYER_DEATHS_OFFSET;
+            Debug.WriteLine("ref_lpPlayerStatsRelated found at: 0x" + ref_lpPlayerStatsRelated.ToString("X"));
+            if (IsValidAddress(ref_lpPlayerStatsRelated))
             {
-                long pPlayerStatsRelated = DereferenceStaticX64Pointer(_gameAccessHwndStatic, ref_pPlayerStatsRelated, GameData.PATTERN_PLAYER_DEATHS_INSTRUCTION_LENGTH);
-                Debug.WriteLine("pPlayerStatsRelated found at: 0x" + pPlayerStatsRelated.ToString("X"));
-                if (IsValidAddress(pPlayerStatsRelated))
+                long lpPlayerStatsRelated = DereferenceStaticX64Pointer(_gameAccessHwndStatic, ref_lpPlayerStatsRelated, GameData.PATTERN_PLAYER_DEATHS_INSTRUCTION_LENGTH);
+                Debug.WriteLine("lpPlayerStatsRelated found at: 0x" + lpPlayerStatsRelated.ToString("X"));
+                if (IsValidAddress(lpPlayerStatsRelated))
                 {
-                    int playerStatsToDeathsOffset = Read<Int32>(_gameAccessHwndStatic, ref_pPlayerStatsRelated + GameData.PATTERN_PLAYER_DEATHS_POINTER_OFFSET_OFFSET);
-                    Debug.WriteLine("offset pPlayerStats->iPlayerDeaths found : 0x" + playerStatsToDeathsOffset.ToString("X"));
+                    int dwPlayerStatsToDeathsOffset = Read<Int32>(_gameAccessHwndStatic, ref_lpPlayerStatsRelated + GameData.PATTERN_PLAYER_DEATHS_POINTER_OFFSET_OFFSET);
+                    Debug.WriteLine("offset pPlayerStats->iPlayerDeaths found : 0x" + dwPlayerStatsToDeathsOffset.ToString("X"));
 
-                    if (playerStatsToDeathsOffset > 0)
-                        _offset_player_deaths = Read<Int64>(_gameAccessHwndStatic, pPlayerStatsRelated) + playerStatsToDeathsOffset;
+                    if (dwPlayerStatsToDeathsOffset > 0)
+                        _offset_player_deaths = Read<Int64>(_gameAccessHwndStatic, lpPlayerStatsRelated) + dwPlayerStatsToDeathsOffset;
                     Debug.WriteLine("iPlayerDeaths found at: 0x" + _offset_player_deaths.ToString("X"));
                 }
             }
             if (!IsValidAddress(_offset_player_deaths))
                 _offset_player_deaths = 0x0;
 
-            long ref_pTotalKills = patternScan.FindPatternInternal(GameData.PATTERN_TOTAL_KILLS, GameData.PATTERN_TOTAL_KILLS_MASK, ' ');
-            Debug.WriteLine("ref_pTotalKills found at: 0x" + ref_pTotalKills.ToString("X"));
-            if (IsValidAddress(ref_pTotalKills))
+            long ref_lpTotalKills = patternScan.FindPattern(GameData.PATTERN_TOTAL_KILLS);
+            Debug.WriteLine("ref_lpTotalKills found at: 0x" + ref_lpTotalKills.ToString("X"));
+            if (IsValidAddress(ref_lpTotalKills))
             {
-                _offset_total_kills = DereferenceStaticX64Pointer(_gameAccessHwndStatic, ref_pTotalKills, GameData.PATTERN_TOTAL_KILLS_INSTRUCTION_LENGTH);
+                _offset_total_kills = DereferenceStaticX64Pointer(_gameAccessHwndStatic, ref_lpTotalKills, GameData.PATTERN_TOTAL_KILLS_INSTRUCTION_LENGTH);
                 if (!IsValidAddress(_offset_total_kills))
                     _offset_total_kills = 0x0;
             }
 
-            long ref_pTimeRelated = patternScan.FindPatternInternal(GameData.PATTERN_TIMESCALE, GameData.PATTERN_TIMESCALE_MASK, ' ');
-            Debug.WriteLine("ref_pTimeRelated found at: 0x" + ref_pTimeRelated.ToString("X"));
-            if (IsValidAddress(ref_pTimeRelated))
+            long ref_lpTimeRelated = patternScan.FindPattern(GameData.PATTERN_TIMESCALE);
+            Debug.WriteLine("ref_lpTimeRelated found at: 0x" + ref_lpTimeRelated.ToString("X"));
+            if (IsValidAddress(ref_lpTimeRelated))
             {
-                long pTimescaleManager = DereferenceStaticX64Pointer(_gameAccessHwndStatic, ref_pTimeRelated, GameData.PATTERN_TIMESCALE_INSTRUCTION_LENGTH);
-                Debug.WriteLine("pTimescaleManager found at: 0x" + pTimescaleManager.ToString("X"));
-                if (IsValidAddress(pTimescaleManager))
+                long lpTimescaleManager = DereferenceStaticX64Pointer(_gameAccessHwndStatic, ref_lpTimeRelated, GameData.PATTERN_TIMESCALE_INSTRUCTION_LENGTH);
+                Debug.WriteLine("lpTimescaleManager found at: 0x" + lpTimescaleManager.ToString("X"));
+                if (IsValidAddress(lpTimescaleManager))
                 {
-                    _offset_timescale = Read<Int64>(_gameAccessHwndStatic, pTimescaleManager) + Read<Int32>(_gameAccessHwndStatic, ref_pTimeRelated + GameData.PATTERN_TIMESCALE_POINTER_OFFSET_OFFSET);
+                    _offset_timescale = Read<Int64>(_gameAccessHwndStatic, lpTimescaleManager) + Read<Int32>(_gameAccessHwndStatic, ref_lpTimeRelated + GameData.PATTERN_TIMESCALE_POINTER_OFFSET_OFFSET);
                     Debug.WriteLine("fTimescale found at: 0x" + _offset_timescale.ToString("X"));
                     if (!IsValidAddress(_offset_timescale))
                         _offset_timescale = 0x0;
                 }
             }
 
-            long pPlayerStructRelated1 = patternScan.FindPatternInternal(GameData.PATTERN_TIMESCALE_PLAYER, GameData.PATTERN_TIMESCALE_PLAYER_MASK, ' ');
-            Debug.WriteLine("pPlayerStructRelated1 found at: 0x" + pPlayerStructRelated1.ToString("X"));
-            if (IsValidAddress(pPlayerStructRelated1))
+            long lpPlayerStructRelated1 = patternScan.FindPattern(GameData.PATTERN_TIMESCALE_PLAYER);
+            Debug.WriteLine("lpPlayerStructRelated1 found at: 0x" + lpPlayerStructRelated1.ToString("X"));
+            if (IsValidAddress(lpPlayerStructRelated1))
             {
-                long pPlayerStructRelated2 = DereferenceStaticX64Pointer(_gameAccessHwndStatic, pPlayerStructRelated1, GameData.PATTERN_TIMESCALE_PLAYER_INSTRUCTION_LENGTH);
-                Debug.WriteLine("pPlayerStructRelated2 found at: 0x" + pPlayerStructRelated2.ToString("X"));
-                if (IsValidAddress(pPlayerStructRelated2))
+                long lpPlayerStructRelated2 = DereferenceStaticX64Pointer(_gameAccessHwndStatic, lpPlayerStructRelated1, GameData.PATTERN_TIMESCALE_PLAYER_INSTRUCTION_LENGTH);
+                Debug.WriteLine("lpPlayerStructRelated2 found at: 0x" + lpPlayerStructRelated2.ToString("X"));
+                if (IsValidAddress(lpPlayerStructRelated2))
                 {
-                    _offset_timescale_player_pointer_start = pPlayerStructRelated2;
-                    long pPlayerStructRelated3 = Read<Int64>(_gameAccessHwndStatic, pPlayerStructRelated2) + GameData.PATTERN_TIMESCALE_POINTER2_OFFSET;
-                    Debug.WriteLine("pPlayerStructRelated3 found at: 0x" + pPlayerStructRelated3.ToString("X"));
-                    if (IsValidAddress(pPlayerStructRelated3))
+                    _offset_timescale_player_pointer_start = lpPlayerStructRelated2;
+                    long lpPlayerStructRelated3 = Read<Int64>(_gameAccessHwndStatic, lpPlayerStructRelated2) + GameData.PATTERN_TIMESCALE_POINTER2_OFFSET;
+                    Debug.WriteLine("lpPlayerStructRelated3 found at: 0x" + lpPlayerStructRelated3.ToString("X"));
+                    if (IsValidAddress(lpPlayerStructRelated3))
                     {
-                        long pPlayerStructRelated4 = Read<Int64>(_gameAccessHwndStatic, pPlayerStructRelated3) + GameData.PATTERN_TIMESCALE_POINTER3_OFFSET;
-                        Debug.WriteLine("pPlayerStructRelated4 found at: 0x" + pPlayerStructRelated4.ToString("X"));
-                        if (IsValidAddress(pPlayerStructRelated4))
+                        long lpPlayerStructRelated4 = Read<Int64>(_gameAccessHwndStatic, lpPlayerStructRelated3) + GameData.PATTERN_TIMESCALE_POINTER3_OFFSET;
+                        Debug.WriteLine("lpPlayerStructRelated4 found at: 0x" + lpPlayerStructRelated4.ToString("X"));
+                        if (IsValidAddress(lpPlayerStructRelated4))
                         {
-                            long pPlayerStructRelated5 = Read<Int64>(_gameAccessHwndStatic, pPlayerStructRelated4) + GameData.PATTERN_TIMESCALE_POINTER4_OFFSET;
-                            Debug.WriteLine("pPlayerStructRelated5 found at: 0x" + pPlayerStructRelated5.ToString("X"));
-                            if (IsValidAddress(pPlayerStructRelated5))
+                            long lpPlayerStructRelated5 = Read<Int64>(_gameAccessHwndStatic, lpPlayerStructRelated4) + GameData.PATTERN_TIMESCALE_POINTER4_OFFSET;
+                            Debug.WriteLine("lpPlayerStructRelated5 found at: 0x" + lpPlayerStructRelated5.ToString("X"));
+                            if (IsValidAddress(lpPlayerStructRelated5))
                             {
-                                _offset_timescale_player = Read<Int64>(_gameAccessHwndStatic, pPlayerStructRelated5) + GameData.PATTERN_TIMESCALE_POINTER5_OFFSET;
+                                _offset_timescale_player = Read<Int64>(_gameAccessHwndStatic, lpPlayerStructRelated5) + GameData.PATTERN_TIMESCALE_POINTER5_OFFSET;
                                 Debug.WriteLine("fTimescalePlayer found at: 0x" + _offset_timescale_player.ToString("X"));
                                 if (!IsValidAddress(_offset_timescale_player))
                                     _offset_timescale_player = 0x0;
@@ -378,6 +392,31 @@ namespace SekiroFpsUnlockAndMore
                         }
                     }
                 }
+            }
+
+            long lpCamAdjustPitch = patternScan.FindPattern(GameData.PATTERN_CAMADJUST_PITCH);
+            long lpCamAdjustYawZ = patternScan.FindPattern(GameData.PATTERN_CAMADJUST_YAW_Z) + GameData.PATTERN_CAMADJUST_YAW_Z_OFFSET;
+            long lpCamAdjustPitchXY = patternScan.FindPattern(GameData.PATTERN_CAMADJUST_PITCH_XY);
+            long lpCamAdjustYawXY = patternScan.FindPattern(GameData.PATTERN_CAMADJUST_YAW_XY) + GameData.PATTERN_CAMADJUST_YAW_XY_OFFSET;
+            Debug.WriteLine("lpCamAdjustPitch found at: 0x" + lpCamAdjustPitch.ToString("X"));
+            Debug.WriteLine("lpCamAdjustYawZ found at: 0x" + lpCamAdjustYawZ.ToString("X"));
+            Debug.WriteLine("lpCamAdjustPitchXY found at: 0x" + lpCamAdjustPitchXY.ToString("X"));
+            Debug.WriteLine("lpCamAdjustYawXY found at: 0x" + lpCamAdjustYawXY.ToString("X"));
+            if (IsValidAddress(lpCamAdjustPitch) && IsValidAddress(lpCamAdjustYawZ) && IsValidAddress(lpCamAdjustPitchXY) && IsValidAddress(lpCamAdjustYawXY))
+            {
+                List<bool> results = new List<bool>
+                {
+                    _codeCaveGenerator.CreateNewCodeCave(_CODECAVE_CAMADJUST_PITCH, lpCamAdjustPitch, GameData.INJECT_CAMADJUST_PITCH_OVERWRITE_LENGTH, GameData.INJECT_CAMADJUST_PITCH_SHELLCODE),
+                    _codeCaveGenerator.CreateNewCodeCave(_CODECAVE_CAMADJUST_YAW_Z, lpCamAdjustYawZ, GameData.INJECT_CAMADJUST_YAW_Z_OVERWRITE_LENGTH, GameData.INJECT_CAMADJUST_YAW_Z_SHELLCODE),
+                    _codeCaveGenerator.CreateNewCodeCave(_CODECAVE_CAMADJUST_PITCH_XY, lpCamAdjustPitchXY, GameData.INJECT_CAMADJUST_PITCH_XY_OVERWRITE_LENGTH, GameData.INJECT_CAMADJUST_PITCH_XY_SHELLCODE),
+                    _codeCaveGenerator.CreateNewCodeCave(_CODECAVE_CAMADJUST_YAW_XY, lpCamAdjustYawXY, GameData.INJECT_CAMADJUST_YAW_XY_OVERWRITE_LENGTH, GameData.INJECT_CAMADJUST_YAW_XY_SHELLCODE)
+                };
+                Debug.WriteLine("lpCamAdjustPitch code cave at: 0x" + _codeCaveGenerator.GetCodeCaveAddressByName(_CODECAVE_CAMADJUST_PITCH).ToString("X"));
+                Debug.WriteLine("lpCamAdjustYawZ code cave at: 0x" + _codeCaveGenerator.GetCodeCaveAddressByName(_CODECAVE_CAMADJUST_YAW_Z).ToString("X"));
+                Debug.WriteLine("lpCamAdjustPitchXY code cave at: 0x" + _codeCaveGenerator.GetCodeCaveAddressByName(_CODECAVE_CAMADJUST_PITCH_XY).ToString("X"));
+                Debug.WriteLine("lpCamAdjustYawXY code cave at: 0x" + _codeCaveGenerator.GetCodeCaveAddressByName(_CODECAVE_CAMADJUST_YAW_XY).ToString("X"));
+                if (results.IndexOf(false) < 0)
+                    _codeCavesGenerated = true;
             }
         }
 
@@ -444,6 +483,13 @@ namespace SekiroFpsUnlockAndMore
 
             this.cbBorderless.IsEnabled = true;
 
+            if (!_codeCavesGenerated)
+            {
+                UpdateStatus("cam adjust not found...", Brushes.Red);
+                LogToFile("cam adjust not found...");
+            }
+            this.cbCamAdjust.IsEnabled = _codeCavesGenerated;
+
             if (_offset_timescale == 0x0)
             {
                 UpdateStatus("timescale not found...", Brushes.Red);
@@ -460,6 +506,7 @@ namespace SekiroFpsUnlockAndMore
             this.bPatch.IsEnabled = true;
             _running = true;
             PatchGame();
+            InjectToGame();
         }
 
         /// <summary>
@@ -470,16 +517,16 @@ namespace SekiroFpsUnlockAndMore
             bool valid = false;
             if (_offset_timescale_player_pointer_start > 0)
             {
-                long pPlayerStructRelated3 = Read<Int64>(_gameAccessHwndStatic, _offset_timescale_player_pointer_start) + GameData.PATTERN_TIMESCALE_POINTER2_OFFSET;
-                if (IsValidAddress(pPlayerStructRelated3))
+                long lpPlayerStructRelated3 = Read<Int64>(_gameAccessHwndStatic, _offset_timescale_player_pointer_start) + GameData.PATTERN_TIMESCALE_POINTER2_OFFSET;
+                if (IsValidAddress(lpPlayerStructRelated3))
                 {
-                    long pPlayerStructRelated4 = Read<Int64>(_gameAccessHwndStatic, pPlayerStructRelated3) + GameData.PATTERN_TIMESCALE_POINTER3_OFFSET;
-                    if (IsValidAddress(pPlayerStructRelated4))
+                    long lpPlayerStructRelated4 = Read<Int64>(_gameAccessHwndStatic, lpPlayerStructRelated3) + GameData.PATTERN_TIMESCALE_POINTER3_OFFSET;
+                    if (IsValidAddress(lpPlayerStructRelated4))
                     {
-                        long pPlayerStructRelated5 = Read<Int64>(_gameAccessHwndStatic, pPlayerStructRelated4) + GameData.PATTERN_TIMESCALE_POINTER4_OFFSET;
-                        if (IsValidAddress(pPlayerStructRelated5))
+                        long lpPlayerStructRelated5 = Read<Int64>(_gameAccessHwndStatic, lpPlayerStructRelated4) + GameData.PATTERN_TIMESCALE_POINTER4_OFFSET;
+                        if (IsValidAddress(lpPlayerStructRelated5))
                         {
-                            _offset_timescale_player = Read<Int64>(_gameAccessHwndStatic, pPlayerStructRelated5) + GameData.PATTERN_TIMESCALE_POINTER5_OFFSET;
+                            _offset_timescale_player = Read<Int64>(_gameAccessHwndStatic, lpPlayerStructRelated5) + GameData.PATTERN_TIMESCALE_POINTER5_OFFSET;
                             if (IsValidAddress(_offset_timescale_player))
                                 valid = true;
                         }
@@ -519,10 +566,13 @@ namespace SekiroFpsUnlockAndMore
             _offset_timescale = 0x0;
             _offset_timescale_player = 0x0;
             _offset_timescale_player_pointer_start = 0x0;
+            _codeCaveGenerator.ClearCodeCaves();
+            _codeCaveGenerator = null;
             this.cbFramelock.IsEnabled = true;
             this.cbAddResolution.IsEnabled = true;
             this.cbFov.IsEnabled = true;
             this.cbBorderless.IsEnabled = false;
+            this.cbCamAdjust.IsEnabled = true;
             this.bPatch.IsEnabled = false;
             this.cbGameSpeed.IsEnabled = true;
             this.cbPlayerSpeed.IsEnabled = true;
@@ -783,7 +833,7 @@ namespace SekiroFpsUnlockAndMore
         }
 
         /// <summary>
-        /// Patch up this broken port of a game
+        /// Patch up this broken port of a game.
         /// </summary>
         private void PatchGame()
         {
@@ -802,6 +852,33 @@ namespace SekiroFpsUnlockAndMore
                 UpdateStatus(DateTime.Now.ToString("HH:mm:ss") + " Game patched!", Brushes.Green);
             else
                 UpdateStatus(DateTime.Now.ToString("HH:mm:ss") + " Game unpatched!", Brushes.White);
+        }
+
+        /// <summary>
+        /// Inject or eject code to game using code caves.
+        /// </summary>
+        private void InjectToGame()
+        {
+            if (!CanPatchGame() || !_codeCavesGenerated) return;
+
+            if (this.cbCamAdjust.IsChecked == true)
+            {
+                this.IsEnabled = false;
+                _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH);
+                _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_Z);
+                _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH_XY);
+                _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_XY);
+                this.IsEnabled = true;
+            }
+            else
+            {
+                this.IsEnabled = false;
+                _codeCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH);
+                _codeCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_Z);
+                _codeCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH_XY);
+                _codeCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_XY);
+                this.IsEnabled = true;
+            }
         }
 
         /// <summary>
@@ -972,14 +1049,14 @@ namespace SekiroFpsUnlockAndMore
         /// Reads a given type from processes memory using a generic method.
         /// </summary>
         /// <typeparam name="T">The base type to read.</typeparam>
-        /// <param name="gameProc">The process handle to read from.</param>
+        /// <param name="hProcess">The process handle to read from.</param>
         /// <param name="lpBaseAddress">The address to read from.</param>
         /// <returns>The given base type read from memory.</returns>
         /// <remarks>GCHandle and Marshal are costy.</remarks>
-        private static T Read<T>(IntPtr gameProc, Int64 lpBaseAddress)
+        private static T Read<T>(IntPtr hProcess, Int64 lpBaseAddress)
         {
             byte[] lpBuffer = new byte[Marshal.SizeOf(typeof(T))];
-            ReadProcessMemory(gameProc, lpBaseAddress, lpBuffer, (ulong)lpBuffer.Length, out _);
+            ReadProcessMemory(hProcess, lpBaseAddress, lpBuffer, (ulong)lpBuffer.Length, out _);
             GCHandle gcHandle = GCHandle.Alloc(lpBuffer, GCHandleType.Pinned);
             T structure = (T)Marshal.PtrToStructure(gcHandle.AddrOfPinnedObject(), typeof(T));
             gcHandle.Free();
@@ -989,13 +1066,13 @@ namespace SekiroFpsUnlockAndMore
         /// <summary>
         /// Writes a given type and value to processes memory using a generic method.
         /// </summary>
-        /// <param name="gameProc">The process handle to read from.</param>
+        /// <param name="hProcess">The process handle to read from.</param>
         /// <param name="lpBaseAddress">The address to write from.</param>
         /// <param name="bytes">The byte array to write.</param>
         /// <returns>True if successful, false otherwise.</returns>
-        private static bool WriteBytes(IntPtr gameProc, Int64 lpBaseAddress, byte[] bytes)
+        private static bool WriteBytes(IntPtr hProcess, Int64 lpBaseAddress, byte[] bytes)
         {
-            return WriteProcessMemory(gameProc, lpBaseAddress, bytes, (ulong)bytes.Length, out _);
+            return WriteProcessMemory(hProcess, lpBaseAddress, bytes, (ulong)bytes.Length, out _);
         }
 
         /// <summary>
@@ -1025,7 +1102,7 @@ namespace SekiroFpsUnlockAndMore
         /// Logs messages to log file
         /// </summary>
         /// <param name="msg">The message to write to file.</param>
-        private void LogToFile(string msg)
+        internal static void LogToFile(string msg)
         {
             string timedMsg = "[" + DateTime.Now + "] " + msg;
             Debug.WriteLine(timedMsg);
@@ -1119,6 +1196,11 @@ namespace SekiroFpsUnlockAndMore
         private void CbBorderlessStretch_Check_Handler(object sender, RoutedEventArgs e)
         {
             PatchWindow();
+        }
+
+        private void CbCamAdjust_Check_Handler(object sender, RoutedEventArgs e)
+        {
+            InjectToGame();
         }
 
         private void CbStatChanged(object sender, RoutedEventArgs e)

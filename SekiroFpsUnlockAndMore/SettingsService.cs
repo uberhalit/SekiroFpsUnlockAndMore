@@ -14,6 +14,7 @@ namespace SekiroFpsUnlockAndMore
          */
         [XmlElement]
         public bool gameVersionNotify { get; set; }
+        [XmlElement]
         public bool cbFramelock { get; set; }
         [XmlElement]
         public int tbFramelock { get; set; }
@@ -31,6 +32,8 @@ namespace SekiroFpsUnlockAndMore
         public bool cbBorderless { get; set; }
         [XmlElement]
         public bool cbBorderlessStretch { get; set; }
+        [XmlElement]
+        public bool cbCamAdjust { get; set; }
         [XmlElement]
         public bool cbLogStats { get; set; }
         [XmlElement]

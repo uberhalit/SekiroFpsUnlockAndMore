@@ -62,6 +62,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CodeCaveGenerator.cs" />
     <Compile Include="SettingsService.cs" />
     <Compile Include="StatusViewModel.cs" />
     <Page Include="MainWindow.xaml">

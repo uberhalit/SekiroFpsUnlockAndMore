@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("SekiroFpsUnlockAndMore")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("uberhalit")]
 [assembly: AssemblyProduct("SekiroFpsUnlockAndMore")]
 [assembly: AssemblyCopyright("Copyright © uberhalit 2019")]
 [assembly: AssemblyTrademark("")]
@@ -21,5 +21,5 @@ using System.Runtime.InteropServices;
     ResourceDictionaryLocation.SourceAssembly
 )]
 
-[assembly: AssemblyVersion("1.2.0.0")]
-[assembly: AssemblyFileVersion("1.2.0.0")]
+[assembly: AssemblyVersion("1.2.1.0")]
+[assembly: AssemblyFileVersion("1.2.1.0")]
