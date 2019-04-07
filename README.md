@@ -8,7 +8,7 @@ Patches games memory while running, does not modify any game files. Works with e
 **[Get the latest release here](https://github.com/uberhalit/SekiroFpsUnlockAndMore/releases)**
 
 ### See it in action:
-[![Video preview](https://camo.githubusercontent.com/784859be34b212aeebd5bac1baf47b9bffdd36db/68747470733a2f2f692e696d6775722e636f6d2f4d4d724f62487a2e706e67)](https://giant.gfycat.com/PhonyReadyGreatargus.webm)
+[![Video preview](https://camo.githubusercontent.com/6e7dfcc62f9915b8ef5330bdf6489e0cd35be2ec/68747470733a2f2f692e696d6775722e636f6d2f7032436b734e342e706e67)](https://giant.gfycat.com/GraciousMadeupJavalina.webm)
 
 ## Features
 
@@ -113,7 +113,7 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
   2. Download [DDU](https://www.guru3d.com/files-get/display-driver-uninstaller-download,1.html)
   3. Disconnect internet so windows update won't auto-install minimal driver as soon as you uninstall them
   4. Boot into safe mode
-  5. Completely uninstall graphic drivers and all utilities using DDU
+  5. Completely uninstall graphic drivers and all of their utilities using DDU
   6. Reboot
   7. Install the latest driver
   8. Reconnect internet
@@ -160,13 +160,13 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 
 ## Preview
 
-[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/53468e92a923083b0fa8d19350dffdfde3b1d480/68747470733a2f2f692e696d6775722e636f6d2f435656497555312e706e67)](#)
+[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/e48e4e663b9a9248789d498aa7add145a7734910/68747470733a2f2f692e696d6775722e636f6d2f42304341545a762e706e67)](#)
 
 ### Unlocked framerate
-[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/2c22eea5a618066716cdd1d45274720814592172/68747470733a2f2f692e696d6775722e636f6d2f534e636b6445732e706e67)](#)
+[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/272adde7c1a0d81c0e91e7d7fb68868bed0a04ae/68747470733a2f2f692e696d6775722e636f6d2f46514b6671504e2e706e67)](#)
 
 ### Increased FOV, borderless window and 90% game speed
-[![FOV increase on the fly and borderless window](https://camo.githubusercontent.com/fbca15acc147937ccc1b98a9fc0850c06cff4476/68747470733a2f2f692e696d6775722e636f6d2f536e6f394e39302e706e67)](#)
+[![FOV increase on the fly and borderless window](https://camo.githubusercontent.com/8fbc5e5889d7a1d4717796ca1d6bb996f83757a5/68747470733a2f2f692e696d6775722e636f6d2f656532616851682e706e67)](#)
 
 ## Prerequisites
 
