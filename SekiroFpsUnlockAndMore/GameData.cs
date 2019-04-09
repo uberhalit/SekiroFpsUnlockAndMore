@@ -240,6 +240,7 @@ namespace SekiroFpsUnlockAndMore
         };
         /**
             Controls automatic camera pitch adjust on move on XY-axis. Pointer in rax holds new pitch while rsi+170 holds current one prior movement so we overwrite xmm0 with the old pitch value and then overwrite [rax] with xmm0
+            Breaks Pitch on emulated controllers...
             000000014073B476 | F3:0F1000                  | movss xmm0,dword ptr ds:[rax]                  | newCamPitch | code inject overwrite from here
             000000014073B47A | F3:0F1186 70010000         | movss dword ptr ds:[rsi+170],xmm0              | camPitch
             000000014073B482 | F3:0F1085 E4120000         | movss xmm0,dword ptr ss:[rbp+12E4]             | jump back here from code inject

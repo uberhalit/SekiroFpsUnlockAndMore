@@ -259,7 +259,8 @@ namespace SekiroFpsUnlockAndMore
             string gameFileVersion = FileVersionInfo.GetVersionInfo(procList[0].MainModule.FileName).FileVersion;
             if (gameFileVersion != GameData.PROCESS_EXE_VERSION && !_settingsService.ApplicationSettings.gameVersionNotify)
             {
-                MessageBox.Show("Unknown game version.\nSome functions might not work properly or even crash the game. Check for updates on this utility regularly following the link at the bottom.", "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Unknown game version.\nSome functions might not work properly or even crash the game. " +
+                                "Check for updates on this utility regularly following the link at the bottom.", "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Warning);
                 _settingsService.ApplicationSettings.gameVersionNotify = true;
             }
             else
@@ -865,14 +866,28 @@ namespace SekiroFpsUnlockAndMore
             {
                 if (!_settingsService.ApplicationSettings.cameraAdjustNotify)
                 {
-                    MessageBox.Show("Disabling camera auto adjustment is intended for mouse users!\nDo not enable this if you are using a controller.", "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBoxResult result = MessageBox.Show("Disabling camera auto adjustment is intended for mouse users.\n\n" +
+                                                              "If you are using a controller this will not work perfectly and you will temporary loose the deadzones on your controller (slow tiling).\n\n" +
+                                                              "Do you want to continue?", "Sekiro FPS Unlocker and more", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    if (result == MessageBoxResult.No)
+                    {
+                        this.cbCamAdjust.IsEnabled = false;
+                        this.cbCamAdjust.IsChecked = false;
+                        this.cbCamAdjust.IsEnabled = true;
+                        return;
+                    }
+                    result = MessageBox.Show("Are you using a mouse as input?\n\n" +
+                                             "To change your selection just delete the configuration file: SekiroFpsUnlockAndMore.xml", "Sekiro FPS Unlocker and more", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.No)
+                        _settingsService.ApplicationSettings.peasantInput = true;
                     _settingsService.ApplicationSettings.cameraAdjustNotify = true;
                 }
 
                 this.cbCamAdjust.IsEnabled = false;
                 _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH);
                 _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_Z);
-                _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH_XY);
+                if (!_settingsService.ApplicationSettings.peasantInput)
+                    _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH_XY); // BREAKS PITCH AND OTHER CONTROLS ON CONTROLLERS
                 _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_XY);
                 this.cbCamAdjust.IsEnabled = true;
             }
@@ -1206,7 +1221,8 @@ namespace SekiroFpsUnlockAndMore
 
         private void CbCamAdjust_Check_Handler(object sender, RoutedEventArgs e)
         {
-            InjectToGame();
+            if (this.cbCamAdjust.IsEnabled)
+                InjectToGame();
         }
 
         private void CbStatChanged(object sender, RoutedEventArgs e)

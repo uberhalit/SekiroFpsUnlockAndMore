@@ -17,6 +17,8 @@ namespace SekiroFpsUnlockAndMore
         [XmlElement]
         public bool cameraAdjustNotify { get; set; }
         [XmlElement]
+        public bool peasantInput { get; set; }
+        [XmlElement]
         public bool cbFramelock { get; set; }
         [XmlElement]
         public int tbFramelock { get; set; }

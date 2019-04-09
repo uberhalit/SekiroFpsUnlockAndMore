@@ -19,7 +19,7 @@ Patches games memory while running, does not modify any game files. Works with e
 * add a custom resolution, 21:9 widescreen supported (will overwrite the default 1920x1080 / 1280x720 resolution, HUD limited to 16/9)
 * increase and decrease field of view (FOV)
 * set the game to borderless window mode
-* disable camera auto rotate adjustment on movement (for mouse users only!)
+* disable camera auto rotate adjustment on movement (intended for mouse users)
 * display hidden counters such as death/kill count and optionally log them to file to display in OBS
 * game modifications
   * global game speed modifier (increase or decrease)
@@ -30,7 +30,7 @@ Patches games memory while running, does not modify any game files. Works with e
 
 ## Usage
 
-The following graphical guide has to be done if you want to unlock the game's framerate or play on a higher refresh rate in fullscreen. If you do not wish to use that feature you can scroll down further to the guides on all other features. The graphic setup has to be done only once but as the patcher hot-patches the memory **you have to start the patcher every time you want use any of its features**.
+The following graphical guide has to be done if you want to unlock the game's framerate or play on a higher refresh rate in fullscreen. If you do not wish to use that feature you can scroll down further to the guides on all other features. The graphic setup has to be done only once but as the patcher hot-patches the memory **you have to start the patcher every time you want to use any of its features**.
 
 The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors so we have to override these.
 
@@ -122,7 +122,7 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 5. If you want fullscreen borderless enable `Fullscreen stretch`
 
 ### On 'Disable camera auto rotate on movement':
-This is intended exclusively for mouse users, enabling it on non-native windows controller-input can temporary disable your up-down controls. Disabling the automatic camera adjustments makes little sense on controllers.
+This will completely disable the automatic camera rotation adjustments when you are moving. This is mostly intended for mouse users, enabling it on non-native windows controllers will not work perfectly (some rotation adjustments will be left) and you will temporary lose the ability to slow-tilt (deadzones). Disabling the automatic camera adjustments makes little sense on controllers. If you changed your input device or made a mistake while selecting it simply close the utility, delete the `SekiroFpsUnlockAndMore.xml` file and restart the mod.
 
 ### To display total death/kill counters in OBS:
 1. Start the game
@@ -204,7 +204,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 * the game has forced VSYNC so unlocking the frame rate when your monitor has 60Hz will do nothing. You'll have to disable VSYNC in Nvidia Control Panel or AMD Radeon Settings first, see Usage
 * in fullscreen the game forces the monitor to 60 Hz so you'll have to handle this with driver override too, see Usage
 * your monitor has to support your custom resolution otherwise it won't show up correctly
-* due to how the game renders altering HUD is limited to 16:9 even on 21:9 resolutions
+* due to how the game renders the HUD is limited to 16:9 even on 21:9 resolutions
 * disabling automatic camera rotation adjustment on movement is intended for mouse users only, using it on a non-native windows controller can disable up-down controls
 * Player speed modification needs a loaded save before it can be activated
 * Player and game speed modification can potentially crash the game in certain cutscenes and NPC interactions, use with caution
