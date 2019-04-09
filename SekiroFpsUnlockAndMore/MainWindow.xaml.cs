@@ -863,21 +863,27 @@ namespace SekiroFpsUnlockAndMore
 
             if (this.cbCamAdjust.IsChecked == true)
             {
-                this.IsEnabled = false;
+                if (!_settingsService.ApplicationSettings.cameraAdjustNotify)
+                {
+                    MessageBox.Show("Disabling camera auto adjustment is intended for mouse users!\nDo not enable this if you are using a controller.", "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    _settingsService.ApplicationSettings.cameraAdjustNotify = true;
+                }
+
+                this.cbCamAdjust.IsEnabled = false;
                 _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH);
                 _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_Z);
                 _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH_XY);
                 _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_XY);
-                this.IsEnabled = true;
+                this.cbCamAdjust.IsEnabled = true;
             }
             else
             {
-                this.IsEnabled = false;
+                this.cbCamAdjust.IsEnabled = false;
                 _codeCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH);
                 _codeCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_Z);
                 _codeCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH_XY);
                 _codeCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_XY);
-                this.IsEnabled = true;
+                this.cbCamAdjust.IsEnabled = true;
             }
         }
 
@@ -1092,14 +1098,14 @@ namespace SekiroFpsUnlockAndMore
         /// Check whether input is numeric only.
         /// </summary>
         /// <param name="text">The text to check.</param>
-        /// <returns>True if inout is numeric only.</returns>
+        /// <returns>True if input is numeric only.</returns>
         private static bool IsNumericInput(string text)
         {
             return Regex.IsMatch(text, "[^0-9]+");
         }
 
         /// <summary>
-        /// Logs messages to log file
+        /// Logs messages to log file.
         /// </summary>
         /// <param name="msg">The message to write to file.</param>
         internal static void LogToFile(string msg)

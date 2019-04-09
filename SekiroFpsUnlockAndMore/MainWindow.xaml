@@ -28,13 +28,13 @@
                     <CheckBox x:Name="cbBorderless" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Borderless window" ToolTip="To enable this set 'Windowed' mode in game options first." IsEnabled="False" Checked="CbBorderless_Checked" Unchecked="CbBorderless_Unchecked"/>
                     <CheckBox x:Name="cbBorderlessStretch" DockPanel.Dock="Right" Margin="10,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Fullscreen stretch" IsEnabled="False" Checked="CbBorderlessStretch_Check_Handler" Unchecked="CbBorderlessStretch_Check_Handler"  />
                 </StackPanel>
-                <CheckBox x:Name="cbCamAdjust" Margin="0,5,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Disable camera auto rotate on movement" ToolTip="Disables the automatic camera adjustment on movement. Annoying when mouse is used." Checked="CbCamAdjust_Check_Handler" Unchecked="CbCamAdjust_Check_Handler" />
+                <CheckBox x:Name="cbCamAdjust" Margin="0,5,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Disable camera auto rotate on movement" ToolTip="MOUSE USERS ONLY! Disables the annoying automatic camera adjustment on movement." Checked="CbCamAdjust_Check_Handler" Unchecked="CbCamAdjust_Check_Handler" />
                 <CheckBox x:Name="cbLogStats" Margin="0,5,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Log stats (Deaths, Kills) to file for OBS" ToolTip="Check the guide on how to display these on stream with OBS." Checked="CbStatChanged" Unchecked="CbStatChanged" />
                 <Expander x:Name="exGameMods" Margin="-3,5,0,0" Height="Auto" FontSize="14 px" Header="Game modifications" IsExpanded="False">
                     <Grid Margin="3,0,0,0" Background="#FFF9F9F9">
                         <StackPanel Width="Auto" Height="Auto">
                             <DockPanel Margin="0,3,0,0" LastChildFill="False">
-                                <CheckBox x:Name="cbGameSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Game speed (%):" ToolTip="Can potentially crash the game in cutscenes, use with caution." Checked="CbGameSpeed_Check_Handler" Unchecked="CbGameSpeed_Check_Handler"  />
+                                <CheckBox x:Name="cbGameSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Game speed (%):" ToolTip="Increase or decrease. Can potentially crash the game in cutscenes, use with caution." Checked="CbGameSpeed_Check_Handler" Unchecked="CbGameSpeed_Check_Handler"  />
                                 <Button x:Name="bGs100" DockPanel.Dock="Right" Content="100" Margin="0,0,0,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
                             Focusable="False" Click="BGs100_Click" />
                                 <Button x:Name="bGsHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
@@ -46,7 +46,7 @@
                             Focusable="False" Click="BGs0_Click" />
                             </DockPanel>
                             <DockPanel Margin="0,5,0,0" LastChildFill="False">
-                                <CheckBox x:Name="cbPlayerSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Player speed (%):" ToolTip="To enable this start the game and load a save, then tick the checkbox. Can potentially crash the game in cutscenes, use with caution." Checked="CbPlayerSpeed_Check_Handler" Unchecked="CbPlayerSpeed_Check_Handler"  />
+                                <CheckBox x:Name="cbPlayerSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Player speed (%):" ToolTip="Increase or decrease. To enable this start the game and load a save, then tick the checkbox. Can potentially crash the game in cutscenes, use with caution." Checked="CbPlayerSpeed_Check_Handler" Unchecked="CbPlayerSpeed_Check_Handler"  />
                                 <Button x:Name="bPs100" DockPanel.Dock="Right" Content="100" Margin="0,0,0,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
                             Focusable="False" Click="BPs100_Click" />
                                 <Button x:Name="bPsHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
@@ -69,13 +69,14 @@
                         <Run FontWeight="Bold">If your monitor is 60 Hz you will have to use</Run>
                         <Run FontWeight="Bold" Foreground="#FFF00000">fullscreen mode and force disable VSYNC</Run>
                         <Run FontWeight="Bold">with Nvidia Control panel or AMD Radeon Settings to get frame rate unlock working.</Run>
-                        <Run>To avoid stuttering it's recommended to disable VSYNC even with a 144 Hz monitor.</Run>
+                        <Run>To avoid stuttering it's recommended to always disable VSYNC (except when you have GSYNC).</Run>
                         <Run FontWeight="Bold">If your monitor is >60 Hz you will have to use</Run>
                         <Run FontWeight="Bold" Foreground="#FFF00000">borderless window mode or force the game to run on highest available refresh rate</Run>
                         <Run FontWeight="Bold">using Nvidia Control panel or AMD Radeon Settings.</Run>
                         <Run>Borderless window mode requires "Windowed" in game settings first.</Run>
-                        <Run FontWeight="Bold">Custom resolution adds 21/9 support and overwrites a default resolution, hud will be limited to 16/9.</Run>
+                        <Run FontWeight="Bold">Custom resolution adds 21:9 support and overwrites a default resolution, hud will be limited to 16:9.</Run>
                         <Run>Borderless window mode with custom resolution requires you to patch and set resolution first, then activate borderless afterwards.</Run>
+                        <Run FontWeight="Bold">Disabling camera auto rotate is intended for mouse users.</Run>
                         <Run FontWeight="Bold">To enable Player Speed modification you have to be ingame first.</Run>
                         <Run FontWeight="Bold" Foreground="#FFF00000">See the link below for detailed information, guides, GSYNC support and an AMD fix.</Run>
                     </TextBlock.Inlines>

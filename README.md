@@ -1,6 +1,6 @@
 # Sekiro FPS Unlocker and more
 
-A small utility to remove frame rate limit, add custom resolutions with 21/9 widescreen support, change field of view (FOV), borderless window mode, display and log stats (OBS), disable camera auto adjust on movement and various game modifications for [Sekiro: Shadows Die Twice](https://www.sekirothegame.com/) written in C#.
+A small utility to remove frame rate limit, add custom resolutions with 21:9 widescreen support, change field of view (FOV), borderless window mode, display and log stats (OBS), disable camera auto adjust on movement and various game modifications for [Sekiro: Shadows Die Twice](https://www.sekirothegame.com/) written in C#.
 Patches games memory while running, does not modify any game files. Works with every game version (legit steam & oh-not-so-legit), should work with all future updates. Also available on [Nexus Mods](https://www.nexusmods.com/sekiro/mods/13/).
 
 ## Download
@@ -16,14 +16,14 @@ Patches games memory while running, does not modify any game files. Works with e
 * works with legit, unmodified steam version as well as with unpacked, not-so-legit versions
 * GSYNC and FreeSync support even in borderless window mode
 * unlock frame rate (remove FPS limit) by setting a new custom limit
-* add a custom resolution, 21/9 widescreen supported (will overwrite the default 1920x1080 / 1280x720 resolution, HUD limited to 16/9)
+* add a custom resolution, 21:9 widescreen supported (will overwrite the default 1920x1080 / 1280x720 resolution, HUD limited to 16/9)
 * increase and decrease field of view (FOV)
 * set the game to borderless window mode
-* disable camera auto rotate adjustment on movement (annoying for mouse users)
+* disable camera auto rotate adjustment on movement (for mouse users only!)
 * display hidden counters such as death/kill count and optionally log them to file to display in OBS
 * game modifications
-  * global game speed modifier
-  * player speed modifier
+  * global game speed modifier (increase or decrease)
+  * player speed modifier (increase or decrease)
 * automatically patch game on startup
 * seamlessly switch between windowed, borderless and borderless fullscreen
 * hotkey for patching while in (borderless) window mode
@@ -93,7 +93,7 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 ### To play the game with GSYNC do these additional steps (Nvidia):
 1. Under Nvidia Control Panel navigate to `3D Settings -> Manage 3D settings -> Program Settings -> Sekiro`
 2. Set `Monitor Technology` to `G-SYNC`
-3. Set `Vertical sync` to `Off` again as enabling G-SYNC re-enables it
+3. If you want to play in (borderless) window mode you have to set `Vertical sync` to `Off` again as enabling G-SYNC re-enables it, if you play in exclusive fullscreen you can keep VSync on `Application controlled` to help remove frame time stutters ([see here](https://www.blurbusters.com/gsync/gsync101-input-lag-tests-and-settings/15/))
 4. Make sure that `Preferred refresh rate` is still set to `Highest available`
 5. [![Control Panel](https://camo.githubusercontent.com/b7b491c24020fd3eca41d857bd58b1c0c2ee037f/68747470733a2f2f692e696d6775722e636f6d2f614a41744444632e706e67)](#)
 6. If you do not have `Preferred refresh rate` or `Vertical sync` see the guide above on how to use the Nvidia Profile Inspector
@@ -103,31 +103,13 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 10. Start the game and set it to Fullscreen
 11. Enjoy perfectly tearing free variable high refresh rates without VSYNC
 
-### Troubleshooting:
-* Make sure you followed the appreciate steps and didn't skip any (especially not the deletion of the Sekiro profile!)
-* Try disabling `Fullscreen optimization` for Sekiro: right mouse click on `sekiro.exe -> Compatibility-> tick 'Disable fullscreen optimizations'`
-* Try adding the whole game folder and `Sekiro FPS Unlocker and more` to your antivirus's exclusion list
-* Try disabling `Steam Broadcast` (streaming via overlay)
-* Do a clean reinstall of your graphic driver:
-  1. Download latest graphics driver for your GPU
-  2. Download [DDU](https://www.guru3d.com/files-get/display-driver-uninstaller-download,1.html)
-  3. Disconnect internet so windows update won't auto-install minimal driver as soon as you uninstall them
-  4. Boot into safe mode
-  5. Completely uninstall graphics driver and all of their utilities using DDU
-  6. Reboot
-  7. Install the latest driver you previously downloaded
-  8. Reconnect internet
-* Close and disable all screen recording and streaming applications
-* Close and disable all overlays
-* Close and disable all performance "booster" programs and alike
-
-### To add a custom resolution
+### To add a custom resolution:
 1. Start the game
 2. Start `Sekiro FPS Unlocker and more`, set you desired resolution and enable it by ticking the check box
 3. Set your custom resolution in the graphical settings
 4. Be aware that your monitor has to natively support this resolution and the ingame HUD will be limited to 16/9
 
-### To use the FOV changer
+### To use the FOV changer:
 1. Start the game
 2. Load up your save game
 3. Start `Sekiro FPS Unlocker and more`, set you desired FOV value and enable it by ticking the check box
@@ -139,7 +121,10 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 4. Start `Sekiro FPS Unlocker and more` and enable borderless window mode
 5. If you want fullscreen borderless enable `Fullscreen stretch`
 
-### To display total death/kill counters in OBS
+### On 'Disable camera auto rotate on movement':
+This is intended exclusively for mouse users, enabling it on non-native windows controller-input can temporary disable your up-down controls. Disabling the automatic camera adjustments makes little sense on controllers.
+
+### To display total death/kill counters in OBS:
 1. Start the game
 2. Load up your save game
 3. Start `Sekiro FPS Unlocker and more` and enable `Log stats` check box
@@ -151,12 +136,31 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 9.  To add additional counters repeat steps 4-7
 10. [![On Stream Display with OBS](https://camo.githubusercontent.com/007910d42ace53ee0db0ea8b61d525751b9d48a6/68747470733a2f2f692e696d6775722e636f6d2f4c39546e6f34462e706e67)](#)
 
-### To use any of the game modifications
+### To use any of the game modifications:
 1. Start the game
 2. Load up your save game
 3. Start `Sekiro FPS Unlocker and more` and expand `Game modifications`
 4. Set your desired values and then tick the checkbox you'd wish to enable
 5. Be aware that player and game speed modifications can potentially crash the game in certain cutscenes and NPC interactions
+
+## Troubleshooting:
+* Make sure you followed the appropriate steps and didn't skip any (especially not the deletion of the Sekiro profile!)
+* Try disabling `Fullscreen optimization` for Sekiro: right mouse click on `sekiro.exe -> Compatibility-> tick 'Disable fullscreen optimizations'`
+* Try adding the whole game folder and `Sekiro FPS Unlocker and more` to your antivirus's exclusion list
+* Try disabling `Steam Broadcast` (streaming via overlay)
+* Try to force disable VSYNC even when you are using GSYNC
+* Close and disable all screen recording and streaming applications
+* Close and disable all overlays
+* Close and disable all performance "booster" programs and alike
+* Do a clean reinstall of your graphic driver:
+  1. Download latest graphics driver for your GPU
+  2. Download [DDU](https://www.guru3d.com/files-get/display-driver-uninstaller-download,1.html)
+  3. Disconnect internet so windows update won't auto-install minimal driver as soon as you uninstall them
+  4. Boot into safe mode
+  5. Completely uninstall graphics driver and all of their utilities using DDU
+  6. Reboot
+  7. Install the latest driver you previously downloaded
+  8. Reconnect internet
 
 ## Preview
 
@@ -201,6 +205,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 * in fullscreen the game forces the monitor to 60 Hz so you'll have to handle this with driver override too, see Usage
 * your monitor has to support your custom resolution otherwise it won't show up correctly
 * due to how the game renders altering HUD is limited to 16:9 even on 21:9 resolutions
+* disabling automatic camera rotation adjustment on movement is intended for mouse users only, using it on a non-native windows controller can disable up-down controls
 * Player speed modification needs a loaded save before it can be activated
 * Player and game speed modification can potentially crash the game in certain cutscenes and NPC interactions, use with caution
 * the hotkey won't work if the game runs in exclusive, true fullscreen mode
