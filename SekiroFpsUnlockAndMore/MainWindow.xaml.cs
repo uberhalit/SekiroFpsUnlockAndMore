@@ -86,6 +86,14 @@ namespace SekiroFpsUnlockAndMore
 
             LoadConfiguration();
 
+            if (_settingsService.ApplicationSettings.cameraAdjustNotify)
+            {
+                if (_settingsService.ApplicationSettings.peasantInput)
+                    this.sbStatus.Text = "Controller Input";
+                else
+                    this.sbStatus.Text = "Mouse Input";
+            }
+
             IntPtr hWnd = new WindowInteropHelper(this).Handle;
             if (!RegisterHotKey(hWnd, 9009, MOD_CONTROL, VK_P))
                 MessageBox.Show("Hotkey is already in use, it may not work.", "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -879,7 +887,11 @@ namespace SekiroFpsUnlockAndMore
                     result = MessageBox.Show("Are you using a mouse as input?\n\n" +
                                              "To change your selection just delete the configuration file: SekiroFpsUnlockAndMore.xml", "Sekiro FPS Unlocker and more", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.No)
+                    {
                         _settingsService.ApplicationSettings.peasantInput = true;
+                        this.sbStatus.Text = "Controller Input";
+                    }
+                    else this.sbStatus.Text = "Mouse Input";
                     _settingsService.ApplicationSettings.cameraAdjustNotify = true;
                 }
 
