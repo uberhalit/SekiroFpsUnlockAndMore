@@ -27,14 +27,13 @@ namespace SekiroFpsUnlockAndMore
         internal long _offset_resolution = 0x0;
         internal long _offset_resolution_default = 0x0;
         internal long _offset_resolution_scaling_fix = 0x0;
-        internal long _offset_fovsetting = 0x0;
         internal long _offset_total_kills = 0x0;
         internal long _offset_player_deaths = 0x0;
         internal long _offset_timescale = 0x0;
         internal long _offset_timescale_player = 0x0;
         internal long _offset_timescale_player_pointer_start = 0x0;
 
-        internal CodeCaveGenerator _codeCaveGenerator;
+        internal MemoryCaveGenerator _memoryCaveGenerator;
         internal SettingsService _settingsService;
         internal StatusViewModel _statusViewModel = new StatusViewModel();
 
@@ -49,10 +48,12 @@ namespace SekiroFpsUnlockAndMore
         internal string _killCounterPath;
         internal bool _retryAccess = true;
         internal bool _use_resolution_720 = false;
-        internal bool _codeCavesGenerated = false;
+        internal bool _codeCave_camadjust = false;
+        internal bool _dataCave_fovsetting = false;
         internal bool _statLoggingEnabled = false;
         internal RECT _windowRect;
 
+        internal const string _DATACAVE_FOV_POINTER = "fovPointer";
         internal const string _CODECAVE_CAMADJUST_PITCH = "camAdjustPitch";
         internal const string _CODECAVE_CAMADJUST_YAW_Z = "camAdjustYawZ";
         internal const string _CODECAVE_CAMADJUST_PITCH_XY = "camAdjustPitchXY";
@@ -80,9 +81,6 @@ namespace SekiroFpsUnlockAndMore
             _logPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\SekiroFpsUnlockAndMore.log";
             _deathCounterPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\DeathCounter.txt";
             _killCounterPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\TotalKillsCounter.txt";
-
-            this.cbSelectFov.ItemsSource = GameData.PATCH_FOVSETTING_MATRIX;
-            this.cbSelectFov.SelectedIndex = 2;
 
             LoadConfiguration();
 
@@ -164,7 +162,7 @@ namespace SekiroFpsUnlockAndMore
             this.tbWidth.Text = _settingsService.ApplicationSettings.tbWidth.ToString();
             this.tbHeight.Text = _settingsService.ApplicationSettings.tbHeight.ToString();
             this.cbFov.IsChecked = _settingsService.ApplicationSettings.cbFov;
-            this.cbSelectFov.SelectedIndex = _settingsService.ApplicationSettings.cbSelectFov;
+            this.tbFov.Text = _settingsService.ApplicationSettings.tbFov.ToString();
             this.cbBorderless.IsChecked = _settingsService.ApplicationSettings.cbBorderless;
             this.cbBorderlessStretch.IsChecked = _settingsService.ApplicationSettings.cbBorderlessStretch;
             this.cbCamAdjust.IsChecked = _settingsService.ApplicationSettings.cbCamAdjust;
@@ -187,7 +185,7 @@ namespace SekiroFpsUnlockAndMore
             _settingsService.ApplicationSettings.tbWidth = Convert.ToInt32(this.tbWidth.Text);
             _settingsService.ApplicationSettings.tbHeight = Convert.ToInt32(this.tbHeight.Text);
             _settingsService.ApplicationSettings.cbFov = this.cbFov.IsChecked == true;
-            _settingsService.ApplicationSettings.cbSelectFov = this.cbSelectFov.SelectedIndex;
+            _settingsService.ApplicationSettings.tbFov = Convert.ToInt32(this.tbFov.Text);
             _settingsService.ApplicationSettings.cbBorderless = this.cbBorderless.IsChecked == true;
             _settingsService.ApplicationSettings.cbBorderlessStretch = this.cbBorderlessStretch.IsChecked == true;
             _settingsService.ApplicationSettings.cbCamAdjust = this.cbCamAdjust.IsChecked == true;
@@ -287,7 +285,7 @@ namespace SekiroFpsUnlockAndMore
         private void ReadGame(object sender, DoWorkEventArgs doWorkEventArgs)
         {
             PatternScan patternScan = new PatternScan(_gameAccessHwnd, _gameProc.MainModule);
-            _codeCaveGenerator = new CodeCaveGenerator(_gameAccessHwnd, _gameProc.MainModule.BaseAddress.ToInt64());
+            _memoryCaveGenerator = new MemoryCaveGenerator(_gameAccessHwnd, _gameProc.MainModule.BaseAddress.ToInt64());
 
             _offset_framelock = patternScan.FindPattern(GameData.PATTERN_FRAMELOCK) + GameData.PATTERN_FRAMELOCK_OFFSET;
             Debug.WriteLine("fFrameTick found at: 0x" + _offset_framelock.ToString("X"));
@@ -324,10 +322,14 @@ namespace SekiroFpsUnlockAndMore
                     _offset_resolution = 0x0;
             }
 
-            _offset_fovsetting = patternScan.FindPattern(GameData.PATTERN_FOVSETTING) + GameData.PATTERN_FOVSETTING_OFFSET;
-            Debug.WriteLine("pFovTableEntry found at: 0x" + _offset_fovsetting.ToString("X"));
-            if (!IsValidAddress(_offset_fovsetting))
-                _offset_fovsetting = 0x0;
+            long lpFovPointer = patternScan.FindPattern(GameData.PATTERN_FOVSETTING) + GameData.PATTERN_FOVSETTING_OFFSET;
+            Debug.WriteLine("lpFovPointer found at: 0x" + lpFovPointer.ToString("X"));
+            if (IsValidAddress(lpFovPointer))
+            { 
+                if (_memoryCaveGenerator.CreateNewDataCave(_DATACAVE_FOV_POINTER, lpFovPointer, BitConverter.GetBytes(GameData.PATCH_FOVSETTING_DISABLE), PointerStyle.dwRelative))
+                    _dataCave_fovsetting = true;
+                Debug.WriteLine("lpFovPointer data cave at: 0x" + _memoryCaveGenerator.GetDataCaveAddressByName(_DATACAVE_FOV_POINTER).ToString("X"));
+            }
 
             long ref_lpPlayerStatsRelated = patternScan.FindPattern(GameData.PATTERN_PLAYER_DEATHS) + GameData.PATTERN_PLAYER_DEATHS_OFFSET;
             Debug.WriteLine("ref_lpPlayerStatsRelated found at: 0x" + ref_lpPlayerStatsRelated.ToString("X"));
@@ -415,17 +417,17 @@ namespace SekiroFpsUnlockAndMore
             {
                 List<bool> results = new List<bool>
                 {
-                    _codeCaveGenerator.CreateNewCodeCave(_CODECAVE_CAMADJUST_PITCH, lpCamAdjustPitch, GameData.INJECT_CAMADJUST_PITCH_OVERWRITE_LENGTH, GameData.INJECT_CAMADJUST_PITCH_SHELLCODE),
-                    _codeCaveGenerator.CreateNewCodeCave(_CODECAVE_CAMADJUST_YAW_Z, lpCamAdjustYawZ, GameData.INJECT_CAMADJUST_YAW_Z_OVERWRITE_LENGTH, GameData.INJECT_CAMADJUST_YAW_Z_SHELLCODE),
-                    _codeCaveGenerator.CreateNewCodeCave(_CODECAVE_CAMADJUST_PITCH_XY, lpCamAdjustPitchXY, GameData.INJECT_CAMADJUST_PITCH_XY_OVERWRITE_LENGTH, GameData.INJECT_CAMADJUST_PITCH_XY_SHELLCODE),
-                    _codeCaveGenerator.CreateNewCodeCave(_CODECAVE_CAMADJUST_YAW_XY, lpCamAdjustYawXY, GameData.INJECT_CAMADJUST_YAW_XY_OVERWRITE_LENGTH, GameData.INJECT_CAMADJUST_YAW_XY_SHELLCODE)
+                    _memoryCaveGenerator.CreateNewCodeCave(_CODECAVE_CAMADJUST_PITCH, lpCamAdjustPitch, GameData.INJECT_CAMADJUST_PITCH_OVERWRITE_LENGTH, GameData.INJECT_CAMADJUST_PITCH_SHELLCODE),
+                    _memoryCaveGenerator.CreateNewCodeCave(_CODECAVE_CAMADJUST_YAW_Z, lpCamAdjustYawZ, GameData.INJECT_CAMADJUST_YAW_Z_OVERWRITE_LENGTH, GameData.INJECT_CAMADJUST_YAW_Z_SHELLCODE),
+                    _memoryCaveGenerator.CreateNewCodeCave(_CODECAVE_CAMADJUST_PITCH_XY, lpCamAdjustPitchXY, GameData.INJECT_CAMADJUST_PITCH_XY_OVERWRITE_LENGTH, GameData.INJECT_CAMADJUST_PITCH_XY_SHELLCODE),
+                    _memoryCaveGenerator.CreateNewCodeCave(_CODECAVE_CAMADJUST_YAW_XY, lpCamAdjustYawXY, GameData.INJECT_CAMADJUST_YAW_XY_OVERWRITE_LENGTH, GameData.INJECT_CAMADJUST_YAW_XY_SHELLCODE)
                 };
-                Debug.WriteLine("lpCamAdjustPitch code cave at: 0x" + _codeCaveGenerator.GetCodeCaveAddressByName(_CODECAVE_CAMADJUST_PITCH).ToString("X"));
-                Debug.WriteLine("lpCamAdjustYawZ code cave at: 0x" + _codeCaveGenerator.GetCodeCaveAddressByName(_CODECAVE_CAMADJUST_YAW_Z).ToString("X"));
-                Debug.WriteLine("lpCamAdjustPitchXY code cave at: 0x" + _codeCaveGenerator.GetCodeCaveAddressByName(_CODECAVE_CAMADJUST_PITCH_XY).ToString("X"));
-                Debug.WriteLine("lpCamAdjustYawXY code cave at: 0x" + _codeCaveGenerator.GetCodeCaveAddressByName(_CODECAVE_CAMADJUST_YAW_XY).ToString("X"));
+                Debug.WriteLine("lpCamAdjustPitch code cave at: 0x" + _memoryCaveGenerator.GetCodeCaveAddressByName(_CODECAVE_CAMADJUST_PITCH).ToString("X"));
+                Debug.WriteLine("lpCamAdjustYawZ code cave at: 0x" + _memoryCaveGenerator.GetCodeCaveAddressByName(_CODECAVE_CAMADJUST_YAW_Z).ToString("X"));
+                Debug.WriteLine("lpCamAdjustPitchXY code cave at: 0x" + _memoryCaveGenerator.GetCodeCaveAddressByName(_CODECAVE_CAMADJUST_PITCH_XY).ToString("X"));
+                Debug.WriteLine("lpCamAdjustYawXY code cave at: 0x" + _memoryCaveGenerator.GetCodeCaveAddressByName(_CODECAVE_CAMADJUST_YAW_XY).ToString("X"));
                 if (results.IndexOf(false) < 0)
-                    _codeCavesGenerated = true;
+                    _codeCave_camadjust = true;
             }
         }
 
@@ -448,7 +450,7 @@ namespace SekiroFpsUnlockAndMore
                 this.cbFramelock.IsEnabled = false;
             }
 
-            if ((int)SystemParameters.PrimaryScreenWidth < 1281) _use_resolution_720 = true;
+            if ((int)SystemParameters.PrimaryScreenWidth < 1920) _use_resolution_720 = true;
             if (_offset_resolution_default == 0x0)
             {
                 UpdateStatus("default resolution not found...", Brushes.Red);
@@ -468,10 +470,10 @@ namespace SekiroFpsUnlockAndMore
                 this.cbAddResolution.IsEnabled = false;
             }
 
-            if (_offset_fovsetting == 0x0)
+            if (!_dataCave_fovsetting)
             {
-                UpdateStatus("fov table not found...", Brushes.Red);
-                LogToFile("fov table not found...");
+                UpdateStatus("could not create FOV table...", Brushes.Red);
+                LogToFile("could not create FOV table...");
                 this.cbFov.IsEnabled = false;
             }
 
@@ -492,12 +494,12 @@ namespace SekiroFpsUnlockAndMore
 
             this.cbBorderless.IsEnabled = true;
 
-            if (!_codeCavesGenerated)
+            if (!_codeCave_camadjust)
             {
                 UpdateStatus("cam adjust not found...", Brushes.Red);
                 LogToFile("cam adjust not found...");
             }
-            this.cbCamAdjust.IsEnabled = _codeCavesGenerated;
+            this.cbCamAdjust.IsEnabled = _codeCave_camadjust;
 
             if (_offset_timescale == 0x0)
             {
@@ -569,14 +571,15 @@ namespace SekiroFpsUnlockAndMore
             _offset_resolution = 0x0;
             _offset_resolution_default = 0x0;
             _offset_resolution_scaling_fix = 0x0;
-            _offset_fovsetting = 0x0;
             _offset_player_deaths = 0x0;
             _offset_total_kills = 0x0;
             _offset_timescale = 0x0;
             _offset_timescale_player = 0x0;
             _offset_timescale_player_pointer_start = 0x0;
-            _codeCaveGenerator.ClearCodeCaves();
-            _codeCaveGenerator = null;
+            _dataCave_fovsetting = false;
+            _codeCave_camadjust = false;
+            _memoryCaveGenerator.ClearCaves();
+            _memoryCaveGenerator = null;
             this.cbFramelock.IsEnabled = true;
             this.cbAddResolution.IsEnabled = true;
             this.cbFov.IsEnabled = true;
@@ -647,11 +650,12 @@ namespace SekiroFpsUnlockAndMore
             if (!this.cbAddResolution.IsEnabled || _offset_resolution == 0x0 || _offset_resolution_default == 0x0 || _offset_resolution_scaling_fix == 0x0 || !CanPatchGame()) return false;
             if (this.cbAddResolution.IsChecked == true)
             {
+                this.cbBorderless.IsChecked = false;
                 bool isNumber = Int32.TryParse(this.tbWidth.Text, out int width);
                 if (width < 800 || !isNumber)
                 {
-                    this.tbWidth.Text = "2560";
-                    width = 2560;
+                    this.tbWidth.Text = "800";
+                    width = 800;
                 }
                 else if (width > 5760)
                 {
@@ -661,8 +665,8 @@ namespace SekiroFpsUnlockAndMore
                 isNumber = Int32.TryParse(this.tbHeight.Text, out int height);
                 if (height < 450 || !isNumber)
                 {
-                    this.tbHeight.Text = "1080";
-                    height = 1080;
+                    this.tbHeight.Text = "450";
+                    height = 450;
                 }
                 else if (height > 2160)
                 {
@@ -675,6 +679,7 @@ namespace SekiroFpsUnlockAndMore
             }
             else if (this.cbAddResolution.IsChecked == false)
             {
+                this.cbBorderless.IsChecked = false;
                 WriteBytes(_gameAccessHwndStatic, _offset_resolution_default, !_use_resolution_720 ? GameData.PATCH_RESOLUTION_DEFAULT_DISABLE : GameData.PATCH_RESOLUTION_DEFAULT_DISABLE_720);
                 WriteBytes(_gameAccessHwndStatic, _offset_resolution_scaling_fix, GameData.PATCH_RESOLUTION_SCALING_FIX_DISABLE);
                 if (showStatus) UpdateStatus(DateTime.Now.ToString("HH:mm:ss") + " Game unpatched!", Brushes.White);
@@ -691,15 +696,28 @@ namespace SekiroFpsUnlockAndMore
         /// <param name="showStatus">Determines if status should be updated from within method, default is true.</param>
         private bool PatchFov(bool showStatus = true)
         {
-            if (!this.cbFov.IsEnabled || _offset_fovsetting == 0x0 || !CanPatchGame()) return false;
+            if (!this.cbFov.IsEnabled || !_dataCave_fovsetting|| !CanPatchGame()) return false;
             if (this.cbFov.IsChecked == true)
             {
-                byte[] fovByte = ((KeyValuePair<byte[], string>)this.cbSelectFov.SelectedItem).Key;
-                WriteBytes(_gameAccessHwndStatic, _offset_fovsetting, fovByte);
+                bool isNumber = Int32.TryParse(this.tbFov.Text, out int fovIncrease);
+                if (fovIncrease < -95 || !isNumber)
+                {
+                    this.tbFov.Text = "-95";
+                    fovIncrease = -95;
+                }
+                else if (fovIncrease > 95)
+                {
+                    this.tbFov.Text = "95";
+                    fovIncrease = 95;
+                }
+
+                float fovValue = (float)(Math.PI / 180) * ((fovIncrease / 100.0f) + 1); // convert change in %degree to radians
+                _memoryCaveGenerator.UpdateDataCaveValueByName(_DATACAVE_FOV_POINTER, BitConverter.GetBytes(fovValue));
+                _memoryCaveGenerator.ActivateDataCaveByName(_DATACAVE_FOV_POINTER);
             }
             else if (this.cbFov.IsChecked == false)
             {
-                WriteBytes(_gameAccessHwndStatic, _offset_fovsetting, GameData.PATCH_FOVSETTING_DISABLE);
+                _memoryCaveGenerator.DeactivateDataCaveByName(_DATACAVE_FOV_POINTER);
                 if (showStatus) UpdateStatus(DateTime.Now.ToString("HH:mm:ss") + " Game unpatched!", Brushes.White);
                 return false;
             }
@@ -723,18 +741,15 @@ namespace SekiroFpsUnlockAndMore
                     this.cbBorderless.IsChecked = false;
                     return false;
                 }
+                if (!IsBorderless(_gameHwnd))
+                    GetWindowRect(_gameHwnd, out _windowRect);
+                int width = Read<Int32>(_gameAccessHwnd, _offset_resolution);
+                int height = Read<Int32>(_gameAccessHwnd, _offset_resolution + 4);
+                Debug.WriteLine(string.Format("Client Resolution: {0}x{1}", width, height));
+                if (this.cbBorderlessStretch.IsChecked == true)
+                    SetWindowBorderless(_gameHwnd, (int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, 0, 0);
                 else
-                {
-                    if (!IsBorderless(_gameHwnd))
-                        GetWindowRect(_gameHwnd, out _windowRect);
-                    int width = Read<Int32>(_gameAccessHwnd, _offset_resolution);
-                    int height = Read<Int32>(_gameAccessHwnd, _offset_resolution + 4);
-                    Debug.WriteLine(string.Format("Client Resolution: {0}x{1}", width, height));
-                    if (this.cbBorderlessStretch.IsChecked == true)
-                        SetWindowBorderless(_gameHwnd, (int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, 0, 0);
-                    else
-                        SetWindowBorderless(_gameHwnd, width, height, _windowRect.Left, _windowRect.Top);
-                }
+                    SetWindowBorderless(_gameHwnd, width, height, _windowRect.Left, _windowRect.Top);
             }
             else if (this.cbBorderless.IsChecked == false && IsBorderless(_gameHwnd))
             {
@@ -868,7 +883,7 @@ namespace SekiroFpsUnlockAndMore
         /// </summary>
         private void InjectToGame()
         {
-            if (!CanPatchGame() || !_codeCavesGenerated) return;
+            if (!CanPatchGame() || !_codeCave_camadjust) return;
 
             if (this.cbCamAdjust.IsChecked == true)
             {
@@ -896,20 +911,20 @@ namespace SekiroFpsUnlockAndMore
                 }
 
                 this.cbCamAdjust.IsEnabled = false;
-                _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH);
-                _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_Z);
+                _memoryCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH);
+                _memoryCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_Z);
                 if (!_settingsService.ApplicationSettings.peasantInput)
-                    _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH_XY); // BREAKS PITCH AND OTHER CONTROLS ON CONTROLLERS
-                _codeCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_XY);
+                    _memoryCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH_XY); // BREAKS PITCH AND OTHER CONTROLS ON CONTROLLERS
+                _memoryCaveGenerator.ActivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_XY);
                 this.cbCamAdjust.IsEnabled = true;
             }
             else
             {
                 this.cbCamAdjust.IsEnabled = false;
-                _codeCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH);
-                _codeCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_Z);
-                _codeCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH_XY);
-                _codeCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_XY);
+                _memoryCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH);
+                _memoryCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_Z);
+                _memoryCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_PITCH_XY);
+                _memoryCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_CAMADJUST_YAW_XY);
                 this.cbCamAdjust.IsEnabled = true;
             }
         }
@@ -1132,6 +1147,16 @@ namespace SekiroFpsUnlockAndMore
         }
 
         /// <summary>
+        /// Check whether input is (signed) numeric only.
+        /// </summary>
+        /// <param name="text">The text to check.</param>
+        /// <returns>True if input is (signed) numeric only.</returns>
+        private static bool IsSignedNumericInput(string text)
+        {
+            return Regex.IsMatch(text, "[-+]?[0-9]+");
+        }
+
+        /// <summary>
         /// Logs messages to log file.
         /// </summary>
         /// <param name="msg">The message to write to file.</param>
@@ -1193,9 +1218,19 @@ namespace SekiroFpsUnlockAndMore
             else e.CancelCommand();
         }
 
-        private void CbSelectFov_DropDownClosed(object sender, EventArgs e)
+        private void SignedNumeric_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            if (this.cbFov.IsChecked == true) PatchFov();
+            e.Handled = IsSignedNumericInput(e.Text);
+        }
+
+        private void SignedNumeric_PastingHandler(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string text = (string)e.DataObject.GetData(typeof(string));
+                if (IsSignedNumericInput(text)) e.CancelCommand();
+            }
+            else e.CancelCommand();
         }
 
         private void CbFramelock_Check_Handler(object sender, RoutedEventArgs e)
@@ -1213,14 +1248,40 @@ namespace SekiroFpsUnlockAndMore
             PatchFov();
         }
 
+        private void BFov0_Click(object sender, RoutedEventArgs e)
+        {
+            this.tbFov.Text = "0";
+            if (this.cbFov.IsChecked == true) PatchFov();
+        }
+
+        private void BFovLower_Click(object sender, RoutedEventArgs e)
+        {
+            if (Int32.TryParse(this.tbFov.Text, out int fov) && fov > -91)
+            {
+                this.tbFov.Text = (fov - 5).ToString();
+                if (this.cbFov.IsChecked == true) PatchFov();
+            }
+        }
+
+        private void BFovHigher_Click(object sender, RoutedEventArgs e)
+        {
+            if (Int32.TryParse(this.tbFov.Text, out int fov) && fov < 91)
+            {
+                this.tbFov.Text = (fov + 5).ToString();
+                if (this.cbFov.IsChecked == true) PatchFov();
+            }
+        }
+
         private void CbBorderless_Checked(object sender, RoutedEventArgs e)
         {
+            if (!this.cbBorderless.IsEnabled) return;
             this.cbBorderlessStretch.IsEnabled = true;
             PatchWindow();
         }
 
         private void CbBorderless_Unchecked(object sender, RoutedEventArgs e)
         {
+            if (!this.cbBorderless.IsEnabled) return;
             this.cbBorderlessStretch.IsEnabled = false;
             this.cbBorderlessStretch.IsChecked = false;
             PatchWindow();
@@ -1228,6 +1289,7 @@ namespace SekiroFpsUnlockAndMore
 
         private void CbBorderlessStretch_Check_Handler(object sender, RoutedEventArgs e)
         {
+            if (!this.cbBorderlessStretch.IsEnabled) return;
             PatchWindow();
         }
 
@@ -1255,9 +1317,7 @@ namespace SekiroFpsUnlockAndMore
 
         private void BGsLower_Click(object sender, RoutedEventArgs e)
         {
-            int gameSpeed = -1;
-            Int32.TryParse(this.tbGameSpeed.Text, out gameSpeed);
-            if (gameSpeed > -1 && gameSpeed > 4)
+            if (Int32.TryParse(this.tbGameSpeed.Text, out int gameSpeed) && gameSpeed > 4)
             {
                 this.tbGameSpeed.Text = (gameSpeed - 5).ToString();
                 if (cbGameSpeed.IsChecked == true) PatchGameSpeed();
@@ -1266,9 +1326,7 @@ namespace SekiroFpsUnlockAndMore
 
         private void BGsHigher_Click(object sender, RoutedEventArgs e)
         {
-            int gameSpeed = -1;
-            Int32.TryParse(this.tbGameSpeed.Text, out gameSpeed);
-            if (gameSpeed > -1 && gameSpeed < 995)
+            if (Int32.TryParse(this.tbGameSpeed.Text, out int gameSpeed) && gameSpeed < 995)
             {
                 this.tbGameSpeed.Text = (gameSpeed + 5).ToString();
                 if (cbGameSpeed.IsChecked == true) PatchGameSpeed();
@@ -1294,9 +1352,7 @@ namespace SekiroFpsUnlockAndMore
 
         private void BPsLower_Click(object sender, RoutedEventArgs e)
         {
-            int playerSpeed = -1;
-            Int32.TryParse(this.tbPlayerSpeed.Text, out playerSpeed);
-            if (playerSpeed > -1 && playerSpeed > 4)
+            if (Int32.TryParse(this.tbPlayerSpeed.Text, out int playerSpeed) && playerSpeed > 4)
             {
                 this.tbPlayerSpeed.Text = (playerSpeed - 5).ToString();
                 if (this.cbPlayerSpeed.IsChecked == true) PatchPlayerSpeed();
@@ -1305,9 +1361,7 @@ namespace SekiroFpsUnlockAndMore
 
         private void BPsHigher_Click(object sender, RoutedEventArgs e)
         {
-            int playerSpeed = -1;
-            Int32.TryParse(this.tbPlayerSpeed.Text, out playerSpeed);
-            if (playerSpeed > -1 && playerSpeed < 995)
+            if (Int32.TryParse(this.tbPlayerSpeed.Text, out int playerSpeed) && playerSpeed < 995)
             {
                 this.tbPlayerSpeed.Text = (playerSpeed + 5).ToString();
                 if (this.cbPlayerSpeed.IsChecked == true) PatchPlayerSpeed();

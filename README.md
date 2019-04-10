@@ -213,8 +213,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Version History
 
 * v1.2.1.1 (2019-04-09)
-  * Added prompt to let user decide between mouse or controller input if 'disable camera auto rotation" is used
-  * This selection will fix locked up-down controls (pitch) on controllers
+  * Added prompt to let user decide between mouse or controller input
+  * This selection will fix locked up-down controls (pitch) on controllers if 'disable camera auto rotation" is used
 * v1.2.1 (2019-04-07)
   * Added an option to disable automatic camera rotation adjust on movement (thanks to Cielos for some offsets)
   * Added +25% FOV option

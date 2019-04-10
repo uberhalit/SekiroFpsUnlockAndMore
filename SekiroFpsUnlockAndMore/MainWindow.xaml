@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SekiroFpsUnlockAndMore"
         mc:Ignorable="d"
-        Title="Sekiro FPS Unlocker and more v1.2.1" Width="Auto" Height="Auto" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="Sekiro FPS Unlocker and more v1.2.2" Width="Auto" Height="Auto" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
 
     <Grid Background="#FFF9F9F9">
         <DockPanel>
@@ -21,8 +21,11 @@
                     <TextBox x:Name="tbWidth" DockPanel.Dock="Right" Margin="0,0,0,0" Width="50" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="2560" MaxLength="4" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
                 </DockPanel>
                 <DockPanel Margin="0,5,0,0" LastChildFill="False">
-                    <CheckBox x:Name="cbFov" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Increase FOV by:" Checked="CbFov_Check_Handler" Unchecked="CbFov_Check_Handler" />
-                    <ComboBox x:Name="cbSelectFov" DockPanel.Dock="Right" Margin="0,0,0,0" Width="116" Height="25" FontSize="14 px" SelectedValuePath="Key" DisplayMemberPath="Value" DropDownClosed="CbSelectFov_DropDownClosed"/>
+                    <CheckBox x:Name="cbFov" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Change FOV by (%):" Checked="CbFov_Check_Handler" Unchecked="CbFov_Check_Handler" />
+                    <Button x:Name="bFovHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,0,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BFovHigher_Click" />
+                    <TextBox x:Name="tbFov" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="25" TextAlignment="Center" MaxLength="3" PreviewTextInput="SignedNumeric_PreviewTextInput" DataObject.Pasting="SignedNumeric_PastingHandler" />
+                    <Button x:Name="bFovLower" DockPanel.Dock="Right" Content="&lt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BFovLower_Click" />
+                    <Button x:Name="bFov0" DockPanel.Dock="Right" Content="0" Margin="0,0,3,0" Width="27" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BFov0_Click" />
                 </DockPanel>
                 <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
                     <CheckBox x:Name="cbBorderless" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Borderless window" ToolTip="To enable this set 'Windowed' mode in game options first." IsEnabled="False" Checked="CbBorderless_Checked" Unchecked="CbBorderless_Unchecked"/>
@@ -35,27 +38,19 @@
                         <StackPanel Width="Auto" Height="Auto">
                             <DockPanel Margin="0,3,0,0" LastChildFill="False">
                                 <CheckBox x:Name="cbGameSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Game speed (%):" ToolTip="Increase or decrease. Can potentially crash the game in cutscenes, use with caution." Checked="CbGameSpeed_Check_Handler" Unchecked="CbGameSpeed_Check_Handler"  />
-                                <Button x:Name="bGs100" DockPanel.Dock="Right" Content="100" Margin="0,0,0,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
-                            Focusable="False" Click="BGs100_Click" />
-                                <Button x:Name="bGsHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
-                            Focusable="False" Click="BGsHigher_Click" />
+                                <Button x:Name="bGs100" DockPanel.Dock="Right" Content="100" Margin="0,0,0,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGs100_Click" />
+                                <Button x:Name="bGsHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGsHigher_Click" />
                                 <TextBox x:Name="tbGameSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
-                                <Button x:Name="bGsLower" DockPanel.Dock="Right" Content="&lt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
-                            Focusable="False" Click="BGsLower_Click" />
-                                <Button x:Name="bGs0" DockPanel.Dock="Right" Content="0" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
-                            Focusable="False" Click="BGs0_Click" />
+                                <Button x:Name="bGsLower" DockPanel.Dock="Right" Content="&lt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGsLower_Click" />
+                                <Button x:Name="bGs0" DockPanel.Dock="Right" Content="0" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGs0_Click" />
                             </DockPanel>
                             <DockPanel Margin="0,5,0,0" LastChildFill="False">
                                 <CheckBox x:Name="cbPlayerSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Player speed (%):" ToolTip="Increase or decrease. To enable this start the game and load a save, then tick the checkbox. Can potentially crash the game in cutscenes, use with caution." Checked="CbPlayerSpeed_Check_Handler" Unchecked="CbPlayerSpeed_Check_Handler"  />
-                                <Button x:Name="bPs100" DockPanel.Dock="Right" Content="100" Margin="0,0,0,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
-                            Focusable="False" Click="BPs100_Click" />
-                                <Button x:Name="bPsHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
-                            Focusable="False" Click="BPsHigher_Click" />
+                                <Button x:Name="bPs100" DockPanel.Dock="Right" Content="100" Margin="0,0,0,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPs100_Click" />
+                                <Button x:Name="bPsHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPsHigher_Click" />
                                 <TextBox x:Name="tbPlayerSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
-                                <Button x:Name="bPsLower" DockPanel.Dock="Right" Content="&lt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
-                            Focusable="False" Click="BPsLower_Click" />
-                                <Button x:Name="bPs0" DockPanel.Dock="Right" Content="0" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
-                            Focusable="False" Click="BPs0_Click" />
+                                <Button x:Name="bPsLower" DockPanel.Dock="Right" Content="&lt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPsLower_Click" />
+                                <Button x:Name="bPs0" DockPanel.Dock="Right" Content="0" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPs0_Click" />
                             </DockPanel>
                         </StackPanel>
                     </Grid>
@@ -83,7 +78,7 @@
                 </TextBlock>
                 <Label HorizontalAlignment="Right" FontSize="12 px">
                     <Hyperlink NavigateUri="https://github.com/uberhalit/SekiroFpsUnlockAndMore" RequestNavigate="Hyperlink_RequestNavigate">
-                        v1.2.1 - by uberhalit
+                        v1.2.2 - by uberhalit
                     </Hyperlink>
                 </Label>
             </StackPanel>

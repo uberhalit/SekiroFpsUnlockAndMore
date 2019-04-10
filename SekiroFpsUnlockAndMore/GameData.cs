@@ -109,10 +109,10 @@ namespace SekiroFpsUnlockAndMore
             DATA SECTION. All resolutions are listed in memory as <int>width1 <int>height1 <int>width2 <int>height2 ...
             Overwrite an unused one with desired new one. Some glitches, 1920x1080 and 1280x720 works best
          */
-        internal const string PATTERN_RESOLUTION_DEFAULT = "80 07 00 00 38 04 00 00"; // 1920x1080
-        internal const string PATTERN_RESOLUTION_DEFAULT_720 = "40 06 00 00 84 03 00 00"; // 1280x720
+        internal const string PATTERN_RESOLUTION_DEFAULT = "80 07 00 00 38 04 00 00 00 08 00 00 80 04 00 00"; // 1920x1080
+        internal const string PATTERN_RESOLUTION_DEFAULT_720 = "00 05 00 00 D0 02 00 00 A0 05 00 00 2A 03 00 00"; // 1280x720
         internal static byte[] PATCH_RESOLUTION_DEFAULT_DISABLE = new byte[8] { 0x80, 0x07, 0x00, 0x00, 0x38, 0x04, 0x00, 0x00 };
-        internal static byte[] PATCH_RESOLUTION_DEFAULT_DISABLE_720 = new byte[8] { 0x40, 0x06, 0x00, 0x00, 0x84, 0x03, 0x00, 0x00 };
+        internal static byte[] PATCH_RESOLUTION_DEFAULT_DISABLE_720 = new byte[8] { 0x00, 0x05, 0x00, 0x00, 0xD0, 0x02, 0x00, 0x00 };
 
 
         /**
@@ -128,28 +128,15 @@ namespace SekiroFpsUnlockAndMore
 
         /**
             Reference pointer pFovTableEntry to FOV entry in game FOV table that gets used in FOV calculations. Overwrite pFovTableEntry address to use a higher or lower <float>fFOV from table
+            FOV is in radians while default is 1.0deg (0.0174533rad), to increase by 25% you'd write 1.25deg (0.0218166rad) as fFov
             0000000140739548 | F3:0F1008                 | movss xmm1,dword ptr ds:[rax]                   |
             000000014073954C | F3:0F590D 0CE79B02        | mulss xmm1,dword ptr ds:[1430F7C60]             | pFovTableEntry->fFov
+            0000000140739554 | F3:0F5C4E 50              | subss xmm1,dword ptr ds:[rsi+50]                |
          */
         // credits to 'jackfuste' for original offset
-        internal const string PATTERN_FOVSETTING = "F3 0F 10 08 F3 0F 59 0D ?? ?? 9B 02";
+        internal const string PATTERN_FOVSETTING = "F3 0F 10 08 F3 0F 59 0D ?? ?? ?? ?? F3 0F 5C 4E";
         internal const int PATTERN_FOVSETTING_OFFSET = 8;
-        /**
-            00000001430F7C60
-            Key: Patch to pFovTableEntry (last 2 bytes)
-            Value: Value resolve in float table from pFovTableEntry->fFov
-         */
-        internal static readonly Dictionary<byte[], string> PATCH_FOVSETTING_MATRIX = new Dictionary<byte[], string>
-        {
-            { new byte[2] {0x00, 0xE7}, "- 50%" },
-            { new byte[2] {0x04, 0xE7}, "- 10%" },
-            { new byte[2] {0x10, 0xE7}, "+ 15%" },
-            { new byte[2] {0x42, 0x9B}, "+ 25%" },
-            { new byte[2] {0x14, 0xE7}, "+ 40%" },
-            { new byte[2] {0x18, 0xE7}, "+ 75%" },
-            { new byte[2] {0x1C, 0xE7}, "+ 90%" }
-        };
-        internal static readonly byte[] PATCH_FOVSETTING_DISABLE = new byte[2] { 0x0C, 0xE7 }; // + 0%
+        internal const float PATCH_FOVSETTING_DISABLE = 0.0174533f; // Rad2Deg -> 1°
 
 
         /**

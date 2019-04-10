@@ -31,7 +31,7 @@ namespace SekiroFpsUnlockAndMore
         [XmlElement]
         public bool cbFov { get; set; }
         [XmlElement]
-        public int cbSelectFov { get; set; }
+        public int tbFov { get; set; }
         [XmlElement]
         public bool cbBorderless { get; set; }
         [XmlElement]
