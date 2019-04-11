@@ -23,7 +23,7 @@
                 <DockPanel Margin="0,5,0,0" LastChildFill="False">
                     <CheckBox x:Name="cbFov" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Change FOV by (%):" Checked="CbFov_Check_Handler" Unchecked="CbFov_Check_Handler" />
                     <Button x:Name="bFovHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,0,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BFovHigher_Click" />
-                    <TextBox x:Name="tbFov" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="25" TextAlignment="Center" MaxLength="3" PreviewTextInput="SignedNumeric_PreviewTextInput" DataObject.Pasting="SignedNumeric_PastingHandler" />
+                    <TextBox x:Name="tbFov" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="25" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
                     <Button x:Name="bFovLower" DockPanel.Dock="Right" Content="&lt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BFovLower_Click" />
                     <Button x:Name="bFov0" DockPanel.Dock="Right" Content="0" Margin="0,0,3,0" Width="27" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BFov0_Click" />
                 </DockPanel>

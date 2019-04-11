@@ -180,21 +180,21 @@ namespace SekiroFpsUnlockAndMore
         private void SaveConfiguration()
         {
             _settingsService.ApplicationSettings.cbFramelock = this.cbFramelock.IsChecked == true;
-            _settingsService.ApplicationSettings.tbFramelock = Convert.ToInt32(this.tbFramelock.Text);
+            _settingsService.ApplicationSettings.tbFramelock = this.tbFramelock.Text != "" && !this.tbFramelock.Text.Contains(" ") ? Convert.ToInt32(this.tbFramelock.Text) : 144;
             _settingsService.ApplicationSettings.cbAddResolution = this.cbAddResolution.IsChecked == true;
-            _settingsService.ApplicationSettings.tbWidth = Convert.ToInt32(this.tbWidth.Text);
-            _settingsService.ApplicationSettings.tbHeight = Convert.ToInt32(this.tbHeight.Text);
+            _settingsService.ApplicationSettings.tbWidth = this.tbWidth.Text != "" && !this.tbWidth.Text.Contains(" ") ? Convert.ToInt32(this.tbWidth.Text) : 2560;
+            _settingsService.ApplicationSettings.tbHeight = this.tbHeight.Text != "" && !this.tbHeight.Text.Contains(" ") ? Convert.ToInt32(this.tbHeight.Text) : 1080;
             _settingsService.ApplicationSettings.cbFov = this.cbFov.IsChecked == true;
-            _settingsService.ApplicationSettings.tbFov = Convert.ToInt32(this.tbFov.Text);
+            _settingsService.ApplicationSettings.tbFov = this.tbFov.Text != "" && !this.tbFov.Text.Contains(" ") ? Convert.ToInt32(this.tbFov.Text) : 25;
             _settingsService.ApplicationSettings.cbBorderless = this.cbBorderless.IsChecked == true;
             _settingsService.ApplicationSettings.cbBorderlessStretch = this.cbBorderlessStretch.IsChecked == true;
             _settingsService.ApplicationSettings.cbCamAdjust = this.cbCamAdjust.IsChecked == true;
             _settingsService.ApplicationSettings.cbLogStats = this.cbLogStats.IsChecked == true;
             _settingsService.ApplicationSettings.exGameMods = this.exGameMods.IsExpanded;
             _settingsService.ApplicationSettings.cbGameSpeed = this.cbGameSpeed.IsChecked == true;
-            _settingsService.ApplicationSettings.tbGameSpeed = Convert.ToInt32(this.tbGameSpeed.Text);
+            _settingsService.ApplicationSettings.tbGameSpeed = this.tbGameSpeed.Text != "" && !this.tbGameSpeed.Text.Contains(" ") ? Convert.ToInt32(this.tbGameSpeed.Text) : 100;
             _settingsService.ApplicationSettings.cbPlayerSpeed = this.cbPlayerSpeed.IsChecked == true;
-            _settingsService.ApplicationSettings.tbPlayerSpeed = Convert.ToInt32(this.tbPlayerSpeed.Text);
+            _settingsService.ApplicationSettings.tbPlayerSpeed = this.tbPlayerSpeed.Text != "" && !this.tbPlayerSpeed.Text.Contains(" ") ? Convert.ToInt32(this.tbPlayerSpeed.Text) : 100;
             _settingsService.Save();
         }
 
@@ -1147,16 +1147,6 @@ namespace SekiroFpsUnlockAndMore
         }
 
         /// <summary>
-        /// Check whether input is (signed) numeric only.
-        /// </summary>
-        /// <param name="text">The text to check.</param>
-        /// <returns>True if input is (signed) numeric only.</returns>
-        private static bool IsSignedNumericInput(string text)
-        {
-            return Regex.IsMatch(text, "[-+]?[0-9]+");
-        }
-
-        /// <summary>
         /// Logs messages to log file.
         /// </summary>
         /// <param name="msg">The message to write to file.</param>
@@ -1214,21 +1204,6 @@ namespace SekiroFpsUnlockAndMore
             {
                 string text = (string)e.DataObject.GetData(typeof(string));
                 if (IsNumericInput(text)) e.CancelCommand();
-            }
-            else e.CancelCommand();
-        }
-
-        private void SignedNumeric_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            e.Handled = IsSignedNumericInput(e.Text);
-        }
-
-        private void SignedNumeric_PastingHandler(object sender, DataObjectPastingEventArgs e)
-        {
-            if (e.DataObject.GetDataPresent(typeof(string)))
-            {
-                string text = (string)e.DataObject.GetData(typeof(string));
-                if (IsSignedNumericInput(text)) e.CancelCommand();
             }
             else e.CancelCommand();
         }
