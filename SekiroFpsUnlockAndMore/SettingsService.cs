@@ -39,6 +39,8 @@ namespace SekiroFpsUnlockAndMore
         [XmlElement]
         public bool cbCamAdjust { get; set; }
         [XmlElement]
+        public bool cbCamReset { get; set; }
+        [XmlElement]
         public bool cbLogStats { get; set; }
         [XmlElement]
         public bool exGameMods { get; set; }

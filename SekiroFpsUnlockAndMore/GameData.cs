@@ -140,62 +140,6 @@ namespace SekiroFpsUnlockAndMore
 
 
         /**
-            Reference pointer pPlayerStatsRelated to PlayerStats pointer, offset in struct to <int>iPlayerDeaths
-            00000001407AAC92 | 0FB648 7A                 | movzx ecx,byte ptr ds:[rax+7A]                  |
-            00000001407AAC96 | 888B F7000000             | mov byte ptr ds:[rbx+F7],cl                     |
-            00000001407AAC9C | 48:8B05 4DD03903          | mov rax,qword ptr ds:[143B47CF0]                |
-            00000001407AACA3 | 8B88 8C000000             | mov ecx,dword ptr ds:[rax+8C]                   |
-            00000001407AACA9 | 898B F8000000             | mov dword ptr ds:[rbx+F8],ecx                   |
-            00000001407AACAF | 48:8B05 3AD03903          | mov rax,qword ptr ds:[143B47CF0]                | pPlayerStatsRelated->[PlayerStats+0x90]->iPlayerDeaths
-            00000001407AACB6 | 8B88 90000000             | mov ecx,dword ptr ds:[rax+90]                   | offset pPlayerStats->iPlayerDeaths
-         */
-        // credits to 'Me_TheCat' for original offset
-        internal const string PATTERN_PLAYER_DEATHS = "0F B6 48 ?? 88 8B ?? ?? 00 00 48 8B 05 ?? ?? ?? ?? 8B 88 ?? ?? 00 00 89 8B ?? ?? 00 00 48 8B 05 ?? ?? ?? ?? 8B 88 ?? ?? 00 00";
-        internal const int PATTERN_PLAYER_DEATHS_OFFSET = 29;
-        internal const int PATTERN_PLAYER_DEATHS_INSTRUCTION_LENGTH = 7;
-        internal const int PATTERN_PLAYER_DEATHS_POINTER_OFFSET_OFFSET = 9;
-
-
-        /**
-            Reference pointer pTotalKills to <int>iTotalKills, does not get updated on every kill but mostly on every 2nd, includes own player deaths...
-            0000000141151838 | 48:8D0D A9A5B302          | lea rcx,qword ptr ds:[143C8BDE8]                | pTotalKills->iTotalKills
-            000000014115183F | 891481                    | mov dword ptr ds:[rcx+rax*4],edx                |
-            0000000141151842 | C3                        | ret                                             |
-         */
-        // credits to 'Me_TheCat' for original offset
-        internal const string PATTERN_TOTAL_KILLS = "48 8D 0D ?? ?? ?? ?? 89 14 81 C3";
-        internal const int PATTERN_TOTAL_KILLS_INSTRUCTION_LENGTH = 7;
-
-
-        /**
-            Reference pointer pTimeRelated to TimescaleManager pointer, offset in struct to <float>fTimescale which acts as a global speed scale for almost all ingame calculations
-            0000000141149E87 | 48:8B05 3A24B402          | mov rax,qword ptr ds:[143C8C2C8]                | pTimeRelated->[TimescaleManager+0x360]->fTimescale
-            0000000141149E8E | F3:0F1088 60030000        | movss xmm1,dword ptr ds:[rax+360]               | offset TimescaleManager->fTimescale
-            0000000141149E96 | F3:0F5988 68020000        | mulss xmm1,dword ptr ds:[rax+268]               |
-         */
-        // credits to 'Zullie the Witch' for original offset
-        internal const string PATTERN_TIMESCALE = "48 8B 05 ?? ?? ?? ?? F3 0F 10 88 ?? ?? ?? ?? F3 0F";
-        internal const int PATTERN_TIMESCALE_INSTRUCTION_LENGTH = 7;
-        internal const int PATTERN_TIMESCALE_POINTER_OFFSET_OFFSET = 11;
-
-
-        /**
-            Reference pointer pPlayerStructRelated1 to 4 more pointers up to player data class, offset in struct to <float>fTimescalePlayer which acts as a speed scale for the player character
-            00000001406BF1D7 | 48:8B1D 128C4A03          | mov rbx,qword ptr ds:[143B67DF0]                | pPlayerStructRelated1->[pPlayerStructRelated2+0x88]->[pPlayerStructRelated3+0x1FF8]->[pPlayerStructRelated4+0x28]->[pPlayerStructRelated5+0xD00]->fTimescalePlayer
-            00000001406BF1DE | 48:85DB                   | test rbx,rbx                                    |
-            00000001406BF1E1 | 74 3C                     | je sekiro.1406BF21F                             |
-            00000001406BF1E3 | 8B17                      | mov edx,dword ptr ds:[rdi]                      |
-         */
-        // credits to 'Zullie the Witch' for original offset
-        internal const string PATTERN_TIMESCALE_PLAYER = "48 8B 1D ?? ?? ?? ?? 48 85 DB 74 3C 8B 17";
-        internal const int PATTERN_TIMESCALE_PLAYER_INSTRUCTION_LENGTH = 7;
-        internal const int PATTERN_TIMESCALE_POINTER2_OFFSET = 0x88;
-        internal const int PATTERN_TIMESCALE_POINTER3_OFFSET = 0x1FF8;
-        internal const int PATTERN_TIMESCALE_POINTER4_OFFSET = 0x28;
-        internal const int PATTERN_TIMESCALE_POINTER5_OFFSET = 0xD00;
-
-
-        /**
             Controls camera pitch. xmm4 holds new pitch from a calculation while rps+170 holds current one from mouse so we overwrite xmm4 with the old pitch value
             000000014073AF26 | 0F29A5 70080000            | movaps xmmword ptr ss:[rbp+870],xmm4           | code inject overwrite from here
             000000014073AF2D | 0F29A5 80080000            | movaps xmmword ptr ss:[rbp+880],xmm4           | jump back here from code inject
@@ -259,5 +203,72 @@ namespace SekiroFpsUnlockAndMore
             0xF3, 0x0F, 0x10, 0x86, 0x74, 0x01, 0x00, 0x00, // movss xmm0,dword ptr ds:[rsi+174]
             0xF3, 0x0F, 0x11, 0x86, 0x74, 0x01, 0x00, 0x00  // movss dword ptr ds:[rsi+174],xmm0
         };
+
+
+        /**
+            When user presses button to lock on target but no target is in range a camera reset is triggered to center cam position. This boolean indicates if we need to reset or not
+            000000014073AD97  | C686 A3020000 01           | mov byte ptr ds:[rsi+2A3],1                    | Sets bool to indicate we need to reset camera and block user input til cam is reset
+            000000014073AD9E  | F3:0F108E B4020000         | movss xmm1,dword ptr ds:[rsi+2B4]              |
+         */
+        internal const string PATTERN_CAMRESET_LOCKON = "C6 86 ?? ?? 00 00 ?? F3 0F 10 8E ?? ?? 00 00";
+        internal const int PATTERN_CAMRESET_LOCKON_OFFSET = 6;
+        internal static byte[] PATCH_CAMRESET_LOCKON_DISABLE = new byte[1] { 0x00 };  // FALSE
+        internal static byte[] PATCH_CAMRESET_LOCKON_ENABLE = new byte[1] { 0x01 }; // TRUE
+
+
+        /**
+            Reference pointer pPlayerStatsRelated to PlayerStats pointer, offset in struct to <int>iPlayerDeaths
+            00000001407AAC92 | 0FB648 7A                 | movzx ecx,byte ptr ds:[rax+7A]                  |
+            00000001407AAC96 | 888B F7000000             | mov byte ptr ds:[rbx+F7],cl                     |
+            00000001407AAC9C | 48:8B05 4DD03903          | mov rax,qword ptr ds:[143B47CF0]                |
+            00000001407AACA3 | 8B88 8C000000             | mov ecx,dword ptr ds:[rax+8C]                   |
+            00000001407AACA9 | 898B F8000000             | mov dword ptr ds:[rbx+F8],ecx                   |
+            00000001407AACAF | 48:8B05 3AD03903          | mov rax,qword ptr ds:[143B47CF0]                | pPlayerStatsRelated->[PlayerStats+0x90]->iPlayerDeaths
+            00000001407AACB6 | 8B88 90000000             | mov ecx,dword ptr ds:[rax+90]                   | offset pPlayerStats->iPlayerDeaths
+         */
+        // credits to 'Me_TheCat' for original offset
+        internal const string PATTERN_PLAYER_DEATHS = "0F B6 48 ?? 88 8B ?? ?? 00 00 48 8B 05 ?? ?? ?? ?? 8B 88 ?? ?? 00 00 89 8B ?? ?? 00 00 48 8B 05 ?? ?? ?? ?? 8B 88 ?? ?? 00 00";
+        internal const int PATTERN_PLAYER_DEATHS_OFFSET = 29;
+        internal const int PATTERN_PLAYER_DEATHS_INSTRUCTION_LENGTH = 7;
+        internal const int PATTERN_PLAYER_DEATHS_POINTER_OFFSET_OFFSET = 9;
+
+
+        /**
+            Reference pointer pTotalKills to <int>iTotalKills, does not get updated on every kill but mostly on every 2nd, includes own player deaths...
+            0000000141151838 | 48:8D0D A9A5B302          | lea rcx,qword ptr ds:[143C8BDE8]                | pTotalKills->iTotalKills
+            000000014115183F | 891481                    | mov dword ptr ds:[rcx+rax*4],edx                |
+            0000000141151842 | C3                        | ret                                             |
+         */
+        // credits to 'Me_TheCat' for original offset
+        internal const string PATTERN_TOTAL_KILLS = "48 8D 0D ?? ?? ?? ?? 89 14 81 C3";
+        internal const int PATTERN_TOTAL_KILLS_INSTRUCTION_LENGTH = 7;
+
+
+        /**
+            Reference pointer pTimeRelated to TimescaleManager pointer, offset in struct to <float>fTimescale which acts as a global speed scale for almost all ingame calculations
+            0000000141149E87 | 48:8B05 3A24B402          | mov rax,qword ptr ds:[143C8C2C8]                | pTimeRelated->[TimescaleManager+0x360]->fTimescale
+            0000000141149E8E | F3:0F1088 60030000        | movss xmm1,dword ptr ds:[rax+360]               | offset TimescaleManager->fTimescale
+            0000000141149E96 | F3:0F5988 68020000        | mulss xmm1,dword ptr ds:[rax+268]               |
+         */
+        // credits to 'Zullie the Witch' for original offset
+        internal const string PATTERN_TIMESCALE = "48 8B 05 ?? ?? ?? ?? F3 0F 10 88 ?? ?? ?? ?? F3 0F";
+        internal const int PATTERN_TIMESCALE_INSTRUCTION_LENGTH = 7;
+        internal const int PATTERN_TIMESCALE_POINTER_OFFSET_OFFSET = 11;
+
+
+        /**
+            Reference pointer pPlayerStructRelated1 to 4 more pointers up to player data class, offset in struct to <float>fTimescalePlayer which acts as a speed scale for the player character
+            00000001406BF1D7 | 48:8B1D 128C4A03          | mov rbx,qword ptr ds:[143B67DF0]                | pPlayerStructRelated1->[pPlayerStructRelated2+0x88]->[pPlayerStructRelated3+0x1FF8]->[pPlayerStructRelated4+0x28]->[pPlayerStructRelated5+0xD00]->fTimescalePlayer
+            00000001406BF1DE | 48:85DB                   | test rbx,rbx                                    |
+            00000001406BF1E1 | 74 3C                     | je sekiro.1406BF21F                             |
+            00000001406BF1E3 | 8B17                      | mov edx,dword ptr ds:[rdi]                      |
+         */
+        // credits to 'Zullie the Witch' for original offset
+        internal const string PATTERN_TIMESCALE_PLAYER = "48 8B 1D ?? ?? ?? ?? 48 85 DB 74 3C 8B 17";
+        internal const int PATTERN_TIMESCALE_PLAYER_INSTRUCTION_LENGTH = 7;
+        internal const int PATTERN_TIMESCALE_POINTER2_OFFSET = 0x88;
+        internal const int PATTERN_TIMESCALE_POINTER3_OFFSET = 0x1FF8;
+        internal const int PATTERN_TIMESCALE_POINTER4_OFFSET = 0x28;
+        internal const int PATTERN_TIMESCALE_POINTER5_OFFSET = 0xD00;
     }
 }

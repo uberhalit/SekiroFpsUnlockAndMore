@@ -27,6 +27,7 @@ namespace SekiroFpsUnlockAndMore
         internal long _offset_resolution = 0x0;
         internal long _offset_resolution_default = 0x0;
         internal long _offset_resolution_scaling_fix = 0x0;
+        internal long _offset_camera_reset = 0x0;
         internal long _offset_total_kills = 0x0;
         internal long _offset_player_deaths = 0x0;
         internal long _offset_timescale = 0x0;
@@ -166,6 +167,7 @@ namespace SekiroFpsUnlockAndMore
             this.cbBorderless.IsChecked = _settingsService.ApplicationSettings.cbBorderless;
             this.cbBorderlessStretch.IsChecked = _settingsService.ApplicationSettings.cbBorderlessStretch;
             this.cbCamAdjust.IsChecked = _settingsService.ApplicationSettings.cbCamAdjust;
+            this.cbCamReset.IsChecked = _settingsService.ApplicationSettings.cbCamReset;
             this.cbLogStats.IsChecked = _settingsService.ApplicationSettings.cbLogStats;
             this.exGameMods.IsExpanded = _settingsService.ApplicationSettings.exGameMods;
             this.cbGameSpeed.IsChecked = _settingsService.ApplicationSettings.cbGameSpeed;
@@ -189,6 +191,7 @@ namespace SekiroFpsUnlockAndMore
             _settingsService.ApplicationSettings.cbBorderless = this.cbBorderless.IsChecked == true;
             _settingsService.ApplicationSettings.cbBorderlessStretch = this.cbBorderlessStretch.IsChecked == true;
             _settingsService.ApplicationSettings.cbCamAdjust = this.cbCamAdjust.IsChecked == true;
+            _settingsService.ApplicationSettings.cbCamReset = this.cbCamReset.IsChecked == true;
             _settingsService.ApplicationSettings.cbLogStats = this.cbLogStats.IsChecked == true;
             _settingsService.ApplicationSettings.exGameMods = this.exGameMods.IsExpanded;
             _settingsService.ApplicationSettings.cbGameSpeed = this.cbGameSpeed.IsChecked == true;
@@ -330,6 +333,11 @@ namespace SekiroFpsUnlockAndMore
                     _dataCave_fovsetting = true;
                 Debug.WriteLine("lpFovPointer data cave at: 0x" + _memoryCaveGenerator.GetDataCaveAddressByName(_DATACAVE_FOV_POINTER).ToString("X"));
             }
+
+            _offset_camera_reset = patternScan.FindPattern(GameData.PATTERN_CAMRESET_LOCKON) + GameData.PATTERN_CAMRESET_LOCKON_OFFSET;
+            Debug.WriteLine("lpCameraReset found at: 0x" + _offset_camera_reset.ToString("X"));
+            if (!IsValidAddress(_offset_camera_reset))
+                _offset_camera_reset = 0x0;
 
             long ref_lpPlayerStatsRelated = patternScan.FindPattern(GameData.PATTERN_PLAYER_DEATHS) + GameData.PATTERN_PLAYER_DEATHS_OFFSET;
             Debug.WriteLine("ref_lpPlayerStatsRelated found at: 0x" + ref_lpPlayerStatsRelated.ToString("X"));
@@ -477,6 +485,13 @@ namespace SekiroFpsUnlockAndMore
                 this.cbFov.IsEnabled = false;
             }
 
+            if (_offset_camera_reset == 0x0)
+            {
+                UpdateStatus("camera reset not found...", Brushes.Red);
+                LogToFile("camera reset not found...");
+                this.cbCamReset.IsEnabled = false;
+            }
+
             if (_offset_player_deaths == 0x0)
             {
                 UpdateStatus("player deaths not found...", Brushes.Red);
@@ -571,6 +586,7 @@ namespace SekiroFpsUnlockAndMore
             _offset_resolution = 0x0;
             _offset_resolution_default = 0x0;
             _offset_resolution_scaling_fix = 0x0;
+            _offset_camera_reset = 0x0;
             _offset_player_deaths = 0x0;
             _offset_total_kills = 0x0;
             _offset_timescale = 0x0;
@@ -773,6 +789,28 @@ namespace SekiroFpsUnlockAndMore
         }
 
         /// <summary>
+        /// Patches the game's camera centering on lock-on.
+        /// </summary>
+        /// <param name="showStatus">Determines if status should be updated from within method, default is true.</param>
+        private bool PatchCamReset(bool showStatus = true)
+        {
+            if (!this.cbCamReset.IsEnabled || !CanPatchGame()) return false;
+            if (this.cbCamReset.IsChecked == true)
+            {
+                WriteBytes(_gameAccessHwndStatic, _offset_camera_reset, GameData.PATCH_CAMRESET_LOCKON_DISABLE);
+            }
+            else if (this.cbCamReset.IsChecked == false)
+            {
+                WriteBytes(_gameAccessHwndStatic, _offset_camera_reset, GameData.PATCH_CAMRESET_LOCKON_ENABLE);
+                if (showStatus) UpdateStatus(DateTime.Now.ToString("HH:mm:ss") + " Game unpatched!", Brushes.White);
+                return false;
+            }
+
+            if (showStatus) UpdateStatus(DateTime.Now.ToString("HH:mm:ss") + " Game patched!", Brushes.Green);
+            return true;
+        }
+
+        /// <summary>
         /// Patches game's global speed.
         /// </summary>
         /// <param name="showStatus">Determines if status should be updated from within method, default is true.</param>
@@ -869,6 +907,7 @@ namespace SekiroFpsUnlockAndMore
                 PatchResolution(false),
                 PatchFov(false),
                 PatchWindow(false),
+                PatchCamReset(false),
                 PatchGameSpeed(false),
                 PatchPlayerSpeed(false)
             };
@@ -1272,6 +1311,12 @@ namespace SekiroFpsUnlockAndMore
         {
             if (this.cbCamAdjust.IsEnabled)
                 InjectToGame();
+        }
+
+        private void CbCamReset_Check_Handler(object sender, RoutedEventArgs e)
+        {
+            if (this.cbCamReset.IsEnabled)
+                PatchCamReset();
         }
 
         private void CbStatChanged(object sender, RoutedEventArgs e)
