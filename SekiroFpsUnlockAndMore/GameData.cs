@@ -250,7 +250,7 @@ namespace SekiroFpsUnlockAndMore
 
 
         /**
-            Whole dragonrot routine upon death is guarded by a conditional jump, there may be some events in the game where a true death shall not increase the diseases so it's skippable as a whole.
+            Whole dragonrot routine upon death is guarded by a conditional jump, there may be some events in the game where a true death shall not increase the disease so it's skippable as a whole.
             We replace conditional jump with non-conditional one.
             00000001411891E8 | 45:33C0                    | xor r8d,r8d                                    |
             00000001411891EB | BA 27250000                | mov edx,2527                                   |
@@ -278,7 +278,7 @@ namespace SekiroFpsUnlockAndMore
         internal const string PATTERN_DRAGONROT_EFFECT = "45 ?? ?? BA ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 0F 85 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? 48 85 C9 75 ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 4C ?? ?? 4C ?? ?? ?? ?? ?? ?? BA ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? 45 ?? ?? BA ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 0F 84 ?? ?? ?? ?? 48 8D";
         internal const int PATTERN_DRAGONROT_EFFECT_OFFSET = 13;
         internal static readonly byte[] PATCH_DRAGONROT_EFFECT_DISABLE = new byte[4] { 0x90, 0x90, 0x90, 0xE9 }; // nop; jmp
-        internal static readonly byte[] PATCH_DRAGONROT_EFFECT_ENABLE = new byte[4] { 0x84, 0xC0, 0x0F, 0x85 }; // jne
+        internal static readonly byte[] PATCH_DRAGONROT_EFFECT_ENABLE = new byte[4] { 0x84, 0xC0, 0x0F, 0x85 }; // test al,al; jne
 
 
         /**

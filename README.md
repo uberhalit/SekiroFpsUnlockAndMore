@@ -24,7 +24,7 @@ Patches games memory while running, does not modify any game files. Works with e
 * display hidden death/kill counters and optionally log them to file to display in OBS on stream
 * game modifications
   * prevent dragonrot from increasing upon death
-  * disable death penalties like loosing Send or experience
+  * disable death penalties like losing Sen or experience
   * global game speed modifier (increase or decrease)
   * player speed modifier (increase or decrease)
 * automatically patch game on startup
@@ -139,7 +139,7 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 10. [![On Stream Display with OBS](https://camo.githubusercontent.com/007910d42ace53ee0db0ea8b61d525751b9d48a6/68747470733a2f2f692e696d6775722e636f6d2f4c39546e6f34462e706e67)](#)
 
 ### On 'Disable camera auto rotate on movement':
-This will completely disable the automatic camera rotation adjustments when you are moving. This is mostly intended for mouse users, enabling it on non-native windows controllers will not work perfectly (some rotation adjustments will be left) and you will temporary lose the ability to slow-tilt (deadzones). Disabling the automatic camera adjustments makes little sense on controllers. If you changed your input device or made a mistake while selecting it simply close the utility, delete the `SekiroFpsUnlockAndMore.xml` file and restart the mod.
+This will completely disable the automatic camera rotation adjustments when you are moving. This is mostly intended for mouse users, enabling it on non-native windows controllers will not work perfectly (some rotation adjustments will be left) and you will temporary lose the ability to slow-tilt (deadzones). Disabling the automatic camera adjustments makes little sense on controllers. If you changed your input device or made a mistake while selecting it simply close the utility, delete the `SekiroFpsUnlockAndMore.xml` file, restart the game and mod.
 
 ### On 'Disable camera reset on lock-on':
 If you press your target lock-on key and no target is in sight the game will reset and center the camera position and disable your input while it's doing so. Ticking this checkbox will remove this behaviour of the game.
@@ -229,7 +229,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Version History
 
-* v1.2.3.0 (2019-04-15)
+* v1.2.3.0 (2019-04-18)
   * Added option to prevent increase of dragonrot upon death
   * Added option to disable Sen and experience penalties upon death
   * Increased maximum custom resolution width to 7680
