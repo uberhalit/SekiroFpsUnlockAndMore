@@ -80,7 +80,8 @@ namespace SekiroFpsUnlockAndMore
                 bFound = true;
                 for (iy = 0; iy < patternLength; iy++)
                 {
-                    if (szMask[iy] != 'x' || bPattern[iy] == bData[ix + iy]) continue;
+                    if (szMask[iy] != 'x' || bPattern[iy] == bData[ix + iy])
+                        continue;
                     bFound = false;
                     break;
                 }

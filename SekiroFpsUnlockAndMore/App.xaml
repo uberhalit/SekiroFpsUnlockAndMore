@@ -4,6 +4,11 @@
              xmlns:local="clr-namespace:SekiroFpsUnlockAndMore"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <LinearGradientBrush x:Key="resStatusBarModeColorMock">
+            <GradientStop Color="Purple" Offset="0.0" />
+            <GradientStop Color="LimeGreen" Offset="0.25" />
+            <GradientStop Color="Red" Offset="0.5" />
+            <GradientStop Color="Blue" Offset="0.75" />
+        </LinearGradientBrush>
     </Application.Resources>
 </Application>

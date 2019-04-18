@@ -5,81 +5,85 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SekiroFpsUnlockAndMore"
         mc:Ignorable="d"
-        Title="Sekiro FPS Unlocker and more v1.2.2" Width="Auto" Height="Auto" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="Sekiro FPS Unlocker and more v1.2.3" Width="Auto" Height="Auto" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
 
     <Grid Background="#FFF9F9F9">
         <DockPanel>
-            <StackPanel DockPanel.Dock="Top" Margin="10,10,10,0" Width="290" Height="Auto">
+            <StackPanel DockPanel.Dock="Top" Margin="10,10,10,0" Width="300" Height="Auto">
                 <DockPanel LastChildFill="False">
-                    <CheckBox x:Name="cbFramelock" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Frame rate lock:" IsChecked="True" Checked="CbFramelock_Check_Handler" Unchecked="CbFramelock_Check_Handler" />
-                    <TextBox x:Name="tbFramelock" DockPanel.Dock="Right" Margin="0,0,0,0" Width="116" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="144" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
+                    <CheckBox x:Name="cbFramelock" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Frame rate lock:" ToolTip="Make sure to read the guide" IsChecked="True" Checked="CbFramelock_Check_Handler" Unchecked="CbFramelock_Check_Handler" TabIndex="1" />
+                    <TextBox x:Name="tbFramelock" DockPanel.Dock="Right" Margin="0,0,0,0" Width="116" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="144" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="2" />
                 </DockPanel>
                 <DockPanel Margin="0,5,0,0" LastChildFill="False">
-                    <CheckBox x:Name="cbAddResolution" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Add custom resolution:" Checked="CbAddResolution_Check_Handler" Unchecked="CbAddResolution_Check_Handler" />
-                    <TextBox x:Name="tbHeight" DockPanel.Dock="Right" Margin="0,0,0,0" Width="50" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="1080" MaxLength="4" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
+                    <CheckBox x:Name="cbAddResolution" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Add custom resolution:" ToolTip="Your monitor has to natively support this resolution" Checked="CbAddResolution_Check_Handler" Unchecked="CbAddResolution_Check_Handler" TabIndex="3" />
+                    <TextBox x:Name="tbHeight" DockPanel.Dock="Right" Margin="0,0,0,0" Width="50" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="1080" MaxLength="4" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="5" />
                     <Label DockPanel.Dock="Right" Margin="0,0,0,0" Height="25" FontSize="14 px" Content="x" />
-                    <TextBox x:Name="tbWidth" DockPanel.Dock="Right" Margin="0,0,0,0" Width="50" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="2560" MaxLength="4" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
+                    <TextBox x:Name="tbWidth" DockPanel.Dock="Right" Margin="0,0,0,0" Width="50" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="2560" MaxLength="4" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="4" />
                 </DockPanel>
                 <DockPanel Margin="0,5,0,0" LastChildFill="False">
-                    <CheckBox x:Name="cbFov" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Change FOV by (%):" Checked="CbFov_Check_Handler" Unchecked="CbFov_Check_Handler" />
+                    <CheckBox x:Name="cbFov" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Change FOV by (%):" ToolTip="Increase or decrease" Checked="CbFov_Check_Handler" Unchecked="CbFov_Check_Handler" TabIndex="6" />
                     <Button x:Name="bFovHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,0,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BFovHigher_Click" />
-                    <TextBox x:Name="tbFov" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="25" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
+                    <TextBox x:Name="tbFov" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="25" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="7" />
                     <Button x:Name="bFovLower" DockPanel.Dock="Right" Content="&lt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BFovLower_Click" />
                     <Button x:Name="bFov0" DockPanel.Dock="Right" Content="0" Margin="0,0,3,0" Width="27" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BFov0_Click" />
                 </DockPanel>
                 <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                    <CheckBox x:Name="cbBorderless" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Borderless window" ToolTip="To enable this set 'Windowed' mode in game options first." IsEnabled="False" Checked="CbBorderless_Checked" Unchecked="CbBorderless_Unchecked"/>
-                    <CheckBox x:Name="cbBorderlessStretch" DockPanel.Dock="Right" Margin="10,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Fullscreen stretch" IsEnabled="False" Checked="CbBorderlessStretch_Check_Handler" Unchecked="CbBorderlessStretch_Check_Handler"  />
+                    <CheckBox x:Name="cbBorderless" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Borderless window" ToolTip="To enable this set 'Windowed' mode in game options first" IsEnabled="False" Checked="CbBorderless_Checked" Unchecked="CbBorderless_Unchecked" TabIndex="8"/>
+                    <CheckBox x:Name="cbBorderlessStretch" DockPanel.Dock="Right" Margin="10,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Fullscreen stretch" IsEnabled="False" Checked="CbBorderlessStretch_Check_Handler" Unchecked="CbBorderlessStretch_Check_Handler" TabIndex="9"  />
                 </StackPanel>
-                <CheckBox x:Name="cbLogStats" Margin="0,5,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Log stats (Deaths, Kills) to file for OBS" ToolTip="Check the guide on how to display these on stream with OBS." Checked="CbStatChanged" Unchecked="CbStatChanged" />
-                <Expander x:Name="exGameMods" Margin="-3,5,0,0" Height="Auto" FontSize="14 px" Header="Modifications" IsExpanded="True">
+                <CheckBox x:Name="cbLogStats" Margin="0,5,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Log stats (Deaths, Kills) to file for OBS" ToolTip="Check the guide on how to display these on stream with OBS" Checked="CbStatChanged" Unchecked="CbStatChanged" TabIndex="10" />
+                <Expander x:Name="exGameMods" Margin="-3,5,0,0" Height="Auto" FontSize="14 px" Header="Modifications" IsExpanded="True" TabIndex="11">
                     <Grid Margin="3,1,0,0" Background="#FFF9F9F9">
                         <StackPanel Width="Auto" Height="Auto">
-                            <CheckBox x:Name="cbCamAdjust" Margin="0,5,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Disable camera auto rotate on movement" ToolTip="Disables the annoying automatic camera adjustment on movement. Intended for mouse users." Checked="CbCamAdjust_Check_Handler" Unchecked="CbCamAdjust_Check_Handler" />
-                            <CheckBox x:Name="cbCamReset" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Disable camera reset on lock-on" ToolTip="Disables the annoying camera centering on lock-on when there is no target." Checked="CbCamReset_Check_Handler" Unchecked="CbCamReset_Check_Handler" />
+                            <CheckBox x:Name="cbCamAdjust" Margin="0,5,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Disable camera auto rotate on movement" ToolTip="Disables the annoying automatic camera adjustment on movement. Intended for mouse users" Checked="CbCamAdjust_Check_Handler" Unchecked="CbCamAdjust_Check_Handler" TabIndex="12" />
+                            <CheckBox x:Name="cbCamReset" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Disable camera reset on lock-on" ToolTip="Disables the annoying camera centering on lock-on when there is no target" Checked="CbCamReset_Check_Handler" Unchecked="CbCamReset_Check_Handler" TabIndex="13" />
+                            <CheckBox x:Name="cbDragonrot" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Prevent dragonrot increase on death" ToolTip="NPCs won't get the disease and/or their condition won't get worse" Checked="CbDragonrot_Check_Handler" Unchecked="CbDragonrot_Check_Handler" TabIndex="14" />
+                            <CheckBox x:Name="cbDeathPenalty" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Disable death penalties (except dragonrot)" ToolTip="Disables Sen and Experience loss upon death" Checked="CbDeathPenalty_Check_Handler" Unchecked="CbDeathPenalty_Check_Handler" TabIndex="15" />
+                            <CheckBox x:Name="cbDeathPenaltyHidden" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="(DEBUG) Disable hidden death penalties" ToolTip="DEBUG ONLY" Checked="CbDeathPenaltyHidden_Check_Handler" Unchecked="CbDeathPenaltyHidden_Check_Handler" IsTabStop="False" Visibility="Collapsed" />
                             <DockPanel Margin="0,3,0,0" LastChildFill="False">
-                                <CheckBox x:Name="cbGameSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Game speed (%):" ToolTip="Increase or decrease. Can potentially crash the game in cutscenes, use with caution." Checked="CbGameSpeed_Check_Handler" Unchecked="CbGameSpeed_Check_Handler"  />
+                                <CheckBox x:Name="cbGameSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Game speed (%):" ToolTip="Increase or decrease. Can potentially crash the game in cutscenes, use with caution" Checked="CbGameSpeed_Check_Handler" Unchecked="CbGameSpeed_Check_Handler" TabIndex="16"  />
                                 <Button x:Name="bGs100" DockPanel.Dock="Right" Content="100" Margin="0,0,0,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGs100_Click" />
                                 <Button x:Name="bGsHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGsHigher_Click" />
-                                <TextBox x:Name="tbGameSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
+                                <TextBox x:Name="tbGameSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="17" />
                                 <Button x:Name="bGsLower" DockPanel.Dock="Right" Content="&lt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGsLower_Click" />
                                 <Button x:Name="bGs0" DockPanel.Dock="Right" Content="0" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGs0_Click" />
                             </DockPanel>
                             <DockPanel Margin="0,5,0,0" LastChildFill="False">
-                                <CheckBox x:Name="cbPlayerSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Player speed (%):" ToolTip="Increase or decrease. To enable this start the game and load a save, then tick the checkbox. Can potentially crash the game in cutscenes, use with caution." Checked="CbPlayerSpeed_Check_Handler" Unchecked="CbPlayerSpeed_Check_Handler"  />
+                                <CheckBox x:Name="cbPlayerSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Player speed (%):" ToolTip="Increase or decrease. To enable this start the game and load a save, then tick the checkbox. Can potentially crash the game in cutscenes, use with caution" Checked="CbPlayerSpeed_Check_Handler" Unchecked="CbPlayerSpeed_Check_Handler" TabIndex="18"  />
                                 <Button x:Name="bPs100" DockPanel.Dock="Right" Content="100" Margin="0,0,0,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPs100_Click" />
                                 <Button x:Name="bPsHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPsHigher_Click" />
-                                <TextBox x:Name="tbPlayerSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" />
+                                <TextBox x:Name="tbPlayerSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="19" />
                                 <Button x:Name="bPsLower" DockPanel.Dock="Right" Content="&lt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPsLower_Click" />
                                 <Button x:Name="bPs0" DockPanel.Dock="Right" Content="0" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPs0_Click" />
                             </DockPanel>
                         </StackPanel>
                     </Grid>
                 </Expander>
-                <Button x:Name="bPatch" Margin="0,7,0,0" Width="290" Height="30" FontSize="14 px" IsEnabled="False" Content="Patch game (CTRL + P)" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
-                    Focusable="False" Click="BPatch_Click" />
-                <TextBox x:Name="tbStatus" Margin="0,5,0,0" Width="290" Height="25" FontSize="14 px" FontWeight="Bold" Text="waiting for game..." TextAlignment="Center" TextWrapping="NoWrap" IsEnabled="False" />
-                <TextBlock Margin="2,5,2,0" FontSize="11 px" TextWrapping="WrapWithOverflow" IsEnabled="False">
-                    <TextBlock.Inlines>
-                        <Run FontWeight="Bold" Foreground="#FF0046FF">This patcher does not modify game files, you have to start it every time.</Run>
-                        <Run FontWeight="Bold">If your monitor is 60 Hz you will have to use</Run>
-                        <Run FontWeight="Bold" Foreground="#FFF00000">fullscreen mode and force disable VSYNC</Run>
-                        <Run FontWeight="Bold">with Nvidia Control panel or AMD Radeon Settings to get frame rate unlock working.</Run>
-                        <Run>To avoid stuttering it's recommended to always disable VSYNC (except when you have GSYNC).</Run>
-                        <Run FontWeight="Bold">If your monitor is >60 Hz you will have to use</Run>
-                        <Run FontWeight="Bold" Foreground="#FFF00000">borderless window mode or force the game to run on highest available refresh rate</Run>
-                        <Run FontWeight="Bold">using Nvidia Control panel or AMD Radeon Settings.</Run>
-                        <Run>Borderless window mode requires "Windowed" in game settings first.</Run>
-                        <Run FontWeight="Bold">Custom resolution adds 21:9 support and overwrites a default resolution, hud will be limited to 16:9.</Run>
-                        <Run>Borderless window mode with custom resolution requires you to patch and set resolution first, then activate borderless afterwards.</Run>
-                        <Run FontWeight="Bold">Disabling camera auto rotate is mostly intended for mouse users.</Run>
-                        <Run FontWeight="Bold">To enable Player Speed modification you have to be ingame first.</Run>
-                        <Run FontWeight="Bold" Foreground="#FFF00000">See the link below for detailed information, guides, GSYNC support and an AMD fix.</Run>
-                    </TextBlock.Inlines>
-                </TextBlock>
-                <Label HorizontalAlignment="Right" FontSize="12 px">
+                <Button x:Name="bPatch" Margin="0,7,0,0" Width="300" Height="30" FontSize="14 px" IsEnabled="False" Content="Patch game (CTRL + P)" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
+                    Focusable="False" Click="BPatch_Click" TabIndex="20" IsTabStop="False" />
+                <TextBox x:Name="tbStatus" Margin="0,5,0,0" Width="300" Height="25" FontSize="14 px" FontWeight="Bold" Text="waiting for game..." TextAlignment="Center" TextWrapping="NoWrap" IsEnabled="False" />
+                <Expander x:Name="exGuide" Margin="0,8,0,0" Height="Auto" FontSize="14 px" Header="ReadMe" IsExpanded="True" TabIndex="21">
+                    <TextBlock Margin="2,6,2,0" FontSize="11 px" TextWrapping="WrapWithOverflow" IsEnabled="False">
+                        <TextBlock.Inlines>
+                            <Run FontWeight="Bold" Foreground="#FF0046FF">This patcher does not modify game files, you have to start it every time.</Run>
+                            <Run FontWeight="Bold">If your monitor is 60 Hz you will have to use</Run>
+                            <Run FontWeight="Bold" Foreground="#FFF00000">fullscreen mode and force disable VSYNC</Run>
+                            <Run FontWeight="Bold">with Nvidia Control panel or AMD Radeon Settings to get frame rate unlock working.</Run>
+                            <Run FontWeight="Bold">If your monitor is >60 Hz you will have to use</Run>
+                            <Run FontWeight="Bold" Foreground="#FFF00000">borderless window mode or force the game to run on highest available refresh rate</Run>
+                            <Run FontWeight="Bold">using Nvidia Control panel or AMD Radeon Settings.</Run>
+                            <Run>Borderless window mode requires "Windowed" in game settings first.</Run>
+                            <Run FontWeight="Bold">Custom resolution adds 21:9 support and overwrites a default resolution, hud will be limited to 16:9.</Run>
+                            <Run>Borderless window mode with custom resolution requires you to patch and set resolution first, then activate borderless afterwards.</Run>
+                            <Run FontWeight="Bold">Disabling camera auto rotate is mostly intended for mouse users.</Run>
+                            <Run FontWeight="Bold">To enable Player Speed modification you have to be ingame first.</Run>
+                            <Run FontWeight="Bold" Foreground="#FFF00000">See the link below for detailed information, guides, GSYNC support and an AMD fix.</Run>
+                        </TextBlock.Inlines>
+                    </TextBlock>
+                </Expander>
+                <Label HorizontalAlignment="Right" FontSize="12 px" TabIndex="22">
                     <Hyperlink NavigateUri="https://github.com/uberhalit/SekiroFpsUnlockAndMore" RequestNavigate="Hyperlink_RequestNavigate">
-                        v1.2.2 - by uberhalit
+                        v1.2.3 - by uberhalit
                     </Hyperlink>
                 </Label>
             </StackPanel>
@@ -98,8 +102,13 @@
                     </TextBlock>
                 </StatusBarItem>
                 <Separator Margin="5,4,5,4" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
+                <StatusBarItem DockPanel.Dock="Left" HorizontalAlignment="Left">
+                    <TextBlock>
+                        <Run x:Name="sbMode" FontWeight="SemiBold" FontStyle="Italic" />
+                    </TextBlock>
+                </StatusBarItem>
                 <StatusBarItem DockPanel.Dock="Right" HorizontalAlignment="Right">
-                    <TextBlock Name="sbStatus" />
+                    <TextBlock Name="sbInput" />
                 </StatusBarItem>
             </StatusBar>
         </DockPanel>

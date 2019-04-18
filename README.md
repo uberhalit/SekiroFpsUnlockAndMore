@@ -1,6 +1,6 @@
 # Sekiro FPS Unlocker and more
 
-A small utility to remove frame rate limit, add custom resolutions with 21:9 widescreen support, change field of view (FOV), borderless window mode, display and log stats (OBS), disable automatic camera adjustments and various game modifications for [Sekiro: Shadows Die Twice](https://www.sekirothegame.com/) written in C#.
+A small utility to remove frame rate limit, add custom resolutions with 21:9 widescreen support, change field of view (FOV), borderless window mode, display kills/deaths and log them (OBS), disable automatic camera adjustments and various game modifications for [Sekiro: Shadows Die Twice](https://www.sekirothegame.com/) written in C#.
 Patches games memory while running, does not modify any game files. Works with every game version (legit steam & oh-not-so-legit), should work with all future updates. Also available on [Nexus Mods](https://www.nexusmods.com/sekiro/mods/13/).
 
 ## Download
@@ -8,7 +8,7 @@ Patches games memory while running, does not modify any game files. Works with e
 **[Get the latest release here](https://github.com/uberhalit/SekiroFpsUnlockAndMore/releases)**
 
 ### See it in action:
-[![Video preview](https://camo.githubusercontent.com/6e7dfcc62f9915b8ef5330bdf6489e0cd35be2ec/68747470733a2f2f692e696d6775722e636f6d2f7032436b734e342e706e67)](https://giant.gfycat.com/GraciousMadeupJavalina.webm)
+[![Video preview](https://camo.githubusercontent.com/1578c3bce70d6f3b35b8b4266982e064c67c0fb3/68747470733a2f2f692e696d6775722e636f6d2f3041683738736f2e706e67)](https://giant.gfycat.com/WanDisgustingAlpinegoat.webm)
 
 ## Features
 
@@ -17,12 +17,14 @@ Patches games memory while running, does not modify any game files. Works with e
 * G-SYNC and FreeSync support even in borderless window mode
 * unlock frame rate (remove FPS limit) by setting a new custom limit
 * add a custom resolution, 21:9 widescreen supported (will overwrite the default 1920x1080 / 1280x720 resolution, HUD limited to 16:9)
-* increase and decrease field of view (FOV)
+* increase or decrease field of view (FOV)
 * set the game to borderless window mode
 * disable camera auto rotate adjustment on movement (intended for mouse users)
 * disable centering of camera (cam reset) on lock-on if there is no target
-* display hidden counters such as death/kill count and optionally log them to file to display in OBS
+* display hidden death/kill counters and optionally log them to file to display in OBS on stream
 * game modifications
+  * prevent dragonrot from increasing upon death
+  * disable death penalties like loosing Send or experience
   * global game speed modifier (increase or decrease)
   * player speed modifier (increase or decrease)
 * automatically patch game on startup
@@ -107,8 +109,8 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 ### To add a custom resolution:
 1. Start the game
 2. Start `Sekiro FPS Unlocker and more`, set you desired resolution and enable it by ticking the check box
-3. Select your custom resolution in the graphical settings
-4. Be aware that your monitor has to natively support this resolution and the ingame HUD will be limited to 16:9
+3. Select your custom resolution in the graphical settings (a default resolution like 1920x1080 or 1280x720 will be replaced with the new one)
+4. Be aware that your monitor has to **natively** support this resolution and the ingame HUD will be limited to 16:9
 
 ### To use the FOV changer:
 1. Start the game
@@ -124,12 +126,6 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 6. Enable borderless window mode
 7. If you want fullscreen borderless enable `Fullscreen stretch`
 
-### On 'Disable camera auto rotate on movement':
-This will completely disable the automatic camera rotation adjustments when you are moving. This is mostly intended for mouse users, enabling it on non-native windows controllers will not work perfectly (some rotation adjustments will be left) and you will temporary lose the ability to slow-tilt (deadzones). Disabling the automatic camera adjustments makes little sense on controllers. If you changed your input device or made a mistake while selecting it simply close the utility, delete the `SekiroFpsUnlockAndMore.xml` file and restart the mod.
-
-### On 'Disable camera reset on lock-on':
-You you press your target lok-on key and no target is in sight the game will reset and center your camera position and disable your input while its doing so. Ticking this checkbox will remove this behavior of the game.
-
 ### To display total death/kill counters in OBS:
 1. Start the game
 2. Load up your save game
@@ -142,14 +138,28 @@ You you press your target lok-on key and no target is in sight the game will res
 9.  To add additional counters repeat steps 4-7
 10. [![On Stream Display with OBS](https://camo.githubusercontent.com/007910d42ace53ee0db0ea8b61d525751b9d48a6/68747470733a2f2f692e696d6775722e636f6d2f4c39546e6f34462e706e67)](#)
 
-### To use any of the game modifications:
-1. Start the game
-2. Load up your save game
-3. Start `Sekiro FPS Unlocker and more` and expand `Game modifications`
-4. Set your desired values and then tick the checkbox you'd wish to enable
-5. Be aware that player and game speed modifications can potentially crash the game in certain cutscenes and NPC interactions
+### On 'Disable camera auto rotate on movement':
+This will completely disable the automatic camera rotation adjustments when you are moving. This is mostly intended for mouse users, enabling it on non-native windows controllers will not work perfectly (some rotation adjustments will be left) and you will temporary lose the ability to slow-tilt (deadzones). Disabling the automatic camera adjustments makes little sense on controllers. If you changed your input device or made a mistake while selecting it simply close the utility, delete the `SekiroFpsUnlockAndMore.xml` file and restart the mod.
+
+### On 'Disable camera reset on lock-on':
+If you press your target lock-on key and no target is in sight the game will reset and center the camera position and disable your input while it's doing so. Ticking this checkbox will remove this behaviour of the game.
+
+### On 'Prevent dragonrot increase on death':
+This option will remove the effect dragonrot has on NPCs, if an NPC already got dragonrot then it will ensure that their condition won't worsen when you die. The internal dragonrot counter will however keep increasing, nobody will be affected by it though. Keep in mind that there are certain thresholds regarding amount of deaths between dragonrot levels, if you enable this feature and die a level might get skipped so even when you disable it afterwards the dragonrot level for all NPCs will only increase after you have hit the **next** threshold.
+
+### On 'Disable death penalties (except dragonrot)':
+Like 'Unseen Aid' you will not lose any Sen or Experience upon death with this option enabled. Dragonrot will not be modified, check the option above to prevent dragonrot from increasing.
+
+### On 'Game speed':
+Slow down the game to beat a boss like a game journalist or speed it up and become gud. Game speed acts as a global time scale and is used by the game itself to create a dramatic effect in a few cutscenes. All game physics (even opening the menu) will be affected equally: all time-critical windows like dodge and deflect will be proportionally prolonged or shortened while the amount of damage given and taken as well as all other damage physics will be unaltered. A hit from an enemy on 150% game speed will do the exact same damage as on 80%, the deflect window on 50% is exactly twice as long as on 100% and so on. Of course, Sekiro himself will be affected by the speed too so even though a time window might me different now, the speed which you can react on it is different too.
+Be aware that both speed modifications can potentially crash the game in certain cutscenes and NPC interactions so use them with caution.
+
+### On 'Player speed':
+This modifier enables you to control Sekiro's speed independently from general game speed. Combat physics however are not guaranteed to stay the same on every setting. For example if you increase player speed you will be able to react to an attack faster but your own 'deflect' window is shorter now because you move faster. Use this to explore the world or to keep player speed near normal while decreasing general game speed. Grappling as well as jumping is handled by game speed while falling damage is calculated based on player speed so take care when grappling to a lower level with a low game speed and high player speed as this could instantly kill you as the game thinks you fell to death.
+Be aware that both speed modifications can potentially crash the game in certain cutscenes and NPC interactions so use them with caution.
 
 ## Troubleshooting:
+* Utility can't seem to find the game? - Make sure your game exe is called `sekiro.exe`
 * Make sure you followed the appropriate steps and didn't skip any (especially not the deletion of the Sekiro profile!)
 * Try disabling `Fullscreen optimization` for Sekiro: right mouse click on `sekiro.exe -> Compatibility-> tick 'Disable fullscreen optimizations'`
 * Try adding the whole game folder and `Sekiro FPS Unlocker and more` to your antivirus's exclusion list
@@ -170,13 +180,13 @@ You you press your target lok-on key and no target is in sight the game will res
 
 ## Preview
 
-[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/3f6b08a963cba377d653341ddfa4a2e347ea9182/68747470733a2f2f692e696d6775722e636f6d2f656d56627175432e706e67)](#)
+[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/09e0d1ddd5c0216649cf20fcd7d92898492a04e6/68747470733a2f2f692e696d6775722e636f6d2f5774547632654d2e706e67)](#)
 
 ### Unlocked framerate
-[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/272adde7c1a0d81c0e91e7d7fb68868bed0a04ae/68747470733a2f2f692e696d6775722e636f6d2f46514b6671504e2e706e67)](#)
+[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/53f52adb98a5111b31538466f91b58599d56d6d7/68747470733a2f2f692e696d6775722e636f6d2f4c4c524a5a554c2e706e67)](#)
 
-### Increased FOV, borderless window and 90% game speed
-[![FOV increase on the fly and borderless window](https://camo.githubusercontent.com/8fbc5e5889d7a1d4717796ca1d6bb996f83757a5/68747470733a2f2f692e696d6775722e636f6d2f656532616851682e706e67)](#)
+### Increased FOV, disabled mouse adjustments and 90% game speed
+[![FOV increase on the fly and borderless window](https://camo.githubusercontent.com/1025e7d9ea60cc5a584924ec6f7d40cac667fcbf/68747470733a2f2f692e696d6775722e636f6d2f7335504d3134372e706e67)](#)
 
 ## Prerequisites
 
@@ -210,31 +220,45 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 * the game has forced VSYNC so unlocking the frame rate when your monitor has 60Hz will do nothing. You'll have to disable VSYNC in Nvidia Control Panel or AMD Radeon Settings first, see Usage
 * in fullscreen the game forces the monitor to 60 Hz so you'll have to handle this with driver override too, see Usage
 * your monitor has to natively support your custom resolution otherwise it won't show up correctly
+* if a custom resolution is used it has to be added and selected before enabling borderless window
 * due to how the game renders the HUD is limited to 16:9 even on 21:9 resolutions
-* disabling automatic camera rotation adjustment on movement is intended for mouse users only, using it on a non-native windows controller will disable slow-tolting on sticks
+* disabling automatic camera rotation adjustment on movement is intended for mouse users, using it on a non-native windows controller will disable slow-tilting on sticks until the game is restarted
 * Player speed modification needs a loaded save before it can be activated
 * Player and game speed modification can potentially crash the game in certain cutscenes and NPC interactions, use with caution
 * the hotkey won't work if the game runs in exclusive, true fullscreen mode
 
 ## Version History
 
+* v1.2.3.0 (2019-04-15)
+  * Added option to prevent increase of dragonrot upon death
+  * Added option to disable Sen and experience penalties upon death
+  * Increased maximum custom resolution width to 7680
+  * Log files for game stats will be deleted now if option gets disabled
+  * Added indicator to notify about game scanning process
+  * Added a status indicator depending on active settings ;)
+  * Readme inside utility can be collapsed now
+  * Fixed an issue with borderless mode on high-dpi screens that used Windows scaling > 100%
+  * Fixed an issue with borderless checkboxes upon start
+  * Fixed a potential issue with 0 game speed (time freeze)
+  * Fixed a minor GUI issue
+  * Changed some internal methods
 * v1.2.2.0 (2019-04-13)
   * FOV can be set to any value between -95% and +95% now
-  * Adden option to disable camera reset on lock-on if there is no target to lock-on
+  * Added option to disable camera reset on lock-on if there is no target to lock-on
   * Fixed an issue with custom resolutions on certain system configurations
 * v1.2.1.1 (2019-04-09)
   * Added prompt to let user decide between mouse or controller input
   * This selection will fix locked up-down controls (pitch) on controllers if 'disable camera auto rotation" is used
-* v1.2.1 (2019-04-07)
+* v1.2.1.0 (2019-04-07)
   * Added an option to disable automatic camera rotation adjust on movement (thanks to Cielos for some offsets)
   * Added +25% FOV option
   * Improved initial load time and patching speed
-* v1.2.0 (2019-04-02)
+* v1.2.0.0 (2019-04-02)
   * Added stats (kills & deaths for now) with an option to log them to file for display in OBS (thanks to Me_TheCat for his contribution)
   * Player speed modifier will stick between quicktravel now
 * v1.1.0.1 (2019-03-31)
   * Fixed topmost for borderless
-* v1.1.0 (2019-03-30)
+* v1.1.0.0 (2019-03-30)
   * Added game speed modifier (thanks to Zullie the Witch#7202 for offset)
   * Added player speed modifier (thanks to Zullie the Witch#7202 for offset)
   * Custom resolution now support displays down to 1280x720
@@ -243,12 +267,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
   * Fixed a potential issue with unlimited frame rate unlock
   * Fixed a potential issue when user tried to enable borderless while in minimized fullscreen
   * Improved initial load time til game is patchable
-* v1.0.2 (2019-03-26)
+* v1.0.2.0 (2019-03-26)
   * Added option to reduce FOV (request)
   * Added option to stretch borderless window to fullscreen regardless of window resolution
   * Fixed borderless Z-order issue where task bar could be infront of window (thanks to [Forkinator](https://github.com/Forkinator) for reporting)
   * Fixed resolution issues in borderless (thanks to King Henry V#6946 for reporting)
-* v1.0.1 (2019-03-26)
+* v1.0.1.0 (2019-03-26)
   * Fixed scaling issue in borderless window mode (thanks to Spacecop42#0947 for reporting)
-* v1.0.0 (2019-03-25)
+* v1.0.0.0 (2019-03-25)
   * Initial release

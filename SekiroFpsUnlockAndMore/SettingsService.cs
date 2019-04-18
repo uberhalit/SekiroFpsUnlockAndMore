@@ -37,13 +37,19 @@ namespace SekiroFpsUnlockAndMore
         [XmlElement]
         public bool cbBorderlessStretch { get; set; }
         [XmlElement]
+        public bool cbLogStats { get; set; }
+        [XmlElement]
+        public bool exGameMods { get; set; }
+        [XmlElement]
         public bool cbCamAdjust { get; set; }
         [XmlElement]
         public bool cbCamReset { get; set; }
         [XmlElement]
-        public bool cbLogStats { get; set; }
+        public bool cbDragonrot { get; set; }
         [XmlElement]
-        public bool exGameMods { get; set; }
+        public bool cbDeathPenalty { get; set; }
+        [XmlElement]
+        public int hiddenDPs { get; set; }
         [XmlElement]
         public bool cbGameSpeed { get; set; }
         [XmlElement]
@@ -52,6 +58,8 @@ namespace SekiroFpsUnlockAndMore
         public bool cbPlayerSpeed { get; set; }
         [XmlElement]
         public int tbPlayerSpeed { get; set; }
+        [XmlElement]
+        public bool exGuide { get; set; }
     }
 
     public class SettingsService
@@ -103,16 +111,33 @@ namespace SekiroFpsUnlockAndMore
         internal void Save()
         {
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(ApplicationSettings));
-            using (StreamWriter streamReader = new StreamWriter(_sConfigurationPath))
+            using (StreamWriter streamWriter = new StreamWriter(_sConfigurationPath))
             { 
                 try
                 {
-                    xmlSerializer.Serialize(streamReader, ApplicationSettings);
+                    xmlSerializer.Serialize(streamWriter, ApplicationSettings);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error while writing configuration file:\n" + ex.Message, "Sekiro FPS Unlocker and more");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Clears all settings and deletes the settings file.
+        /// </summary>
+        internal void Clear()
+        {
+            ApplicationSettings = new ApplicationSettings();
+            try
+            {
+                if (File.Exists(_sConfigurationPath))
+                    File.Delete(_sConfigurationPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error while trying to delete configuration file:\n" + ex.Message, "Sekiro FPS Unlocker and more");
             }
         }
     }
