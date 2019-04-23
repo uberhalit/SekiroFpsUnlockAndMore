@@ -229,6 +229,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Version History
 
+* v1.2.3.1 (2019-04-23)
+  * added game version 1.03 (1.3.0.0) to supported versions
 * v1.2.3.0 (2019-04-18)
   * Added option to prevent increase of dragonrot upon death
   * Added option to disable Sen and experience penalties upon death
