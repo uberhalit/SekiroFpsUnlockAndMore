@@ -314,7 +314,7 @@ namespace SekiroFpsUnlockAndMore
             }
 
             string gameFileVersion = FileVersionInfo.GetVersionInfo(procList[0].MainModule.FileName).FileVersion;
-            if (gameFileVersion != GameData.PROCESS_EXE_VERSION && !_settingsService.ApplicationSettings.gameVersionNotify)
+            if (gameFileVersion != GameData.PROCESS_EXE_VERSION && Array.IndexOf(GameData.PROCESS_EXE_VERSION_SUPPORTED, gameFileVersion) < 0 && !_settingsService.ApplicationSettings.gameVersionNotify)
             {
                 MessageBox.Show(string.Format("Unknown game version '{0}'.\nSome functions might not work properly or even crash the game. " +
                                 "Check for updates on this utility regularly following the link at the bottom.", gameFileVersion), "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -507,6 +507,7 @@ namespace SekiroFpsUnlockAndMore
 
             long lpPlayerStructRelated1 = patternScan.FindPattern(GameData.PATTERN_TIMESCALE_PLAYER);
             Debug.WriteLine("lpPlayerStructRelated1 found at: 0x" + lpPlayerStructRelated1.ToString("X"));
+
             if (IsValidAddress(lpPlayerStructRelated1))
             {
                 long lpPlayerStructRelated2 = DereferenceStaticX64Pointer(_gameAccessHwndStatic, lpPlayerStructRelated1, GameData.PATTERN_TIMESCALE_PLAYER_INSTRUCTION_LENGTH);

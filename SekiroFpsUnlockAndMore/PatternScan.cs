@@ -72,13 +72,12 @@ namespace SekiroFpsUnlockAndMore
             long ix;
             int iy;
             bool bFound = false;
-            int patternLength = bPattern.Length;
-            int dataLength = bData.Length - patternLength;
+            int dataLength = bData.Length - bPattern.Length;
 
             for (ix = 0; ix < dataLength; ix++)
             {
                 bFound = true;
-                for (iy = 0; iy < patternLength; iy++)
+                for (iy = bPattern.Length - 1; iy > -1; iy--)
                 {
                     if (szMask[iy] != 'x' || bPattern[iy] == bData[ix + iy])
                         continue;
@@ -87,7 +86,7 @@ namespace SekiroFpsUnlockAndMore
                 }
 
                 if (bFound)
-                    return Convert.ToInt64((long) dwStart + ix);
+                    return dwStart + ix;
             }
 
             return 0;
