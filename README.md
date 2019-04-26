@@ -30,6 +30,7 @@ Patches games memory while running, does not modify any game files. Works with e
 * automatically patch game on startup
 * seamlessly switch between windowed, borderless and borderless fullscreen
 * hotkey for patching while in (borderless) window mode
+* hotkey for toggling speed modifier while in (borderless) window mode
 
 ## Usage
 
@@ -68,12 +69,13 @@ The game enforces VSYNC and forces 60 Hz in fullscreen even on 144 Hz monitors s
 6. Press the yellow star icon in the menu bar to create a new Profile (1)
 7. [![Vertical sync Off and Preferred refresh rate Highest available](https://camo.githubusercontent.com/531be3614b0742e9065f8c2a19df7e31afcdc7ed/68747470733a2f2f692e696d6775722e636f6d2f6f75664a7239632e706e67)](#)
 8. Name it `Sekiro` and select it in dropdown
-9. Press the blue window icon with the plus symbol to add an application to this profile (2)
+9.  Press the blue window icon with the plus symbol to add an application to this profile (2)
 10. Change file type to `Application Absolute Path`, navigate to your `sekiro.exe` and select it
 11. [![Application Absolute Path](https://camo.githubusercontent.com/0bb8ace024658dfcb31c5f3347df1505854819ec/68747470733a2f2f692e696d6775722e636f6d2f545669495357562e706e67)](#)
 12. Make sure that the file path to the game is correct (3)
 13. Under `2 - Sync and Refresh` set `Prefered Refreshrate` to `Highest available` and `Vertical Sync` to `Force off` (4)
 14. Hit `Apply changes` and you are good to go (5)
+15. The success rate of these steps depend on your GPU and monitor combination, most will work fine however some (mostly older ones) wont, if your monitor is still locked at 60Hz in fullscreen after this then your only option remaining is to play in windowed mode.
 
 ### Follow these steps on AMD:
 1. Right click on Desktop -> `Display settings`
@@ -151,11 +153,10 @@ This option will remove the effect dragonrot has on NPCs, if an NPC already got 
 Like 'Unseen Aid' you will not lose any Sen or Experience upon death with this option enabled. Dragonrot will not be modified, check the option above to prevent dragonrot from increasing.
 
 ### On 'Game speed':
-Slow down the game to beat a boss like a game journalist or speed it up and become gud. Game speed acts as a global time scale and is used by the game itself to create a dramatic effect in a few cutscenes. All game physics (even opening the menu) will be affected equally: all time-critical windows like dodge and deflect will be proportionally prolonged or shortened while the amount of damage given and taken as well as all other damage physics will be unaltered. A hit from an enemy on 150% game speed will do the exact same damage as on 80%, the deflect window on 50% is exactly twice as long as on 100% and so on. Of course, Sekiro himself will be affected by the speed too so even though a time window might me different now, the speed which you can react on it is different too.
-Be aware that both speed modifications can potentially crash the game in certain cutscenes and NPC interactions so use them with caution.
+Slow down the game to beat a boss like a game journalist or speed it up and become gud. Game speed acts as a global time scale and is used by the game itself to create a dramatic effect in a few cutscenes. All game physics (even opening the menu) will be affected equally: all time-critical windows like dodge and deflect will be proportionally prolonged or shortened while the amount of damage given and taken as well as all other damage physics will be unaltered. A hit from an enemy on 150% game speed will do the exact same damage as on 80%, the deflect window on 50% is exactly twice as long as on 100% and so on. Of course, Sekiro himself will be affected by the speed too so even though a time window might be different now, the speed which you can react on it is different too. Can be toggled by pressing CTRL+M. Be aware that both speed modifications can potentially crash the game in certain cutscenes and NPC interactions so use them with caution.
 
 ### On 'Player speed':
-This modifier enables you to control Sekiro's speed independently from general game speed. Combat physics however are not guaranteed to stay the same on every setting. For example if you increase player speed you will be able to react to an attack faster but your own 'deflect' window is shorter now because you move faster. Use this to explore the world or to keep player speed near normal while decreasing general game speed. Grappling as well as jumping is handled by game speed while falling damage is calculated based on player speed so take care when grappling to a lower level with a low game speed and high player speed as this could instantly kill you as the game thinks you fell to death.
+This modifier enables you to control Sekiro's speed independently from general game speed. Combat physics however are not guaranteed to stay the same on every setting. For example if you increase player speed you will be able to react to an attack faster but your own 'deflect' window is shorter now because you move faster. Use this to explore the world or to keep player speed near normal while altering general game speed. Grappling as well as jumping is handled by game speed while falling damage is calculated based on player speed so take care when grappling to a lower level with a low game speed and high player speed as this could instantly kill you as the game thinks you fell to death.
 Be aware that both speed modifications can potentially crash the game in certain cutscenes and NPC interactions so use them with caution.
 
 ## Troubleshooting:
@@ -219,6 +220,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 * the game has forced VSYNC so unlocking the frame rate when your monitor has 60Hz will do nothing. You'll have to disable VSYNC in Nvidia Control Panel or AMD Radeon Settings first, see Usage
 * in fullscreen the game forces the monitor to 60 Hz so you'll have to handle this with driver override too, see Usage
+* if your monitor does not support Hz override (Preferred Refreshrate missing and Profile Inspector won't work either) you won't be able to play at a higher refresh rate in fullscreen, play in windowed mode as an alternative
 * your monitor has to natively support your custom resolution otherwise it won't show up correctly
 * if a custom resolution is used it has to be added and selected before enabling borderless window
 * due to how the game renders the HUD is limited to 16:9 even on 21:9 resolutions
@@ -229,6 +231,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Version History
 
+* v1.2.3.2 (2019-04-26)
+  * added hotkey to toggle speed modifiers (CTRL+M) 
+  * added game version 1.04 (1.4.0.0) to supported versions
 * v1.2.3.1 (2019-04-23)
   * added game version 1.03 (1.3.0.0) to supported versions
 * v1.2.3.0 (2019-04-18)
@@ -268,7 +273,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
   * FOV will now stick even between loads
   * Fixed a potential issue with unlimited frame rate unlock
   * Fixed a potential issue when user tried to enable borderless while in minimized fullscreen
-  * Improved initial load time til game is patchable
+  * Improved initial load time till game is patchable
 * v1.0.2.0 (2019-03-26)
   * Added option to reduce FOV (request)
   * Added option to stretch borderless window to fullscreen regardless of window resolution

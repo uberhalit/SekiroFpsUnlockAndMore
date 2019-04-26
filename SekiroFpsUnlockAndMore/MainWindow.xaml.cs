@@ -100,8 +100,8 @@ namespace SekiroFpsUnlockAndMore
                 this.sbInput.Text = _settingsService.ApplicationSettings.peasantInput ? "Controller" : "Mouse";
 
             IntPtr hWnd = new WindowInteropHelper(this).Handle;
-            if (!RegisterHotKey(hWnd, 9009, MOD_CONTROL, VK_P))
-                MessageBox.Show("Hotkey is already in use, it may not work.", "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Warning);
+            if (!RegisterHotKey(hWnd, 9009, MOD_CONTROL, VK_M) || !RegisterHotKey(hWnd, 9010, MOD_CONTROL, VK_P))
+                MessageBox.Show("A Hotkey is already in use, it may not work.", "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Warning);
 
             ComponentDispatcher.ThreadFilterMessage += new ThreadMessageEventHandler(ComponentDispatcherThreadFilterMessage);
 
@@ -141,6 +141,7 @@ namespace SekiroFpsUnlockAndMore
             ComponentDispatcher.ThreadFilterMessage -= ComponentDispatcherThreadFilterMessage;
             IntPtr hWnd = new WindowInteropHelper(this).Handle;
             UnregisterHotKey(hWnd, 9009);
+            UnregisterHotKey(hWnd, 9010);
             if (_gameAccessHwnd != IntPtr.Zero)
                 CloseHandle(_gameAccessHwnd);
         }
@@ -153,7 +154,23 @@ namespace SekiroFpsUnlockAndMore
             if (handled) return;
             if (msg.message != WM_HOTKEY_MSG_ID) return;
 
-            if (msg.wParam.ToInt32() == 9009)   // patch game
+            if (msg.wParam.ToInt32() == 9009)   // toggle speed modifier
+            {
+                if (this.cbGameSpeed.IsEnabled && this.cbPlayerSpeed.IsEnabled)
+                {
+                    if (this.cbGameSpeed.IsChecked == false)
+                    {
+                        this.cbGameSpeed.IsChecked = true;
+                        this.cbPlayerSpeed.IsChecked = true;
+                    }
+                    else
+                    {
+                        this.cbGameSpeed.IsChecked = false;
+                        this.cbPlayerSpeed.IsChecked = false;
+                    }
+                }
+            }
+            else if (msg.wParam.ToInt32() == 9010)   // patch game
             {
                 handled = true;
                 PatchGame();
@@ -1724,6 +1741,7 @@ namespace SekiroFpsUnlockAndMore
 
         private const int WM_HOTKEY_MSG_ID = 0x0312;
         private const int MOD_CONTROL = 0x0002;
+        private const uint VK_M = 0x004D;
         private const uint VK_P = 0x0050;
         private const uint PROCESS_ALL_ACCESS = 0x001F0FFF;
         private const int GWL_STYLE = -16;

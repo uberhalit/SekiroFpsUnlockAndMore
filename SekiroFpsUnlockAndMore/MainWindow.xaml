@@ -76,6 +76,7 @@
                             <Run FontWeight="Bold">Custom resolution adds 21:9 support and overwrites a default resolution, hud will be limited to 16:9.</Run>
                             <Run>Borderless window mode with custom resolution requires you to patch and set resolution first, then activate borderless afterwards.</Run>
                             <Run FontWeight="Bold">Disabling camera auto rotate is mostly intended for mouse users.</Run>
+                            <Run>Both speed modifiers can be toggled by pressing hotkey CTRL+M.</Run>
                             <Run FontWeight="Bold">To enable Player Speed modification you have to be ingame first.</Run>
                             <Run FontWeight="Bold" Foreground="#FFF00000">See the link below for detailed information, guides, GSYNC support and an AMD fix.</Run>
                         </TextBlock.Inlines>
