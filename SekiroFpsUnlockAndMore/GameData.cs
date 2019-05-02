@@ -107,9 +107,9 @@ namespace SekiroFpsUnlockAndMore
         /**
             Reference pointer pCurrentResolutionWidth to <int>iInternalGameWidth (and <int>iInternalGameHeight which is +4 bytes).
             000000014114B5C5 | 0F57D2                       | xorps xmm2,xmm2                                       |
-            000000014114B5C8 | 890D 521B7D02                | mov dword ptr ds:[14391D120],ecx                      |
+            000000014114B5C8 | 890D 521B7D02                | mov dword ptr ds:[14391D120],ecx                      | iInternalGameWidth
             000000014114B5CE | 0F57C9                       | xorps xmm1,xmm1                                       |
-            000000014114B5D1 | 8915 4D1B7D02                | mov dword ptr ds:[14391D124],edx                      |
+            000000014114B5D1 | 8915 4D1B7D02                | mov dword ptr ds:[14391D124],edx                      | iInternalGameHeight
 
             000000014114AC88 (Version 1.2.0.0)
          */
@@ -165,7 +165,7 @@ namespace SekiroFpsUnlockAndMore
             00000001407AAD68 | 898B F8000000                | mov dword ptr ds:[rbx+F8],ecx                         |
             00000001407AAD6E | 48:8B05 BBDF3903             | mov rax,qword ptr ds:[143B48D30]                      | pPlayerStatsRelated->[PlayerStats+0x90]->iPlayerDeaths
             00000001407AAD75 | 8B88 90000000                | mov ecx,dword ptr ds:[rax+90]                         | offset pPlayerStats->iPlayerDeaths
-
+            
             00000001407AACAF (Version 1.2.0.0)
         */
         // credits to 'Me_TheCat' for original offset
@@ -176,16 +176,20 @@ namespace SekiroFpsUnlockAndMore
 
 
         /**
-            Reference pointer pTotalKills to <int>iTotalKills, does not get updated on every kill but mostly on every 2nd, includes own player deaths...
-            0000000141152178 | 48:8D0D A9ACB302             | lea rcx,qword ptr ds:[143C8CE28]                      | pTotalKills->iTotalKills
-            000000014115217F | 891481                       | mov dword ptr ds:[rcx+rax*4],edx                      |
-            0000000141152182 | C3                           | ret                                                   |
-
-            0000000141151838 (Version 1.2.0.0)
-         */
-        // credits to 'Me_TheCat' for original offset
-        internal const string PATTERN_TOTAL_KILLS = "48 8D 0D ?? ?? ?? ?? 89 14 81 C3";
+            Reference pointer pPlayerStatsRelated to 2 more PlayerStatsRelated pointer, offset in struct to <int>iTotalKills.
+            00000001407BFE25 | 48:69D8 18020000              | imul rbx,rax,218                         |
+            00000001407BFE2C | 48:8B05 FD8E3803              | mov rax,qword ptr ds:[143B48D30]         | pPlayerStatsRelated->[PlayerStatsRelated1+0x08]->[PlayerStatsRelated2+0xDC]->iTotalKills
+            00000001407BFE33 | 48:03D9                       | add rbx,rcx                              |
+            00000001407BFE36 | 48:897C24 20                  | mov qword ptr ss:[rsp+20],rdi            |
+            00000001407BFE3B | 48:8B78 08                    | mov rdi,qword ptr ds:[rax+8]             | offset PlayerStatsRelated1->PlayerStatsRelated2
+            
+            0000000000000000 (Version 1.2.0.0)
+        */
+        internal const string PATTERN_TOTAL_KILLS = "48 ?? D8 ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 ?? ?? 48 89 ?? ?? ?? 48 8B ?? 08";
+        internal const int PATTERN_TOTAL_KILLS_OFFSET = 7;
         internal const int PATTERN_TOTAL_KILLS_INSTRUCTION_LENGTH = 7;
+        internal const int PATTERN_TOTAL_KILLS_POINTER1_OFFSET = 0x0008;
+        internal const int PATTERN_TOTAL_KILLS_POINTER2_OFFSET = 0x00DC;
 
 
         /**
@@ -370,6 +374,48 @@ namespace SekiroFpsUnlockAndMore
 
 
         /**
+            Whenever we upgrade a prosthetic or learn an ability the following function block will get called. 
+            We inject a check to determine if case is prosthetic and set register affecting SkillEffect4 to 1 so that the upgrade increases our maximum spirit emblem capacity.
+            Type for struct SKILL_PARAM_ST is defined below.
+            0000000140A84C29 | 48:85C0                      | test rax,rax                                          |
+            0000000140A84C2C | 74 4A                        | je sekiro.140A84C78                                   | IncreaseSkill4OnUpgrade ?
+            0000000140A84C2E | 0FB650 37                    | movzx edx,byte ptr ds:[rax+37]                        | get SKILL_PARAM_ST.SkillEffect4 to edx | code inject overwrite from here
+            0000000140A84C32 | 85D2                         | test edx,edx                                          | check if edx is 0
+            0000000140A84C34 | 74 42                        | je sekiro.140A84C78                                   | if 0 jump here | jump back here from code inject
+            0000000140A84C36 | 48:8B0D F3400C03             | mov rcx,qword ptr ds:[143B48D30]                      | increase skill4 on upgrade routine
+            0000000140A84C3D | 48:8B49 08                   | mov rcx,qword ptr ds:[rcx+8]                          |
+            0000000140A84C41 | 48:85C9                      | test rcx,rcx                                          |
+            0000000140A84C44 | 74 32                        | je sekiro.140A84C78                                   |
+            0000000140A84C46 | 48:81C1 46010000             | add rcx,146                                           |
+            0000000140A84C4D | 66:0111                      | add word ptr ds:[rcx],dx                              | increases Skill4 on upgrade, will get skipped if edx == 0
+
+            0000000000000000 (Version 1.2.0.0)
+
+            [StructLayout(LayoutKind.Explicit, Size = 0x0060)]
+            private struct SKILL_PARAM_ST
+            {
+                [FieldOffset(0x0030)]
+                private Int32 SkillFamily;      // (Unk6) 2700000 for prosthetic upgrades
+
+                [FieldOffset(0x0037)]
+                private UInt16 SkillEffect4;    // (Unk10) controls how much spirit emblem capacity rises on acquisition of skill/upgrade
+            }
+         */
+        internal const string PATTERN_EMBLEMUPGRADE = "48 85 C0 74 ?? 0F B6 50 37 85 D2 74 ?? 48 8B 0D";
+        internal const int PATTERN_EMBLEMUPGRADE_OFFSET = 5;
+        internal const int INJECT_EMBLEMUPGRADE_OVERWRITE_LENGTH = 6;
+        internal static readonly byte[] INJECT_EMBLEMUPGRADE_SHELLCODE = new byte[]
+        {
+            0x81, 0x78, 0x30, 0xE0, 0x32, 0x29, 0x00,   // cmp dword ptr ds:[rax+30],2932E0     | if (SKILL_PARAM_ST.SkillFamily == 2700000)
+            0x75, 0x07,                                 // jne +7                               | {
+            0xBA, 0x01, 0x00, 0x00, 0x00,               // mov edx,1                            | edx = 1
+            0xEB, 0x04,                                 // jmp +4                               | } else {
+            0x0F, 0xB6, 0x50, 0x37,                     // movzx edx,byte ptr ds:[rax+37]       | edx = SKILL_PARAM_ST.SkillEffect4 }
+            0x85, 0xD2                                  // test edx,edx                         | check if edx is 0
+        };
+
+
+        /**
             Reference pointer pTimeRelated to TimescaleManager pointer, offset in struct to <float>fTimescale which acts as a global speed scale for almost all ingame calculations.
             000000014114A7C7 | 48:8B05 3A2BB402             | mov rax,qword ptr ds:[143C8D308]                      | pTimeRelated->[TimescaleManager+0x360]->fTimescale
             000000014114A7CE | F3:0F1088 60030000           | movss xmm1,dword ptr ds:[rax+360]                     | offset TimescaleManager->fTimescale
@@ -396,9 +442,9 @@ namespace SekiroFpsUnlockAndMore
         // credits to 'Zullie the Witch' for original offset
         internal const string PATTERN_TIMESCALE_PLAYER = "48 8B 1D ?? ?? ?? ?? 48 85 DB 74 ?? 8B ?? 81 FA";
         internal const int PATTERN_TIMESCALE_PLAYER_INSTRUCTION_LENGTH = 7;
-        internal const int PATTERN_TIMESCALE_POINTER2_OFFSET = 0x88;
+        internal const int PATTERN_TIMESCALE_POINTER2_OFFSET = 0x0088;
         internal const int PATTERN_TIMESCALE_POINTER3_OFFSET = 0x1FF8;
-        internal const int PATTERN_TIMESCALE_POINTER4_OFFSET = 0x28;
-        internal const int PATTERN_TIMESCALE_POINTER5_OFFSET = 0xD00;
+        internal const int PATTERN_TIMESCALE_POINTER4_OFFSET = 0x0028;
+        internal const int PATTERN_TIMESCALE_POINTER5_OFFSET = 0x0D00;
     }
 }

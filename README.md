@@ -152,6 +152,9 @@ This option will remove the effect dragonrot has on NPCs, if an NPC already got 
 ### On 'Disable death penalties (except dragonrot)':
 Like 'Unseen Aid' you will not lose any Sen or Experience upon death with this option enabled. Dragonrot will not be modified, check the option above to prevent dragonrot from increasing.
 
+### On 'Increase spirit emblem cap. on upgrades':
+Whenever you upgrade your prosthetic arm the maximum spirit emblem capacity will now be increased by 1 **permanently**. Deactivating this option will not remove the additional capacity gained by it. With the base 15 capacity and +5 capacity by skills the normal maximal capacity is 20, with this feature enabled you can reach up to 50 max capacity as there are 30 prosthetic upgrades.
+
 ### On 'Game speed':
 Slow down the game to beat a boss like a game journalist or speed it up and become gud. Game speed acts as a global time scale and is used by the game itself to create a dramatic effect in a few cutscenes. All game physics (even opening the menu) will be affected equally: all time-critical windows like dodge and deflect will be proportionally prolonged or shortened while the amount of damage given and taken as well as all other damage physics will be unaltered. A hit from an enemy on 150% game speed will do the exact same damage as on 80%, the deflect window on 50% is exactly twice as long as on 100% and so on. Of course, Sekiro himself will be affected by the speed too so even though a time window might be different now, the speed which you can react on it is different too. Can be toggled by pressing CTRL+M. Be aware that both speed modifications can potentially crash the game in certain cutscenes and NPC interactions so use them with caution.
 
@@ -163,6 +166,7 @@ Be aware that both speed modifications can potentially crash the game in certain
 * Utility can't seem to find the game? - Make sure your game exe is called `sekiro.exe`
 * Make sure you followed the appropriate steps and didn't skip any (especially not the deletion of the Sekiro profile!)
 * Try disabling `Fullscreen optimization` for Sekiro: right mouse click on `sekiro.exe -> Compatibility-> tick 'Disable fullscreen optimizations'`
+* If you are using ReShade make sure your preset doesn't enforce 60 Hz, try removing ReShade and see if it solves the problem
 * Try adding the whole game folder and `Sekiro FPS Unlocker and more` to your antivirus's exclusion list
 * Try disabling `Steam Broadcast` (streaming via overlay)
 * Try to force disable VSYNC even when you are using GSYNC
@@ -181,7 +185,7 @@ Be aware that both speed modifications can potentially crash the game in certain
 
 ## Preview
 
-[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/09e0d1ddd5c0216649cf20fcd7d92898492a04e6/68747470733a2f2f692e696d6775722e636f6d2f5774547632654d2e706e67)](#)
+[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/998730c9a8d472c8e426f61d0dde589661b4f378/68747470733a2f2f692e696d6775722e636f6d2f466249424271742e706e67)](#)
 
 ### Unlocked framerate
 [![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/53f52adb98a5111b31538466f91b58599d56d6d7/68747470733a2f2f692e696d6775722e636f6d2f4c4c524a5a554c2e706e67)](#)
@@ -231,6 +235,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Version History
 
+* v1.2.4.0 (2019-05-02)
+  * added feature to increase spirit emblem capacity on prosthetic upgrades
+  * changed way to obtain player kills, fixes slow stats updates
+  * improved pattern scan algorithm
 * v1.2.3.2 (2019-04-26)
   * added hotkey to toggle speed modifiers (CTRL+M) 
   * added game version 1.04 (1.4.0.0) to supported versions

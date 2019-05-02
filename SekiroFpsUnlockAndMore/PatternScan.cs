@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -71,25 +72,45 @@ namespace SekiroFpsUnlockAndMore
 
             long ix;
             int iy;
-            bool bFound = false;
+
+            List<byte> not0PatternBytesList = new List<byte>();
+            List<int> not0PatternBytesIndexList = new List<int>();
+
             int dataLength = bData.Length - bPattern.Length;
+
+            for (iy = bPattern.Length - 1; iy > -1; iy--)
+            {
+                if (szMask[iy] == 'x')
+                {
+                    not0PatternBytesList.Add(bPattern[iy]);
+                    not0PatternBytesIndexList.Add(iy);
+                }
+            }
+
+            byte[] not0PatternBytesArray = not0PatternBytesList.ToArray();
+            int not0PatternBytesL = not0PatternBytesArray.Length;
+            int[] not0PatternBytesIndexArray = not0PatternBytesIndexList.ToArray();
 
             for (ix = 0; ix < dataLength; ix++)
             {
-                bFound = true;
-                for (iy = bPattern.Length - 1; iy > -1; iy--)
+                if (not0PatternBytesArray[not0PatternBytesL - 1] != bData[ix]) continue;
+                bool check = true;
+
+                for (iy = not0PatternBytesArray.Length - 1; iy > -1; iy--)
                 {
-                    if (szMask[iy] != 'x' || bPattern[iy] == bData[ix + iy])
+                    if (not0PatternBytesArray[iy] == bData[ix + not0PatternBytesIndexArray[iy]])
                         continue;
-                    bFound = false;
+                    check = false;
                     break;
                 }
 
-                if (bFound)
+                if (check)
+                {
                     return dwStart + ix;
+                }
             }
 
-            return 0;
+            return -1;
         }
 
 

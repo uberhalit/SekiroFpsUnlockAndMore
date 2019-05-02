@@ -26,8 +26,8 @@ namespace SekiroFpsUnlockAndMore
         internal long _offset_resolution = 0x0;
         internal long _offset_resolution_default = 0x0;
         internal long _offset_resolution_scaling_fix = 0x0;
-        internal long _offset_total_kills = 0x0;
         internal long _offset_player_deaths = 0x0;
+        internal long _offset_total_kills = 0x0;
         internal long _offset_camera_reset = 0x0;
         internal long _offset_dragonrot_routine = 0x0;
         internal long _offset_deathpenalties1 = 0x0;
@@ -54,6 +54,7 @@ namespace SekiroFpsUnlockAndMore
         internal bool _dataCave_speedfix = false;
         internal bool _dataCave_fovsetting = false;
         internal bool _codeCave_camadjust = false;
+        internal bool _codeCave_emblemupgrade = false;
         internal bool _retryAccess = true;
         internal bool _statLoggingEnabled = false;
         internal bool _initialStartup = true;
@@ -70,6 +71,7 @@ namespace SekiroFpsUnlockAndMore
         internal const string _CODECAVE_CAMADJUST_YAW_Z = "camAdjustYawZ";
         internal const string _CODECAVE_CAMADJUST_PITCH_XY = "camAdjustPitchXY";
         internal const string _CODECAVE_CAMADJUST_YAW_XY = "camAdjustYawXY";
+        internal const string _CODECAVE_EMBLEM_UPGRADE = "emblemCapUpgrade";
 
         public MainWindow()
         {
@@ -201,6 +203,7 @@ namespace SekiroFpsUnlockAndMore
             this.cbDeathPenalty.IsChecked = _settingsService.ApplicationSettings.cbDeathPenalty;
             this.cbDeathPenaltyHidden.Visibility = _settingsService.ApplicationSettings.hiddenDPs == ZUH_HIDDEN_DP ? Visibility.Visible : Visibility.Collapsed;
             if (_settingsService.ApplicationSettings.hiddenDPs == ZUH_HIDDEN_DP) { _debugMode = true; sbMode.Text = "DEBUG"; }
+            this.cbEmblemUpgrade.IsChecked = _settingsService.ApplicationSettings.cbEmblemUpgrade;
             this.cbGameSpeed.IsChecked = _settingsService.ApplicationSettings.cbGameSpeed;
             this.tbGameSpeed.Text = _settingsService.ApplicationSettings.tbGameSpeed.ToString();
             this.cbPlayerSpeed.IsChecked = _settingsService.ApplicationSettings.cbPlayerSpeed;
@@ -228,6 +231,7 @@ namespace SekiroFpsUnlockAndMore
             _settingsService.ApplicationSettings.cbCamReset = this.cbCamReset.IsChecked == true;
             _settingsService.ApplicationSettings.cbDragonrot = this.cbDragonrot.IsChecked == true;
             _settingsService.ApplicationSettings.cbDeathPenalty = this.cbDeathPenalty.IsChecked == true;
+            _settingsService.ApplicationSettings.cbEmblemUpgrade = this.cbEmblemUpgrade.IsChecked == true;
             _settingsService.ApplicationSettings.cbGameSpeed = this.cbGameSpeed.IsChecked == true;
             _settingsService.ApplicationSettings.tbGameSpeed = this.tbGameSpeed.Text != "" && !this.tbGameSpeed.Text.Contains(" ") ? Convert.ToInt32(this.tbGameSpeed.Text) : 100;
             _settingsService.ApplicationSettings.cbPlayerSpeed = this.cbPlayerSpeed.IsChecked == true;
@@ -422,14 +426,25 @@ namespace SekiroFpsUnlockAndMore
             if (!IsValidAddress(_offset_player_deaths))
                 _offset_player_deaths = 0x0;
 
-            long ref_lpTotalKills = patternScan.FindPattern(GameData.PATTERN_TOTAL_KILLS);
+            long ref_lpTotalKills = patternScan.FindPattern(GameData.PATTERN_TOTAL_KILLS) + GameData.PATTERN_TOTAL_KILLS_OFFSET;
             Debug.WriteLine("ref_lpTotalKills found at: 0x" + ref_lpTotalKills.ToString("X"));
             if (IsValidAddress(ref_lpTotalKills))
             {
-                _offset_total_kills = DereferenceStaticX64Pointer(_gameAccessHwndStatic, ref_lpTotalKills, GameData.PATTERN_TOTAL_KILLS_INSTRUCTION_LENGTH);
-                if (!IsValidAddress(_offset_total_kills))
-                    _offset_total_kills = 0x0;
+                long lpPlayerStatsRelatedKills1 = DereferenceStaticX64Pointer(_gameAccessHwndStatic, ref_lpTotalKills, GameData.PATTERN_TOTAL_KILLS_INSTRUCTION_LENGTH);
+                Debug.WriteLine("lpPlayerStatsRelatedKills found at: 0x" + lpPlayerStatsRelatedKills1.ToString("X"));
+                if (IsValidAddress(lpPlayerStatsRelatedKills1))
+                {
+                    long lpPlayerStructRelatedKills2 = Read<Int64>(_gameAccessHwndStatic, lpPlayerStatsRelatedKills1) + GameData.PATTERN_TOTAL_KILLS_POINTER1_OFFSET;
+                    Debug.WriteLine("lpPlayerStructRelatedKills2 found at: 0x" + lpPlayerStructRelatedKills2.ToString("X"));
+                    if (IsValidAddress(lpPlayerStructRelatedKills2))
+                    {
+                        _offset_total_kills = Read<Int64>(_gameAccessHwndStatic, lpPlayerStructRelatedKills2) + GameData.PATTERN_TOTAL_KILLS_POINTER2_OFFSET;
+                        Debug.WriteLine("iTotalKills found at: 0x" + _offset_total_kills.ToString("X"));
+                    }
+                }
             }
+            if (!IsValidAddress(_offset_total_kills))
+                _offset_total_kills = 0x0;
 
             long lpCamAdjustPitch = patternScan.FindPattern(GameData.PATTERN_CAMADJUST_PITCH);
             long lpCamAdjustYawZ = patternScan.FindPattern(GameData.PATTERN_CAMADJUST_YAW_Z) + GameData.PATTERN_CAMADJUST_YAW_Z_OFFSET;
@@ -505,6 +520,15 @@ namespace SekiroFpsUnlockAndMore
                 Debug.WriteLine("lpDeathsCounter found at: 0x" + _offset_deathscounter_routine.ToString("X"));
                 if (!IsValidAddress(_offset_deathscounter_routine))
                     _offset_deathscounter_routine = 0x0;
+            }
+
+            long lpSkill4OnUpgrade = patternScan.FindPattern(GameData.PATTERN_EMBLEMUPGRADE) + GameData.PATTERN_EMBLEMUPGRADE_OFFSET;
+            Debug.WriteLine("lpSkill4OnUpgrade found at: 0x" + lpSkill4OnUpgrade.ToString("X"));
+            if (IsValidAddress(lpSkill4OnUpgrade))
+            {
+                if (_memoryCaveGenerator.CreateNewCodeCave(_CODECAVE_EMBLEM_UPGRADE, lpSkill4OnUpgrade, GameData.INJECT_EMBLEMUPGRADE_OVERWRITE_LENGTH, GameData.INJECT_EMBLEMUPGRADE_SHELLCODE))
+                    _codeCave_emblemupgrade = true;
+                Debug.WriteLine("lpSkill4OnUpgrade code cave at: 0x" + _memoryCaveGenerator.GetCodeCaveAddressByName(_CODECAVE_EMBLEM_UPGRADE).ToString("X"));
             }
 
             long ref_lpTimeRelated = patternScan.FindPattern(GameData.PATTERN_TIMESCALE);
@@ -648,6 +672,13 @@ namespace SekiroFpsUnlockAndMore
             if (_offset_deathscounter_routine == 0x0)
                 this.cbDeathPenaltyHidden.IsEnabled = false;
 
+            if (!_codeCave_emblemupgrade)
+            {
+                UpdateStatus("emblem upgrade not found...", Brushes.Red);
+                LogToFile("emblem upgrade not found...");
+                this.cbEmblemUpgrade.IsEnabled = false;
+            }
+
             if (_offset_timescale == 0x0)
             {
                 UpdateStatus("timescale not found...", Brushes.Red);
@@ -664,7 +695,8 @@ namespace SekiroFpsUnlockAndMore
             this.bPatch.IsEnabled = true;
             _running = true;
             PatchGame();
-            InjectToGame();
+            InjectCamAdjust();
+            InjectEmblemUpgrades();
         }
 
         /// <summary>
@@ -728,6 +760,7 @@ namespace SekiroFpsUnlockAndMore
             _offset_deathpenalties1 = 0x0;
             _offset_deathpenalties2 = 0x0;
             _offset_deathscounter_routine = 0x0;
+            _codeCave_emblemupgrade = false;
             _offset_timescale = 0x0;
             _offset_timescale_player = 0x0;
             _offset_timescale_player_pointer_start = 0x0;
@@ -1149,9 +1182,9 @@ namespace SekiroFpsUnlockAndMore
         }
 
         /// <summary>
-        /// Inject or eject code to game using code caves.
+        /// Inject or eject code to control cam adjustment.
         /// </summary>
-        private void InjectToGame()
+        private void InjectCamAdjust()
         {
             if (!CanPatchGame() || !_codeCave_camadjust) return;
 
@@ -1203,6 +1236,27 @@ namespace SekiroFpsUnlockAndMore
         }
 
         /// <summary>
+        /// Inject or eject code to control emblem upgrades.
+        /// </summary>
+        private void InjectEmblemUpgrades()
+        {
+            if (!CanPatchGame() || !_codeCave_emblemupgrade) return;
+
+            if (this.cbEmblemUpgrade.IsChecked == true)
+            {
+                this.cbEmblemUpgrade.IsEnabled = false;
+                _memoryCaveGenerator.ActivateCodeCaveByName(_CODECAVE_EMBLEM_UPGRADE);
+                this.cbEmblemUpgrade.IsEnabled = true;
+            }
+            else
+            {
+                this.cbEmblemUpgrade.IsEnabled = false;
+                _memoryCaveGenerator.DeactivateCodeCaveByName(_CODECAVE_EMBLEM_UPGRADE);
+                this.cbEmblemUpgrade.IsEnabled = true;
+            }
+        }
+
+        /// <summary>
         /// Freeze values in memory that can't be patched to require no freezing easily.
         /// </summary>
         private void FreezeMemory(object sender, EventArgs e)
@@ -1243,6 +1297,7 @@ namespace SekiroFpsUnlockAndMore
             if (_statLoggingEnabled) LogStatsFile(_path_deathsLog, playerDeaths.ToString());
             int totalKills = Read<Int32>(_gameAccessHwndStatic, _offset_total_kills);
             totalKills -= playerDeaths; // Since this value seems to track every death, including the player
+            if (totalKills < 0) totalKills = 0;
             _statusViewModel.Kills = totalKills;
             if (_statLoggingEnabled) LogStatsFile(_path_killsLog, totalKills.ToString());
         }
@@ -1629,7 +1684,7 @@ namespace SekiroFpsUnlockAndMore
         private void CbCamAdjust_Check_Handler(object sender, RoutedEventArgs e)
         {
             if (this.cbCamAdjust.IsEnabled)
-                InjectToGame();
+                InjectCamAdjust();
         }
 
         private void CbCamReset_Check_Handler(object sender, RoutedEventArgs e)
@@ -1654,6 +1709,12 @@ namespace SekiroFpsUnlockAndMore
         {
             if (this.cbDeathPenaltyHidden.IsEnabled && this.cbDeathPenaltyHidden.Visibility == Visibility.Visible)
                 PatchDeathPenaltyHidden();
+        }
+
+        private void CbEmblemUpgrade_Check_Handler(object sender, RoutedEventArgs e)
+        {
+            if (this.cbEmblemUpgrade.IsEnabled)
+                InjectEmblemUpgrades();
         }
 
         private void CbGameSpeed_Check_Handler(object sender, RoutedEventArgs e)
@@ -1816,7 +1877,6 @@ namespace SekiroFpsUnlockAndMore
             [In, Out] Byte[] lpBuffer,
             UInt64 dwSize,
             out IntPtr lpNumberOfBytesWritten);
-
 
         #endregion
     }

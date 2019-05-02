@@ -51,6 +51,8 @@ namespace SekiroFpsUnlockAndMore
         [XmlElement]
         public int hiddenDPs { get; set; }
         [XmlElement]
+        public bool cbEmblemUpgrade { get; set; }
+        [XmlElement]
         public bool cbGameSpeed { get; set; }
         [XmlElement]
         public int tbGameSpeed { get; set; }

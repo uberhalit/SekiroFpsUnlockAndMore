@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SekiroFpsUnlockAndMore"
         mc:Ignorable="d"
-        Title="Sekiro FPS Unlocker and more v1.2.3" Width="Auto" Height="Auto" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="Sekiro FPS Unlocker and more v1.2.4" Width="Auto" Height="Auto" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
 
     <Grid Background="#FFF9F9F9">
         <DockPanel>
@@ -40,19 +40,20 @@
                             <CheckBox x:Name="cbDragonrot" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Prevent dragonrot increase on death" ToolTip="NPCs won't get the disease and/or their condition won't get worse" Checked="CbDragonrot_Check_Handler" Unchecked="CbDragonrot_Check_Handler" TabIndex="14" />
                             <CheckBox x:Name="cbDeathPenalty" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Disable death penalties (except dragonrot)" ToolTip="Disables Sen and Experience loss upon death" Checked="CbDeathPenalty_Check_Handler" Unchecked="CbDeathPenalty_Check_Handler" TabIndex="15" />
                             <CheckBox x:Name="cbDeathPenaltyHidden" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="(DEBUG) Disable hidden death penalties" ToolTip="DEBUG ONLY" Checked="CbDeathPenaltyHidden_Check_Handler" Unchecked="CbDeathPenaltyHidden_Check_Handler" IsTabStop="False" Visibility="Collapsed" />
+                            <CheckBox x:Name="cbEmblemUpgrade" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Increase spirit emblem cap. on upgrades" ToolTip="Every prosthetic upgrade will increase maximum emblem capacity by 1. PERMANENT INCREASE!" Checked="CbEmblemUpgrade_Check_Handler" Unchecked="CbEmblemUpgrade_Check_Handler" TabIndex="16"/>
                             <DockPanel Margin="0,3,0,0" LastChildFill="False">
-                                <CheckBox x:Name="cbGameSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Game speed (%):" ToolTip="Increase or decrease. Can potentially crash the game in cutscenes, use with caution" Checked="CbGameSpeed_Check_Handler" Unchecked="CbGameSpeed_Check_Handler" TabIndex="16"  />
+                                <CheckBox x:Name="cbGameSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Game speed (%):" ToolTip="Increase or decrease. Can potentially crash the game in cutscenes, use with caution" Checked="CbGameSpeed_Check_Handler" Unchecked="CbGameSpeed_Check_Handler" TabIndex="17"  />
                                 <Button x:Name="bGs100" DockPanel.Dock="Right" Content="100" Margin="0,0,0,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGs100_Click" />
                                 <Button x:Name="bGsHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGsHigher_Click" />
-                                <TextBox x:Name="tbGameSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="17" />
+                                <TextBox x:Name="tbGameSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="18" />
                                 <Button x:Name="bGsLower" DockPanel.Dock="Right" Content="&lt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGsLower_Click" />
                                 <Button x:Name="bGs0" DockPanel.Dock="Right" Content="0" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGs0_Click" />
                             </DockPanel>
                             <DockPanel Margin="0,5,0,0" LastChildFill="False">
-                                <CheckBox x:Name="cbPlayerSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Player speed (%):" ToolTip="Increase or decrease. To enable this start the game and load a save, then tick the checkbox. Can potentially crash the game in cutscenes, use with caution" Checked="CbPlayerSpeed_Check_Handler" Unchecked="CbPlayerSpeed_Check_Handler" TabIndex="18"  />
+                                <CheckBox x:Name="cbPlayerSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Player speed (%):" ToolTip="Increase or decrease. To enable this start the game and load a save, then tick the checkbox. Can potentially crash the game in cutscenes, use with caution" Checked="CbPlayerSpeed_Check_Handler" Unchecked="CbPlayerSpeed_Check_Handler" TabIndex="19"  />
                                 <Button x:Name="bPs100" DockPanel.Dock="Right" Content="100" Margin="0,0,0,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPs100_Click" />
                                 <Button x:Name="bPsHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPsHigher_Click" />
-                                <TextBox x:Name="tbPlayerSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="19" />
+                                <TextBox x:Name="tbPlayerSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="20" />
                                 <Button x:Name="bPsLower" DockPanel.Dock="Right" Content="&lt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPsLower_Click" />
                                 <Button x:Name="bPs0" DockPanel.Dock="Right" Content="0" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPs0_Click" />
                             </DockPanel>
@@ -76,6 +77,8 @@
                             <Run FontWeight="Bold">Custom resolution adds 21:9 support and overwrites a default resolution, hud will be limited to 16:9.</Run>
                             <Run>Borderless window mode with custom resolution requires you to patch and set resolution first, then activate borderless afterwards.</Run>
                             <Run FontWeight="Bold">Disabling camera auto rotate is mostly intended for mouse users.</Run>
+                            <Run>Spirit emblem capacity upgrades are</Run>
+                            <Run FontWeight="Bold" Foreground="#FFF00000">permanent.</Run>
                             <Run>Both speed modifiers can be toggled by pressing hotkey CTRL+M.</Run>
                             <Run FontWeight="Bold">To enable Player Speed modification you have to be ingame first.</Run>
                             <Run FontWeight="Bold" Foreground="#FFF00000">See the link below for detailed information, guides, GSYNC support and an AMD fix.</Run>
@@ -84,7 +87,7 @@
                 </Expander>
                 <Label HorizontalAlignment="Right" FontSize="12 px" TabIndex="22">
                     <Hyperlink NavigateUri="https://github.com/uberhalit/SekiroFpsUnlockAndMore" RequestNavigate="Hyperlink_RequestNavigate">
-                        v1.2.3 - by uberhalit
+                        v1.2.4 - by uberhalit
                     </Hyperlink>
                 </Label>
             </StackPanel>
