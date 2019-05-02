@@ -25,6 +25,7 @@ Patches games memory while running, does not modify any game files. Works with e
 * game modifications
   * prevent dragonrot from increasing upon death
   * disable death penalties like losing Sen or experience
+  * increase spirit emblem capacity on prosthetic upgrades
   * global game speed modifier (increase or decrease)
   * player speed modifier (increase or decrease)
 * automatically patch game on startup
