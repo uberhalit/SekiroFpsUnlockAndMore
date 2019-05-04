@@ -45,6 +45,8 @@ namespace SekiroFpsUnlockAndMore
         [XmlElement]
         public bool cbCamReset { get; set; }
         [XmlElement]
+        public bool cbAutoLoot { get; set; }
+        [XmlElement]
         public bool cbDragonrot { get; set; }
         [XmlElement]
         public bool cbDeathPenalty { get; set; }

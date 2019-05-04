@@ -287,6 +287,20 @@ namespace SekiroFpsUnlockAndMore
 
 
         /**
+            Picking up enemy loot can be automated by setting key press indicator to 1.
+            0000000140910D14 | C685 30010000 01              | mov byte ptr ss:[rbp+130],1              |
+            0000000140910D1B | B0 01                         | mov al,1                                 | triggers loot pickup
+            0000000140910D1D | EB 09                         | jmp sekiro.140910D28                     |
+            0000000140910D1F | C685 30010000 00              | mov byte ptr ss:[rbp+130],0              |
+            0000000140910D26 | 32C0                          | xor al,al                                | resets loot pickup
+         */
+        internal const string PATTERN_AUTOLOOT = "C6 85 ?? ?? ?? ?? ?? B0 01 EB ?? C6 85 ?? ?? ?? ?? ?? 32 C0";
+        internal const int PATTERN_AUTOLOOT_OFFSET = 18;
+        internal static readonly byte[] PATCH_AUTOLOOT_ENABLE = new byte[2] { 0xB0, 0x01}; // mov al,1
+        internal static readonly byte[] PATCH_AUTOLOOT_DISABLE = new byte[2] { 0x32, 0xC0 }; // xor al,al
+
+
+        /**
             Whole dragonrot routine upon death is guarded by a conditional jump, there may be some events in the game where a true death shall not increase the disease so it's skippable as a whole.
             We replace conditional jump with non-conditional one.
             0000000141189D18 | 45:33C0                      | xor r8d,r8d                                           |

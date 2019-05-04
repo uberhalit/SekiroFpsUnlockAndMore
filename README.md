@@ -22,6 +22,7 @@ Patches games memory while running, does not modify any game files. Works with e
 * disable camera auto rotate adjustment on movement (intended for mouse users)
 * disable centering of camera (cam reset) on lock-on if there is no target
 * display hidden death/kill counters and optionally log them to file to display in OBS on stream
+* automatically loot enemies
 * game modifications
   * prevent dragonrot from increasing upon death
   * disable death penalties like losing Sen or experience
@@ -147,6 +148,9 @@ This will completely disable the automatic camera rotation adjustments when you 
 ### On 'Disable camera reset on lock-on':
 If you press your target lock-on key and no target is in sight the game will reset and center the camera position and disable your input while it's doing so. Ticking this checkbox will remove this behaviour of the game.
 
+### On 'Automatically loot enemies':
+Enabling this will pick up all loot an enemy drops automatically as long as you are in pick-up range.
+
 ### On 'Prevent dragonrot increase on death':
 This option will remove the effect dragonrot has on NPCs, if an NPC already got dragonrot then it will ensure that their condition won't worsen when you die. The internal dragonrot counter will however keep increasing, nobody will be affected by it though. Keep in mind that there are certain thresholds regarding amount of deaths between dragonrot levels, if you enable this feature and die a level might get skipped so even when you disable it afterwards the dragonrot level for all NPCs will only increase after you have hit the **next** threshold.
 
@@ -236,6 +240,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Version History
 
+* v1.2.5.0 (2019-05-04)
+  * added feature to automatically loot enemies
 * v1.2.4.0 (2019-05-02)
   * added feature to increase spirit emblem capacity on prosthetic upgrades
   * changed way to obtain player kills, fixes slow stats updates

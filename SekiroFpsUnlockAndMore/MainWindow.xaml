@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SekiroFpsUnlockAndMore"
         mc:Ignorable="d"
-        Title="Sekiro FPS Unlocker and more v1.2.4" Width="Auto" Height="Auto" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="Sekiro FPS Unlocker and more v1.2.5" Width="Auto" Height="Auto" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
 
     <Grid Background="#FFF9F9F9">
         <DockPanel>
@@ -37,23 +37,24 @@
                         <StackPanel Width="Auto" Height="Auto">
                             <CheckBox x:Name="cbCamAdjust" Margin="0,5,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Disable camera auto rotate on movement" ToolTip="Disables the annoying automatic camera adjustment on movement. Intended for mouse users" Checked="CbCamAdjust_Check_Handler" Unchecked="CbCamAdjust_Check_Handler" TabIndex="12" />
                             <CheckBox x:Name="cbCamReset" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Disable camera reset on lock-on" ToolTip="Disables the annoying camera centering on lock-on when there is no target" Checked="CbCamReset_Check_Handler" Unchecked="CbCamReset_Check_Handler" TabIndex="13" />
-                            <CheckBox x:Name="cbDragonrot" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Prevent dragonrot increase on death" ToolTip="NPCs won't get the disease and/or their condition won't get worse" Checked="CbDragonrot_Check_Handler" Unchecked="CbDragonrot_Check_Handler" TabIndex="14" />
-                            <CheckBox x:Name="cbDeathPenalty" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Disable death penalties (except dragonrot)" ToolTip="Disables Sen and Experience loss upon death" Checked="CbDeathPenalty_Check_Handler" Unchecked="CbDeathPenalty_Check_Handler" TabIndex="15" />
+                            <CheckBox x:Name="cbAutoLoot" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Automatically loot enemies" ToolTip="Automatically pickup and collect all enemy loot/items"  TabIndex="14" Checked="CbAutoLoot_Check_Handler" Unchecked="CbAutoLoot_Check_Handler" />
+                            <CheckBox x:Name="cbDragonrot" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Prevent dragonrot increase on death" ToolTip="NPCs won't get the disease and/or their condition won't get worse" Checked="CbDragonrot_Check_Handler" Unchecked="CbDragonrot_Check_Handler" TabIndex="15" />
+                            <CheckBox x:Name="cbDeathPenalty" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Disable death penalties (except dragonrot)" ToolTip="Disables Sen and Experience loss upon death" Checked="CbDeathPenalty_Check_Handler" Unchecked="CbDeathPenalty_Check_Handler" TabIndex="16" />
                             <CheckBox x:Name="cbDeathPenaltyHidden" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="(DEBUG) Disable hidden death penalties" ToolTip="DEBUG ONLY" Checked="CbDeathPenaltyHidden_Check_Handler" Unchecked="CbDeathPenaltyHidden_Check_Handler" IsTabStop="False" Visibility="Collapsed" />
-                            <CheckBox x:Name="cbEmblemUpgrade" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Increase spirit emblem cap. on upgrades" ToolTip="Every prosthetic upgrade will increase maximum emblem capacity by 1. PERMANENT INCREASE!" Checked="CbEmblemUpgrade_Check_Handler" Unchecked="CbEmblemUpgrade_Check_Handler" TabIndex="16"/>
+                            <CheckBox x:Name="cbEmblemUpgrade" Margin="0,3,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Increase spirit emblem cap. on upgrades" ToolTip="Every prosthetic upgrade will increase maximum emblem capacity by 1. PERMANENT INCREASE!" Checked="CbEmblemUpgrade_Check_Handler" Unchecked="CbEmblemUpgrade_Check_Handler" TabIndex="17"/>
                             <DockPanel Margin="0,3,0,0" LastChildFill="False">
-                                <CheckBox x:Name="cbGameSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Game speed (%):" ToolTip="Increase or decrease. Can potentially crash the game in cutscenes, use with caution" Checked="CbGameSpeed_Check_Handler" Unchecked="CbGameSpeed_Check_Handler" TabIndex="17"  />
+                                <CheckBox x:Name="cbGameSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Game speed (%):" ToolTip="Increase or decrease. Can potentially crash the game in cutscenes, use with caution" Checked="CbGameSpeed_Check_Handler" Unchecked="CbGameSpeed_Check_Handler" TabIndex="18"  />
                                 <Button x:Name="bGs100" DockPanel.Dock="Right" Content="100" Margin="0,0,0,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGs100_Click" />
                                 <Button x:Name="bGsHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGsHigher_Click" />
-                                <TextBox x:Name="tbGameSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="18" />
+                                <TextBox x:Name="tbGameSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="19" />
                                 <Button x:Name="bGsLower" DockPanel.Dock="Right" Content="&lt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGsLower_Click" />
                                 <Button x:Name="bGs0" DockPanel.Dock="Right" Content="0" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BGs0_Click" />
                             </DockPanel>
                             <DockPanel Margin="0,5,0,0" LastChildFill="False">
-                                <CheckBox x:Name="cbPlayerSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Player speed (%):" ToolTip="Increase or decrease. To enable this start the game and load a save, then tick the checkbox. Can potentially crash the game in cutscenes, use with caution" Checked="CbPlayerSpeed_Check_Handler" Unchecked="CbPlayerSpeed_Check_Handler" TabIndex="19"  />
+                                <CheckBox x:Name="cbPlayerSpeed" DockPanel.Dock="Left" Margin="0,0,0,0" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Content="Player speed (%):" ToolTip="Increase or decrease. To enable this start the game and load a save, then tick the checkbox. Can potentially crash the game in cutscenes, use with caution" Checked="CbPlayerSpeed_Check_Handler" Unchecked="CbPlayerSpeed_Check_Handler" TabIndex="20"  />
                                 <Button x:Name="bPs100" DockPanel.Dock="Right" Content="100" Margin="0,0,0,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPs100_Click" />
                                 <Button x:Name="bPsHigher" DockPanel.Dock="Right" Content="&gt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPsHigher_Click" />
-                                <TextBox x:Name="tbPlayerSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="20" />
+                                <TextBox x:Name="tbPlayerSpeed" DockPanel.Dock="Right" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" VerticalContentAlignment="Center" Text="100" TextAlignment="Center" MaxLength="3" PreviewTextInput="Numeric_PreviewTextInput" DataObject.Pasting="Numeric_PastingHandler" TabIndex="21" />
                                 <Button x:Name="bPsLower" DockPanel.Dock="Right" Content="&lt;" Margin="0,0,3,0" Width="25" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPsLower_Click" />
                                 <Button x:Name="bPs0" DockPanel.Dock="Right" Content="0" Margin="0,0,3,0" Width="30" Height="25" FontSize="14 px" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Focusable="False" Click="BPs0_Click" />
                             </DockPanel>
@@ -63,7 +64,7 @@
                 <Button x:Name="bPatch" Margin="0,7,0,0" Width="300" Height="30" FontSize="14 px" IsEnabled="False" Content="Patch game (CTRL + P)" BorderThickness="1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
                     Focusable="False" Click="BPatch_Click" TabIndex="20" IsTabStop="False" />
                 <TextBox x:Name="tbStatus" Margin="0,5,0,0" Width="300" Height="25" FontSize="14 px" FontWeight="Bold" Text="waiting for game..." TextAlignment="Center" TextWrapping="NoWrap" IsEnabled="False" />
-                <Expander x:Name="exGuide" Margin="0,8,0,0" Height="Auto" FontSize="14 px" Header="ReadMe" IsExpanded="True" TabIndex="21">
+                <Expander x:Name="exGuide" Margin="0,8,0,0" Height="Auto" FontSize="14 px" Header="ReadMe" IsExpanded="True" TabIndex="22">
                     <TextBlock Margin="2,6,2,0" FontSize="11 px" TextWrapping="WrapWithOverflow" IsEnabled="False">
                         <TextBlock.Inlines>
                             <Run FontWeight="Bold" Foreground="#FF0046FF">This patcher does not modify game files, you have to start it every time.</Run>
@@ -87,7 +88,7 @@
                 </Expander>
                 <Label HorizontalAlignment="Right" FontSize="12 px" TabIndex="22">
                     <Hyperlink NavigateUri="https://github.com/uberhalit/SekiroFpsUnlockAndMore" RequestNavigate="Hyperlink_RequestNavigate">
-                        v1.2.4 - by uberhalit
+                        v1.2.5 - by uberhalit
                     </Hyperlink>
                 </Label>
             </StackPanel>

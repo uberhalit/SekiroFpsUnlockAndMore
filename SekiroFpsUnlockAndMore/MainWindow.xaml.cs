@@ -29,6 +29,7 @@ namespace SekiroFpsUnlockAndMore
         internal long _offset_player_deaths = 0x0;
         internal long _offset_total_kills = 0x0;
         internal long _offset_camera_reset = 0x0;
+        internal long _offset_autoloot = 0x0;
         internal long _offset_dragonrot_routine = 0x0;
         internal long _offset_deathpenalties1 = 0x0;
         internal long _offset_deathpenalties2 = 0x0;
@@ -199,6 +200,7 @@ namespace SekiroFpsUnlockAndMore
             this.exGameMods.IsExpanded = _settingsService.ApplicationSettings.exGameMods;
             this.cbCamAdjust.IsChecked = _settingsService.ApplicationSettings.cbCamAdjust;
             this.cbCamReset.IsChecked = _settingsService.ApplicationSettings.cbCamReset;
+            this.cbAutoLoot.IsChecked = _settingsService.ApplicationSettings.cbAutoLoot;
             this.cbDragonrot.IsChecked = _settingsService.ApplicationSettings.cbDragonrot;
             this.cbDeathPenalty.IsChecked = _settingsService.ApplicationSettings.cbDeathPenalty;
             this.cbDeathPenaltyHidden.Visibility = _settingsService.ApplicationSettings.hiddenDPs == ZUH_HIDDEN_DP ? Visibility.Visible : Visibility.Collapsed;
@@ -229,6 +231,7 @@ namespace SekiroFpsUnlockAndMore
             _settingsService.ApplicationSettings.exGameMods = this.exGameMods.IsExpanded;
             _settingsService.ApplicationSettings.cbCamAdjust = this.cbCamAdjust.IsChecked == true;
             _settingsService.ApplicationSettings.cbCamReset = this.cbCamReset.IsChecked == true;
+            _settingsService.ApplicationSettings.cbAutoLoot = this.cbAutoLoot.IsChecked == true;
             _settingsService.ApplicationSettings.cbDragonrot = this.cbDragonrot.IsChecked == true;
             _settingsService.ApplicationSettings.cbDeathPenalty = this.cbDeathPenalty.IsChecked == true;
             _settingsService.ApplicationSettings.cbEmblemUpgrade = this.cbEmblemUpgrade.IsChecked == true;
@@ -258,9 +261,11 @@ namespace SekiroFpsUnlockAndMore
             this.exGameMods.IsExpanded = true;
             this.cbCamAdjust.IsChecked = false;
             this.cbCamReset.IsChecked = false;
+            this.cbAutoLoot.IsChecked = false;
             this.cbDragonrot.IsChecked = false;
             this.cbDeathPenalty.IsChecked = false;
             this.cbDeathPenaltyHidden.Visibility = Visibility.Collapsed;
+            this.cbEmblemUpgrade.IsChecked = false;
             this.cbGameSpeed.IsChecked = false;
             this.tbGameSpeed.Text = "100";
             this.cbPlayerSpeed.IsChecked = false;
@@ -445,6 +450,11 @@ namespace SekiroFpsUnlockAndMore
             }
             if (!IsValidAddress(_offset_total_kills))
                 _offset_total_kills = 0x0;
+
+            _offset_autoloot = patternScan.FindPattern(GameData.PATTERN_AUTOLOOT) + GameData.PATTERN_AUTOLOOT_OFFSET;
+            Debug.WriteLine("lpAutoLoot found at: 0x" + _offset_autoloot.ToString("X"));
+            if (!IsValidAddress(_offset_autoloot))
+                _offset_autoloot = 0x0;
 
             long lpCamAdjustPitch = patternScan.FindPattern(GameData.PATTERN_CAMADJUST_PITCH);
             long lpCamAdjustYawZ = patternScan.FindPattern(GameData.PATTERN_CAMADJUST_YAW_Z) + GameData.PATTERN_CAMADJUST_YAW_Z_OFFSET;
@@ -655,6 +665,13 @@ namespace SekiroFpsUnlockAndMore
                 this.cbCamReset.IsEnabled = false;
             }
 
+            if (_offset_autoloot == 0x0)
+            {
+                UpdateStatus("auto loot not found...", Brushes.Red);
+                LogToFile("auto loot not found...");
+                this.cbAutoLoot.IsEnabled = false;
+            }
+
             if (_offset_dragonrot_routine == 0x0)
             {
                 UpdateStatus("dragonrot not found...", Brushes.Red);
@@ -757,6 +774,7 @@ namespace SekiroFpsUnlockAndMore
             _codeCave_camadjust = false;
             _offset_camera_reset = 0x0;
             _offset_dragonrot_routine = 0x0;
+            _offset_autoloot = 0x0;
             _offset_deathpenalties1 = 0x0;
             _offset_deathpenalties2 = 0x0;
             _offset_deathscounter_routine = 0x0;
@@ -992,6 +1010,29 @@ namespace SekiroFpsUnlockAndMore
         }
 
         /// <summary>
+        /// Patches the game's auto loot.
+        /// </summary>
+        /// <param name="showStatus">Determines if status should be updated from within method, default is true.</param>
+        private bool PatchAutoloot(bool showStatus = true)
+        {
+            if (!this.cbAutoLoot.IsEnabled || _offset_autoloot == 0x0 || !CanPatchGame()) return false;
+            if (this.cbAutoLoot.IsChecked == true)
+            {
+                WriteBytes(_gameAccessHwndStatic, _offset_autoloot, GameData.PATCH_AUTOLOOT_ENABLE);
+            }
+            else if (this.cbAutoLoot.IsChecked == false)
+            {
+                if (!_initialStartup)
+                    WriteBytes(_gameAccessHwndStatic, _offset_autoloot, GameData.PATCH_AUTOLOOT_DISABLE);
+                if (showStatus) UpdateStatus(DateTime.Now.ToString("HH:mm:ss") + " Game unpatched!", Brushes.White);
+                return false;
+            }
+
+            if (showStatus) UpdateStatus(DateTime.Now.ToString("HH:mm:ss") + " Game patched!", Brushes.Green);
+            return true;
+        }
+
+        /// <summary>
         /// Patches the game's dragonrot effect on NPCs.
         /// </summary>
         /// <param name="showStatus">Determines if status should be updated from within method, default is true.</param>
@@ -1169,6 +1210,7 @@ namespace SekiroFpsUnlockAndMore
                 PatchFov(false),
                 PatchWindow(false),
                 PatchCamReset(false),
+                PatchAutoloot(false),
                 PatchDragonrot(false),
                 PatchDeathPenalty(false),
                 PatchGameSpeed(false),
@@ -1691,6 +1733,12 @@ namespace SekiroFpsUnlockAndMore
         {
             if (this.cbCamReset.IsEnabled)
                 PatchCamReset();
+        }
+
+        private void CbAutoLoot_Check_Handler(object sender, RoutedEventArgs e)
+        {
+            if (this.cbAutoLoot.IsEnabled == true)
+                PatchAutoloot();
         }
 
         private void CbDragonrot_Check_Handler(object sender, RoutedEventArgs e)
