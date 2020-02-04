@@ -164,7 +164,7 @@ Whenever you upgrade your prosthetic arm the maximum spirit emblem capacity will
 Slow down the game to beat a boss like a game journalist or speed it up and become gud. Game speed acts as a global time scale and is used by the game itself to create a dramatic effect in a few cutscenes. All game physics (even opening the menu) will be affected equally: all time-critical windows like dodge and deflect will be proportionally prolonged or shortened while the amount of damage given and taken as well as all other damage physics will be unaltered. A hit from an enemy on 150% game speed will do the exact same damage as on 80%, the deflect window on 50% is exactly twice as long as on 100% and so on. Of course, Sekiro himself will be affected by the speed too so even though a time window might be different now, the speed which you can react on it is different too. Can be toggled by pressing CTRL+M. Be aware that both speed modifications can potentially crash the game in certain cutscenes and NPC interactions so use them with caution.
 
 ### On 'Player speed':
-This modifier enables you to control Sekiro's speed independently from general game speed. Combat physics however are not guaranteed to stay the same on every setting. For example if you increase player speed you will be able to react to an attack faster but your own 'deflect' window is shorter now because you move faster. Use this to explore the world or to keep player speed near normal while altering general game speed. Grappling as well as jumping is handled by game speed while falling damage is calculated based on player speed so take care when grappling to a lower level with a low game speed and high player speed as this could instantly kill you as the game thinks you fell to death.
+This modifier enables you to control Sekiro's speed independently from general game speed. Combat physics however are not guaranteed to stay the same on every setting. For example if you increase player speed you will be able to react to an attack faster but your own 'deflect' window is shorter now because you move faster. Use this to explore the world or to keep player speed near normal while altering general game speed. Grappling as well as jumping is handled by game speed while falling damage is calculated based on player speed so take care when grappling to a lower level with a low game speed and high player speed as this could instantly kill you as the game thinks you fell to death. Can be toggled by pressing CTRL+M. 
 Be aware that both speed modifications can potentially crash the game in certain cutscenes and NPC interactions so use them with caution.
 
 ## Troubleshooting:
@@ -190,7 +190,7 @@ Be aware that both speed modifications can potentially crash the game in certain
 
 ## Preview
 
-[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/998730c9a8d472c8e426f61d0dde589661b4f378/68747470733a2f2f692e696d6775722e636f6d2f466249424271742e706e67)](#)
+[![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/825b3ef500ce18358566b0ec96a74555eddf2603/68747470733a2f2f692e696d6775722e636f6d2f4868396335634a2e706e67)](#)
 
 ### Unlocked framerate
 [![Sekiro FPS Unlocker and more](https://camo.githubusercontent.com/53f52adb98a5111b31538466f91b58599d56d6d7/68747470733a2f2f692e696d6775722e636f6d2f4c4c524a5a554c2e706e67)](#)
@@ -240,6 +240,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Version History
 
+* v1.2.5.1 (2020-02-04)
+  * added support for windows' high contrast mode (thanks to [khvorov45](https://github.com/khvorov45) for pointing it out)
+  * focus of the game won't be stolen anymore when OBS and the utility try to write/read the stats log files at the same time
 * v1.2.5.0 (2019-05-04)
   * added feature to automatically loot enemies
 * v1.2.4.0 (2019-05-02)

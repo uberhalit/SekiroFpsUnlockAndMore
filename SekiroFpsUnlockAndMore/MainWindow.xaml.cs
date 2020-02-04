@@ -93,6 +93,25 @@ namespace SekiroFpsUnlockAndMore
             }
             GC.KeepAlive(mutex);
 
+            try
+            {
+                HIGHCONTRAST highContrastInfo = new HIGHCONTRAST();
+                highContrastInfo.cbSize = Marshal.SizeOf(typeof(HIGHCONTRAST));
+                if (SystemParametersInfo(SPI_GETHIGHCONTRAST, (uint)highContrastInfo.cbSize, ref highContrastInfo, 0))
+                {
+                    if ((highContrastInfo.dwFlags & HCF_HIGHCONTRASTON) == 1)
+                    {
+                        // high contrast mode is active, remove grid background color and let the OS handle it
+                        gMainGrid.Background = null;
+                        gSubGrid1.Background = null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Could not fetch SystemParameters: " + ex.Message);
+            }
+
             _path_logs = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\SekiroFpsUnlockAndMore.log";
             _path_deathsLog = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\DeathCounter.txt";
             _path_killsLog = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\TotalKillsCounter.txt";
@@ -1619,7 +1638,9 @@ namespace SekiroFpsUnlockAndMore
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed writing stats file: " + ex.Message, "Sekiro Fps Unlock And More");
+                LogToFile("Failed writing stats file: " + ex.Message);
+                // don't show a messagebox as this will potentially steal focus from game
+                //MessageBox.Show("Failed writing stats file: " + ex.Message, "Sekiro Fps Unlock And More");
             }
         }
 
@@ -1873,6 +1894,8 @@ namespace SekiroFpsUnlockAndMore
         private const uint SWP_FRAMECHANGED = 0x0020;
         private const uint SWP_SHOWWINDOW = 0x0040;
         private const int ZUH_HIDDEN_DP = 0x7;
+        private const uint SPI_GETHIGHCONTRAST = 0x0042;
+        private const int HCF_HIGHCONTRASTON = 0x00000001;
 
         [DllImport("user32.dll")]
         public static extern Boolean RegisterHotKey(IntPtr hWnd, Int32 id, UInt32 fsModifiers, UInt32 vlc);
@@ -1888,6 +1911,18 @@ namespace SekiroFpsUnlockAndMore
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern Boolean CloseHandle(IntPtr hObject);
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct HIGHCONTRAST
+        {
+            public int cbSize;
+            public int dwFlags;
+            public IntPtr lpszDefaultScheme;
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SystemParametersInfo(UInt32 uiAction, UInt32 uiParam, ref HIGHCONTRAST pvParam, UInt32 fWinIni);
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern IntPtr GetWindowLongPtr(IntPtr hWnd, Int32 nIndex);

@@ -193,7 +193,7 @@ namespace SekiroFpsUnlockAndMore
 
 
         /**
-            Controls camera pitch. xmm4 holds new pitch from a calculation while rps+170 holds current one from mouse so we overwrite xmm4 with the old pitch value.
+            Controls camera pitch. xmm4 holds new pitch from a calculation while rsi+170 holds current one from mouse so we overwrite xmm4 with the old pitch value.
             000000014073AF86 | 0F29A5 70080000              | movaps xmmword ptr ss:[rbp+870],xmm4                  | code inject overwrite from here
             000000014073AF8D | 0F29A5 80080000              | movaps xmmword ptr ss:[rbp+880],xmm4                  | jump back here from code inject
             000000014073AF94 | 0F29A6 70010000              | movaps xmmword ptr ds:[rsi+170],xmm4                  | camPitch, newCamPitch
@@ -230,12 +230,6 @@ namespace SekiroFpsUnlockAndMore
             Controls automatic camera pitch adjust on move on XY-axis. 
             Pointer in rax holds new pitch while rsi+170 holds current one prior movement so we overwrite xmm0 with the old pitch value and then overwrite [rax] with xmm0.
             Breaks Pitch on emulated controllers...
-            000000014073B476 | F3:0F1000                  | movss xmm0,dword ptr ds:[rax]                  | newCamPitch | code inject overwrite from here
-            000000014073B47A | F3:0F1186 70010000         | movss dword ptr ds:[rsi+170],xmm0              | camPitch
-            000000014073B482 | F3:0F1085 E4120000         | movss xmm0,dword ptr ss:[rbp+12E4]             | jump back here from code inject
-            000000014073B48A | E8 91BDFFFF                | call sekiro.140737220                          |
-            000000014073B48F | 0F28D0                     | movaps xmm2,xmm0                               |
-
             000000014073B4D6 | F3:0F1000                    | movss xmm0,dword ptr ds:[rax]                         | newCamPitch | code inject overwrite from here
             000000014073B4DA | F3:0F1186 70010000           | movss dword ptr ds:[rsi+170],xmm0                     | camePitch
             000000014073B4E2 | F3:0F1085 E4120000           | movss xmm0,dword ptr ss:[rbp+12E4]                    | jump back here from code inject
