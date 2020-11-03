@@ -7,9 +7,10 @@ namespace SekiroFpsUnlockAndMore
         internal const string PROCESS_NAME = "sekiro";
         internal const string PROCESS_TITLE = "Sekiro";
         internal const string PROCESS_DESCRIPTION = "Shadows Die Twice";
-        internal const string PROCESS_EXE_VERSION = "1.4.0.0";
-        internal static readonly string[] PROCESS_EXE_VERSION_SUPPORTED = new string[2]
+        internal const string PROCESS_EXE_VERSION = "1.5.0.0";
+        internal static readonly string[] PROCESS_EXE_VERSION_SUPPORTED = new string[3]
         {
+            "1.4.0.0",
             "1.3.0.0",
             "1.2.0.0"
         };
@@ -329,12 +330,12 @@ namespace SekiroFpsUnlockAndMore
 
 
         /**
-            sekiro.14066B520 is used to increase and decrease various player values, in this case it's used to decrease Sen so we skip the call.
-            0000000141189B74 | F344:0F2CE9                  | cvttss2si r13d,xmm1                                   |
-            0000000141189B79 | 41:8BD5                      | mov edx,r13d                                          |
-            0000000141189B7C | 48:8BCB                      | mov rcx,rbx                                           |
-            0000000141189B7F | E8 FC194EFF                  | call sekiro.14066B580                                 | -> ManipulatePlayerValues()
-            0000000141189B84 | 8BAB 60010000                | mov ebp,dword ptr ds:[rbx+160]                        |
+            sekiro.14066DA30 is used to increase and decrease various player values, in this case it's used to decrease Sen so we skip the call.
+            00000001411D32F7 | F344:0F2CE9                  | cvttss2si r13d,xmm1                                   |
+            00000001411D32FC | 41:8BD5                      | mov edx,r13d                                          |
+            00000001411D32FF | 48:8BCF                      | mov rcx,rdi                                           |
+            00000001411D3302 | E8 29A749FF                  | call sekiro.14066DA30                                 | -> ManipulatePlayerValues()
+            00000001411D3307 | 8B87 60010000                | mov eax,dword ptr ds:[rdi+160]                        |
 
             000000014118904F (Version 1.2.0.0)
          */
@@ -344,25 +345,36 @@ namespace SekiroFpsUnlockAndMore
         internal static readonly byte[] PATCH_DEATHPENALTIES1_DISABLE = new byte[5] { 0x90, 0x90, 0x90, 0x90, 0x90 }; // nop
         /**
             Here ability points (AP) are decreased and virtual Sen & AP decrease is set. The later 2 values will be shown after death as an indicator on how much of each has been lost.
-            0000000141189C68 | 8B00                         | mov eax,dword ptr ds:[rax]                            |
-            0000000141189C6A | 8983 60010000                | mov dword ptr ds:[rbx+160],eax                        | OnDeath() ability points (AP) decrease
-            0000000141189C70 | 45:2BFD                      | sub r15d,r13d                                         |
-            0000000141189C73 | 44:89BC24 90000000           | mov dword ptr ss:[rsp+90],r15d                        | virtual Sen decrease - shows how many Sen got lost after death
-            0000000141189C7B | 2BE9                         | sub ebp,ecx                                           |
-            0000000141189C7D | 89AC24 94000000              | mov dword ptr ss:[rsp+94],ebp                         | virtual AP decrease - shows how many APs got lost after death
-            0000000141189C84 | E8 071673FF                  | call sekiro.1408BB290                                 |
+            To not have the "Unseen Aid" screen shown everytime we overwrite an additional instruction.
+            00000001411D33BB | E8 E0110000                  | call sekiro.1411D45A0                                 | -> OnDeath() ability points (AP) decrease
+            00000001411D33C0 | 45:2BE5                      | sub r12d,r13d                                         |
+            00000001411D33C3 | 44:89A424 A0000000           | mov dword ptr ss:[rsp+A0],r12d                        | virtual Sen decrease - shows how many Sen got lost after death
+            00000001411D33CB | 8B8424 90000000              | mov eax,dword ptr ss:[rsp+90]                         | current AP
+            00000001411D33D2 | 2BC3                         | sub eax,ebx                                           |
+            00000001411D33D4 | 898424 A4000000              | mov dword ptr ss:[rsp+A4],eax                         | virtual AP decrease - shows how many APs got lost after death
+            00000001411D33DB | E8 002B6FFF                  | call sekiro.1408C5EE0                                 |
+            00000001411D33E0 | 48:8B8C24 A0000000           | mov rcx,qword ptr ss:[rsp+A0]                         |
+            00000001411D33E8 | 48:8908                      | mov qword ptr ds:[rax],rcx                            | checks if we have lost virtual sen and if not shows "Unseen Aid" screen next spawn
+            00000001411D33EB | 48:8B0D 562BB802             | mov rcx,qword ptr ds:[143D55F48]                      |
+            00000001411D33F2 | 48:85C9                      | test rcx,rcx                                          |
 
             000000014118913A (Version 1.2.0.0)
          */
-        internal const string PATTERN_DEATHPENALTIES2 = "8B ?? 89 83 ?? ?? ?? ?? 45 ?? ?? 44 89 ?? 24 ?? ?? 00 00 2B ?? 89 ?? 24 ?? ?? 00 00 E8";
-        internal const int PATTERN_DEATHPENALTIES2_OFFSET = 2;
-        internal const int PATCH_DEATHPENALTIES2_INSTRUCTION_LENGTH = 26;
-        internal static readonly byte[] PATCH_DEATHPENALTIES2_DISABLE = new byte[26] // nop
+        internal const string PATTERN_DEATHPENALTIES2 = "E8 ?? ?? ?? ?? 45 ?? ?? 44 89 ?? 24 ?? ?? 00 00 8B ?? 24 ?? ?? 00 00 2B ?? 89 ?? 24 ?? ?? 00 00 E8 ?? ?? ?? ?? 48 ?? ?? 24 ?? ?? 00 00 48 ?? ?? 48";
+        internal const int PATTERN_DEATHPENALTIES2_OFFSET = 0;
+        internal const int PATCH_DEATHPENALTIES2_INSTRUCTION_LENGTH = 32;
+        internal static readonly byte[] PATCH_DEATHPENALTIES2_DISABLE = new byte[32] // nop
         {
             0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
             0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
             0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
-            0x90, 0x90
+            0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90
+        };
+        internal const int PATTERN_DEATHPENALTIES3_OFFSET = 45;
+        internal const int PATCH_DEATHPENALTIES3_INSTRUCTION_LENGTH = 3;
+        internal static readonly byte[] PATCH_DEATHPENALTIES3_DISABLE = new byte[3] // nop
+        {
+            0x90, 0x90, 0x90
         };
 
 

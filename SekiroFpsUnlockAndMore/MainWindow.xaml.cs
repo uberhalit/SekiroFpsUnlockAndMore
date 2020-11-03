@@ -33,6 +33,7 @@ namespace SekiroFpsUnlockAndMore
         internal long _offset_dragonrot_routine = 0x0;
         internal long _offset_deathpenalties1 = 0x0;
         internal long _offset_deathpenalties2 = 0x0;
+        internal long _offset_deathpenalties3 = 0x0;
         internal long _offset_deathscounter_routine = 0x0;
         internal long _offset_timescale = 0x0;
         internal long _offset_timescale_player = 0x0;
@@ -40,6 +41,7 @@ namespace SekiroFpsUnlockAndMore
 
         internal byte[] _patch_deathpenalties1_enable;
         internal byte[] _patch_deathpenalties2_enable;
+        internal byte[] _patch_deathpenalties3_enable;
 
         internal MemoryCaveGenerator _memoryCaveGenerator;
         internal SettingsService _settingsService;
@@ -529,7 +531,15 @@ namespace SekiroFpsUnlockAndMore
                         if (!ReadProcessMemory(_gameAccessHwnd, _offset_deathpenalties2, _patch_deathpenalties2_enable, (ulong) GameData.PATCH_DEATHPENALTIES2_INSTRUCTION_LENGTH, out lpNumberOfBytesRead) || lpNumberOfBytesRead.ToInt32() != GameData.PATCH_DEATHPENALTIES2_INSTRUCTION_LENGTH)
                             _patch_deathpenalties2_enable = null;
                         else
+                        {
                             Debug.WriteLine("deathPenalties2 original instruction set: " + BitConverter.ToString(_patch_deathpenalties2_enable).Replace('-', ' '));
+                            _offset_deathpenalties3 = _offset_deathpenalties2 + GameData.PATTERN_DEATHPENALTIES3_OFFSET;
+                            _patch_deathpenalties3_enable = new byte[GameData.PATCH_DEATHPENALTIES3_INSTRUCTION_LENGTH];
+                            if (!ReadProcessMemory(_gameAccessHwnd, _offset_deathpenalties3, _patch_deathpenalties3_enable, (ulong)GameData.PATCH_DEATHPENALTIES3_INSTRUCTION_LENGTH, out lpNumberOfBytesRead) || lpNumberOfBytesRead.ToInt32() != GameData.PATCH_DEATHPENALTIES3_INSTRUCTION_LENGTH)
+                                _patch_deathpenalties2_enable = null;
+                            else
+                                Debug.WriteLine("deathPenalties3 original instruction set: " + BitConverter.ToString(_patch_deathpenalties3_enable).Replace('-', ' '));
+                        }
                     }
                     else
                         _offset_deathpenalties2 = 0x0;
@@ -539,8 +549,10 @@ namespace SekiroFpsUnlockAndMore
             {
                 _offset_deathpenalties1 = 0x0;
                 _offset_deathpenalties2 = 0x0;
+                _offset_deathpenalties3 = 0x0;
                 _patch_deathpenalties1_enable = null;
                 _patch_deathpenalties2_enable = null;
+                _patch_deathpenalties3_enable = null;
             }
 
             if (_settingsService.ApplicationSettings.hiddenDPs == ZUH_HIDDEN_DP)
@@ -1086,13 +1098,15 @@ namespace SekiroFpsUnlockAndMore
             {
                 WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties1, GameData.PATCH_DEATHPENALTIES1_DISABLE);
                 WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties2, GameData.PATCH_DEATHPENALTIES2_DISABLE);
+                WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties3, GameData.PATCH_DEATHPENALTIES3_DISABLE);
             }
             else if (this.cbDeathPenalty.IsChecked == false)
             {
-                if (_initialStartup)
+                if (!_initialStartup)
                 {
                     WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties1, _patch_deathpenalties1_enable);
                     WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties2, _patch_deathpenalties2_enable);
+                    WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties3, _patch_deathpenalties3_enable);
                 }
                 if (showStatus) UpdateStatus(DateTime.Now.ToString("HH:mm:ss") + " Game unpatched!", Brushes.White);
                 return false;

@@ -18,5 +18,5 @@ using System.Runtime.InteropServices;
     ResourceDictionaryLocation.SourceAssembly
 )]
 
-[assembly: AssemblyVersion("1.2.5.1")]
-[assembly: AssemblyFileVersion("1.2.5.1")]
+[assembly: AssemblyVersion("1.2.5.2")]
+[assembly: AssemblyFileVersion("1.2.5.2")]
