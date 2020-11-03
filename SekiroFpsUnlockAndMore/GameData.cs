@@ -8,7 +8,7 @@ namespace SekiroFpsUnlockAndMore
         internal const string PROCESS_TITLE = "Sekiro";
         internal const string PROCESS_DESCRIPTION = "Shadows Die Twice";
         internal const string PROCESS_EXE_VERSION = "1.5.0.0";
-        internal static readonly string[] PROCESS_EXE_VERSION_SUPPORTED = new string[3]
+        internal static readonly string[] PROCESS_EXE_VERSION_SUPPORTED_LEGACY = new string[3]
         {
             "1.4.0.0",
             "1.3.0.0",
@@ -358,6 +358,15 @@ namespace SekiroFpsUnlockAndMore
             00000001411D33EB | 48:8B0D 562BB802             | mov rcx,qword ptr ds:[143D55F48]                      |
             00000001411D33F2 | 48:85C9                      | test rcx,rcx                                          |
 
+            LEGACY
+            0000000141189C68 | 8B00                         | mov eax,dword ptr ds:[rax]                            |
+            0000000141189C6A | 8983 60010000                | mov dword ptr ds:[rbx+160],eax                        | OnDeath() ability points (AP) decrease
+            0000000141189C70 | 45:2BFD                      | sub r15d,r13d                                         |
+            0000000141189C73 | 44:89BC24 90000000           | mov dword ptr ss:[rsp+90],r15d                        | virtual Sen decrease - shows how many Sen got lost after death
+            0000000141189C7B | 2BE9                         | sub ebp,ecx                                           |
+            0000000141189C7D | 89AC24 94000000              | mov dword ptr ss:[rsp+94],ebp                         | virtual AP decrease - shows how many APs got lost after death
+            0000000141189C84 | E8 071673FF                  | call sekiro.1408BB290                                 |
+
             000000014118913A (Version 1.2.0.0)
          */
         internal const string PATTERN_DEATHPENALTIES2 = "E8 ?? ?? ?? ?? 45 ?? ?? 44 89 ?? 24 ?? ?? 00 00 8B ?? 24 ?? ?? 00 00 2B ?? 89 ?? 24 ?? ?? 00 00 E8 ?? ?? ?? ?? 48 ?? ?? 24 ?? ?? 00 00 48 ?? ?? 48";
@@ -375,6 +384,16 @@ namespace SekiroFpsUnlockAndMore
         internal static readonly byte[] PATCH_DEATHPENALTIES3_DISABLE = new byte[3] // nop
         {
             0x90, 0x90, 0x90
+        };
+        internal const string PATTERN_DEATHPENALTIES2_LEGACY = "8B ?? 89 83 ?? ?? ?? ?? 45 ?? ?? 44 89 ?? 24 ?? ?? 00 00 2B ?? 89 ?? 24 ?? ?? 00 00 E8";
+        internal const int PATTERN_DEATHPENALTIES2_OFFSET_LEGACY = 2;
+        internal const int PATCH_DEATHPENALTIES2_INSTRUCTION_LENGTH_LEGACY = 26;
+        internal static readonly byte[] PATCH_DEATHPENALTIES2_DISABLE_LEGACY = new byte[26] // nop
+        {
+            0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
+            0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
+            0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
+            0x90, 0x90
         };
 
 

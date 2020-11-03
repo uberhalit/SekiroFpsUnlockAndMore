@@ -67,6 +67,7 @@ namespace SekiroFpsUnlockAndMore
         internal string _path_killsLog;
         internal RECT _windowRect;
         internal Size _screenSize;
+        internal bool _isLegacyVersion = false;
 
         internal const string _DATACAVE_SPEEDFIX_POINTER = "speedfixPointer";
         internal const string _DATACAVE_FOV_POINTER = "fovPointer";
@@ -361,12 +362,24 @@ namespace SekiroFpsUnlockAndMore
             }
 
             string gameFileVersion = FileVersionInfo.GetVersionInfo(procList[0].MainModule.FileName).FileVersion;
-            if (gameFileVersion != GameData.PROCESS_EXE_VERSION && Array.IndexOf(GameData.PROCESS_EXE_VERSION_SUPPORTED, gameFileVersion) < 0 && !_settingsService.ApplicationSettings.gameVersionNotify)
+            if (gameFileVersion != GameData.PROCESS_EXE_VERSION)
             {
-                MessageBox.Show(string.Format("Unknown game version '{0}'.\nSome functions might not work properly or even crash the game. " +
-                                "Check for updates on this utility regularly following the link at the bottom.", gameFileVersion), "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Warning);
-                ClearConfiguration();
-                _settingsService.ApplicationSettings.gameVersionNotify = true;
+                if (Array.IndexOf(GameData.PROCESS_EXE_VERSION_SUPPORTED_LEGACY, gameFileVersion) < 0)
+                {
+                    if (!_settingsService.ApplicationSettings.gameVersionNotify)
+                    {
+                        MessageBox.Show(string.Format("Unknown game version '{0}'.\nSome functions might not work properly or even crash the game. " +
+                                    "Check for updates on this utility regularly following the link at the bottom.", gameFileVersion), "Sekiro FPS Unlocker and more", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        ClearConfiguration();
+                        _settingsService.ApplicationSettings.gameVersionNotify = true;
+                        SaveConfiguration();
+                    }
+                }
+                else
+                {
+                    _isLegacyVersion = true;
+                    _settingsService.ApplicationSettings.gameVersionNotify = false;
+                }
             }
             else
                 _settingsService.ApplicationSettings.gameVersionNotify = false;
@@ -523,22 +536,35 @@ namespace SekiroFpsUnlockAndMore
                     Debug.WriteLine("deathPenalties1 original instruction set: " + BitConverter.ToString(_patch_deathpenalties1_enable).Replace('-', ' '));
                 if (_patch_deathpenalties1_enable != null)
                 {
-                    _offset_deathpenalties2 = patternScan.FindPattern(GameData.PATTERN_DEATHPENALTIES2) + GameData.PATTERN_DEATHPENALTIES2_OFFSET;
+                    if (!_isLegacyVersion)
+                        _offset_deathpenalties2 = patternScan.FindPattern(GameData.PATTERN_DEATHPENALTIES2) + GameData.PATTERN_DEATHPENALTIES2_OFFSET;
+                    else
+                        _offset_deathpenalties2 = patternScan.FindPattern(GameData.PATTERN_DEATHPENALTIES2_LEGACY) + GameData.PATTERN_DEATHPENALTIES2_OFFSET_LEGACY;
                     Debug.WriteLine("lpDeathPenalties2 found at: 0x" + _offset_deathpenalties2.ToString("X"));
                     if (IsValidAddress(_offset_deathpenalties2))
                     {
-                        _patch_deathpenalties2_enable = new byte[GameData.PATCH_DEATHPENALTIES2_INSTRUCTION_LENGTH];
-                        if (!ReadProcessMemory(_gameAccessHwnd, _offset_deathpenalties2, _patch_deathpenalties2_enable, (ulong) GameData.PATCH_DEATHPENALTIES2_INSTRUCTION_LENGTH, out lpNumberOfBytesRead) || lpNumberOfBytesRead.ToInt32() != GameData.PATCH_DEATHPENALTIES2_INSTRUCTION_LENGTH)
+                        ulong instrLength = (ulong)GameData.PATCH_DEATHPENALTIES2_INSTRUCTION_LENGTH;
+                        if (!_isLegacyVersion)
+                            _patch_deathpenalties2_enable = new byte[GameData.PATCH_DEATHPENALTIES2_INSTRUCTION_LENGTH];
+                        else
+                        {
+                            _patch_deathpenalties2_enable = new byte[GameData.PATCH_DEATHPENALTIES2_INSTRUCTION_LENGTH_LEGACY];
+                            instrLength = (ulong)GameData.PATCH_DEATHPENALTIES2_INSTRUCTION_LENGTH_LEGACY;
+                        }
+                        if (!ReadProcessMemory(_gameAccessHwnd, _offset_deathpenalties2, _patch_deathpenalties2_enable, instrLength, out lpNumberOfBytesRead) || lpNumberOfBytesRead.ToInt32() != (long)instrLength)
                             _patch_deathpenalties2_enable = null;
                         else
                         {
                             Debug.WriteLine("deathPenalties2 original instruction set: " + BitConverter.ToString(_patch_deathpenalties2_enable).Replace('-', ' '));
-                            _offset_deathpenalties3 = _offset_deathpenalties2 + GameData.PATTERN_DEATHPENALTIES3_OFFSET;
-                            _patch_deathpenalties3_enable = new byte[GameData.PATCH_DEATHPENALTIES3_INSTRUCTION_LENGTH];
-                            if (!ReadProcessMemory(_gameAccessHwnd, _offset_deathpenalties3, _patch_deathpenalties3_enable, (ulong)GameData.PATCH_DEATHPENALTIES3_INSTRUCTION_LENGTH, out lpNumberOfBytesRead) || lpNumberOfBytesRead.ToInt32() != GameData.PATCH_DEATHPENALTIES3_INSTRUCTION_LENGTH)
-                                _patch_deathpenalties2_enable = null;
-                            else
-                                Debug.WriteLine("deathPenalties3 original instruction set: " + BitConverter.ToString(_patch_deathpenalties3_enable).Replace('-', ' '));
+                            if (!_isLegacyVersion)
+                            {
+                                _offset_deathpenalties3 = _offset_deathpenalties2 + GameData.PATTERN_DEATHPENALTIES3_OFFSET;
+                                _patch_deathpenalties3_enable = new byte[GameData.PATCH_DEATHPENALTIES3_INSTRUCTION_LENGTH];
+                                if (!ReadProcessMemory(_gameAccessHwnd, _offset_deathpenalties3, _patch_deathpenalties3_enable, (ulong)GameData.PATCH_DEATHPENALTIES3_INSTRUCTION_LENGTH, out lpNumberOfBytesRead) || lpNumberOfBytesRead.ToInt32() != GameData.PATCH_DEATHPENALTIES3_INSTRUCTION_LENGTH)
+                                    _patch_deathpenalties2_enable = null;
+                                else
+                                    Debug.WriteLine("deathPenalties3 original instruction set: " + BitConverter.ToString(_patch_deathpenalties3_enable).Replace('-', ' '));
+                            }
                         }
                     }
                     else
@@ -1098,7 +1124,8 @@ namespace SekiroFpsUnlockAndMore
             {
                 WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties1, GameData.PATCH_DEATHPENALTIES1_DISABLE);
                 WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties2, GameData.PATCH_DEATHPENALTIES2_DISABLE);
-                WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties3, GameData.PATCH_DEATHPENALTIES3_DISABLE);
+                if (!_isLegacyVersion && _offset_deathpenalties3 != 0x0)
+                    WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties3, GameData.PATCH_DEATHPENALTIES3_DISABLE);
             }
             else if (this.cbDeathPenalty.IsChecked == false)
             {
@@ -1106,7 +1133,8 @@ namespace SekiroFpsUnlockAndMore
                 {
                     WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties1, _patch_deathpenalties1_enable);
                     WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties2, _patch_deathpenalties2_enable);
-                    WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties3, _patch_deathpenalties3_enable);
+                    if (!_isLegacyVersion && _offset_deathpenalties3 != 0x0)
+                        WriteBytes(_gameAccessHwndStatic, _offset_deathpenalties3, _patch_deathpenalties3_enable);
                 }
                 if (showStatus) UpdateStatus(DateTime.Now.ToString("HH:mm:ss") + " Game unpatched!", Brushes.White);
                 return false;
