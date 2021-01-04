@@ -240,6 +240,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Version History
 
+* v1.2.5.3 (2021-01-04)
+  * added game version 1.06 (1.6.0.0) to supported versions
 * v1.2.5.2 (2020-11-02)
   * updated death penalties code to latest version 1.05
   * added game version 1.05 (1.5.0.0) to supported versions
